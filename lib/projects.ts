@@ -11,11 +11,15 @@ export type Project = {
   /** Optional status note appended to the tags in the home index. */
   status?: string;
   year: string;
+  /** Optional LIVE banner at the top of the case page. */
+  live?: { url: string; thread?: string };
   /** Live demo URL. Null renders a disabled slot showing demoNote. */
   demo: string | null;
   demoNote?: string;
   /** Optional note shown inside the video slot placeholder. */
   mediaNote?: string;
+  /** Hero demo video. Desktop: muted autoplay loop. Mobile: poster + play button. */
+  heroVideo?: { src: string; poster: string };
   interaction: string[];
   /** Optional mono list rendered after the interaction paragraphs. */
   interactionList?: string[];
@@ -24,7 +28,6 @@ export type Project = {
     points: string[];
   };
   extend: {
-    company: "Krea" | "Runway" | "Moonvalley";
     body: string;
   };
 };
@@ -36,24 +39,33 @@ export const projects: Project[] = [
     thesis: "Dehancer assumes you've shot something. We assume you haven't.",
     role: "Sole Designer & Engineer",
     type: "Solo project",
-    stack: "React · TypeScript · WebGL · GLSL",
-    tags: "React / TypeScript / WebGL / GLSL",
-    status: "Shipping August 2026",
+    stack: "WebGL2 · GLSL",
+    tags: "WebGL2 / GLSL",
+    status: "Shipped July 2026",
     year: "2026",
-    demo: null,
-    demoNote: "Live demo coming soon",
-    mediaNote: "Shipping August 2026",
+    // TODO: swap thread for the exact launch-post URL
+    live: { url: "https://latentfilm.com/", thread: "https://x.com/alilinlab" },
+    demo: "https://latentfilm.com/",
     interaction: [
-      "A WebGL film-physics engine for AI-generated video. Five film-emulation parameters applied as a realtime shader pipeline. [content in progress]",
+      "AI video has a tell. Blacks that hit zero. Highlights that clip instead of roll. Static frames that sit dead still. Nothing in the image ever passed through a physical medium — and your eye knows, even when you can't say why.",
+      "Latent puts the medium back. Halation, grain, highlight roll-off, dye crosstalk — simulated as physics, not filters. Every parameter comes from measurement: I shot CineStill 800T at night, developed it, scanned it, and pulled the numbers off my own negatives. Channel bias. Halation radius in pixels. Grain σ per luminance zone.",
+      "Then I built the instrument to prove it works. A spectral analyzer that fits the radial power spectrum of any frame against natural-image statistics — the same math forensics researchers use to detect AI images, turned around and used as a repair target. The engine moves a frame's spectral falloff from −3.2 toward the −2 of the natural world. Measured, not vibes.",
+      "What this project is really about: taking a feeling everyone has (\"this looks AI\") and decomposing it into numbers you can act on. Some of it the engine fixes. Some of it nothing can fix — and the honest boundary is part of the product. Latent makes AI footage look photographed, not real. Those are different problems.",
+      "Built solo in six weeks alongside a full-time internship: engine, measurement tooling, calibration methodology, site, launch.",
     ],
     architecture: {
       intro:
-        "5-layer pipeline: linearize sRGB → color response remap → halation → grain → highlight roll-off → re-encode. [content in progress]",
-      points: [],
+        "Runs real-time in the browser. Six-pass GPU pipeline, raw WebGL2, no three.js. Footage never leaves your device.",
+      points: [
+        "halation, grain, highlight roll-off, dye crosstalk simulated as physics, not filters",
+        "calibrated from scanned CineStill 800T negatives: channel bias, halation radius in pixels, grain σ per luminance zone",
+        "spectral analyzer fits radial power spectrum against natural-image statistics",
+        "repair target: spectral falloff moved from −3.2 toward −2",
+        "six-pass GPU pipeline, raw WebGL2, no three.js, footage stays on device",
+      ],
     },
     extend: {
-      company: "Krea",
-      body: "How this fits Runway / Krea's post-generation pipeline. [content in progress]",
+      body: "Film physics as a native color stage in post-generation pipelines.",
     },
   },
   {
@@ -66,6 +78,12 @@ export const projects: Project[] = [
     tags: "Three.js / GLSL / Claude API / fal.ai",
     year: "2026",
     demo: "https://resonance.alilinlab.com/",
+    // Poster is a placeholder frame; replace /work/resonance-demo.mp4 with the
+    // 30 s captioned screen recording (and re-export a matching poster).
+    heroVideo: {
+      src: "/work/resonance-demo.mp4",
+      poster: "/work/resonance-poster.jpg",
+    },
     interaction: [
       "AI video generation is a black box. Creators describe intent in words, receive unpredictable output, and judge results with their eyes alone — no physical intuition, no spatial feedback, no measurable control. Resonance turns every frame of an AI-generated video into sculptable material in real time. Brightness sculpts geometry. Motion energy drives surface frequency. When something is wrong, you feel it in the form before you can say it in words.",
     ],
@@ -89,7 +107,6 @@ export const projects: Project[] = [
       ],
     },
     extend: {
-      company: "Runway",
       body: "The next phase uses physics simulation as a spatial consistency validator for world-model output. If a generated scene has an inconsistent light source, the physics readout surfaces it as a form anomaly before the creator consciously identifies it. A generation feedback layer that speaks the language of materials, not words.",
     },
   },
@@ -114,8 +131,7 @@ export const projects: Project[] = [
       ],
     },
     extend: {
-      company: "Moonvalley",
-      body: "Skeletal Silk proves a pattern. The AI reads a material and returns shader parameters, not an image. The same interpreter can move from a static fabric to every frame of a video, which is what Latent does. For Krea or Runway this changes what a model output is: physical parameters you can control, not a black box image you can only regenerate. Control lives at the parameter layer, not the prompt layer.",
+      body: "Two directions. First, the material interpreter moves from a single photograph to video: reading material properties frame by frame and returning physical parameters, so a cinematic model's output can be verified for material consistency instead of regenerated on faith. Second, the parameter schema deepens into layered material — surface, structure and optics separated — so a fabric stops being one number and becomes a stack of measurable claims.",
     },
   },
   {
@@ -140,7 +156,6 @@ export const projects: Project[] = [
       ],
     },
     extend: {
-      company: "Runway",
       body: "Vestige is not a single product. The architecture is a template: ZK proofs, NFC authentication and a realtime twin, rethemed per brand. One retheme already exists, a Coachtopia version that reuses the same stack under a different visual identity. What it demonstrates is serious system design plus a componentized front end built for reuse, not a one-off demo.",
     },
   },

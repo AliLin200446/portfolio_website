@@ -33,15 +33,27 @@ export default function RootLayout({
       <body>
         {children}
         <footer className="mx-auto max-w-5xl border-t border-line px-6 py-8">
-          <div className="flex items-baseline justify-between font-mono text-xs text-muted">
-            <span>© 2026 Ali Lin</span>
+          <div className="flex items-center justify-between font-mono text-xs text-muted">
+            <div className="flex items-center gap-3">
+              <span>© 2026 Ali Lin</span>
+              {/* Year seal: the footer's single static cinnabar element. */}
+              <span
+                aria-hidden
+                className="grid h-6 w-6 select-none grid-cols-2 place-items-center bg-oxblood font-serif text-[9px] leading-none text-paper"
+              >
+                <span>二</span>
+                <span>〇</span>
+                <span>二</span>
+                <span>六</span>
+              </span>
+            </div>
             <nav className="flex gap-6">
-              <Link href="/" className="transition-colors hover:text-oxblood">
+              <Link href="/" className="transition-colors hover:text-bronze">
                 Index
               </Link>
               <Link
                 href="/about"
-                className="transition-colors hover:text-oxblood"
+                className="transition-colors hover:text-bronze"
               >
                 About
               </Link>

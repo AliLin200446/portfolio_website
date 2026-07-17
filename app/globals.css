@@ -1,11 +1,19 @@
 @import "tailwindcss";
 
-/* Design system. All color and type decisions live here. */
+/* Design system. All color and type decisions live here.
+   Five-elements palette (GEWU-AN design language):
+   earth --paper · metal --bronze · fire --oxblood (cinnabar) ·
+   wood --wood · water never appears as a UI color.
+   Discipline: at most ONE static cinnabar element per screen; hover
+   cinnabar is reserved for primary content links (index titles, demo).
+   Structural UI, labels and rules use bronze. Wood stays under 5%. */
 :root {
   --paper: #f5f2ec;
   --ink: #1a1714;
   --muted: #6b6459;
   --oxblood: #9a3b22;
+  --bronze: #8c6a3f;
+  --wood: #3a4a3f;
   --line: #e3ded4;
 }
 
@@ -14,6 +22,8 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-oxblood: var(--oxblood);
+  --color-bronze: var(--bronze);
+  --color-wood: var(--wood);
   --color-line: var(--line);
 
   --font-serif: var(--font-newsreader), Georgia, serif;

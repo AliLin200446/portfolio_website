@@ -9,7 +9,7 @@ export default function AboutPage() {
   return (
     <main className="mx-auto max-w-5xl px-6">
       <header className="flex items-baseline justify-between py-6 font-mono text-xs text-muted">
-        <Link href="/" className="transition-colors hover:text-oxblood">
+        <Link href="/" className="transition-colors hover:text-bronze">
           ← Index
         </Link>
         <span>Ali Lin</span>
@@ -29,33 +29,33 @@ export default function AboutPage() {
 
         <dl className="mt-14 max-w-[68ch] border-t border-line pt-6 font-mono text-sm">
           <div className="flex gap-6 py-1.5">
-            <dt className="w-20 text-muted">Email</dt>
+            <dt className="w-20 text-bronze">Email</dt>
             <dd>
               <a
                 href="mailto:alilin406@outlook.com"
-                className="transition-colors hover:text-oxblood"
+                className="transition-colors hover:text-bronze"
               >
                 alilin406@outlook.com
               </a>
             </dd>
           </div>
           <div className="flex gap-6 py-1.5">
-            <dt className="w-20 text-muted">LinkedIn</dt>
+            <dt className="w-20 text-bronze">LinkedIn</dt>
             <dd>
               <a
                 href="https://www.linkedin.com/in/alilin406/"
-                className="transition-colors hover:text-oxblood"
+                className="transition-colors hover:text-bronze"
               >
                 linkedin.com/in/alilin406
               </a>
             </dd>
           </div>
           <div className="flex gap-6 py-1.5">
-            <dt className="w-20 text-muted">Twitter</dt>
+            <dt className="w-20 text-bronze">Twitter</dt>
             <dd>
               <a
                 href="https://x.com/alilinlab"
-                className="transition-colors hover:text-oxblood"
+                className="transition-colors hover:text-bronze"
               >
                 x.com/alilinlab
               </a>

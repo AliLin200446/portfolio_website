@@ -11,7 +11,7 @@ export default function Home() {
 
         <header className="relative z-10 flex items-baseline justify-between px-6 py-6 font-mono text-xs text-muted">
           <span>Ali Lin</span>
-          <Link href="/about" className="transition-colors hover:text-oxblood">
+          <Link href="/about" className="transition-colors hover:text-bronze">
             About
           </Link>
         </header>
@@ -32,7 +32,7 @@ export default function Home() {
 
       {/* Project index. */}
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h2 className="mb-8 font-mono text-xs uppercase tracking-widest text-muted">
+        <h2 className="mb-8 font-mono text-xs uppercase tracking-widest text-bronze">
           Selected work
         </h2>
         <ol className="border-t border-line">
@@ -42,7 +42,7 @@ export default function Home() {
                 href={`/work/${project.slug}`}
                 className="group grid grid-cols-[3ch_1fr] gap-x-6 gap-y-1 py-6 sm:grid-cols-[3ch_14rem_1fr_auto] sm:items-baseline"
               >
-                <span className="font-mono text-xs text-muted">
+                <span className="font-mono text-xs text-bronze">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="font-serif text-2xl decoration-oxblood decoration-1 underline-offset-4 group-hover:underline">
@@ -52,7 +52,10 @@ export default function Home() {
                   {project.thesis}
                 </p>
                 <p className="col-start-2 font-mono text-xs text-muted sm:col-start-4 sm:text-right">
-                  {[project.tags, project.status].filter(Boolean).join(" — ")}
+                  {project.tags}
+                  {project.status && (
+                    <span className="text-wood">{` — ${project.status}`}</span>
+                  )}
                 </p>
               </Link>
             </li>
