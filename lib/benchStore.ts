@@ -32,11 +32,6 @@ type BenchState = {
   // B5 seal
   b5StampNonce: number;
   b5Stamp: () => void;
-  // B6 bronze figure
-  b6PointIdx: number;
-  setB6PointIdx: (i: number) => void;
-  b6NeedleNonce: number;
-  b6Needle: () => void;
 };
 
 export const useBenchStore = create<BenchState>((set) => ({
@@ -62,8 +57,4 @@ export const useBenchStore = create<BenchState>((set) => ({
   b4Grab: () => set((s) => ({ b4GrabNonce: s.b4GrabNonce + 1 })),
   b5StampNonce: 0,
   b5Stamp: () => set((s) => ({ b5StampNonce: s.b5StampNonce + 1 })),
-  b6PointIdx: 0,
-  setB6PointIdx: (i) => set({ b6PointIdx: i }),
-  b6NeedleNonce: 0,
-  b6Needle: () => set((s) => ({ b6NeedleNonce: s.b6NeedleNonce + 1 })),
 }));
