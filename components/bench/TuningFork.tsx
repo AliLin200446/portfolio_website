@@ -5,10 +5,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { berthOf } from "@/lib/bench";
+import { makeBenchEnvMap } from "@/lib/bench/envMap";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
- * B2 RESONANCE — the tuning fork. Strike it and the arms ring in the real
+ * B2-REV RESONANCE — precision instrument pass: polished PBR copper
+ * arms with long sharp axial highlights (low roughness + shared bench
+ * env map + a grazing side light), weighted rounded tips, a cold
+ * neutral-grey stem/base (restrained two-material split — it stays ONE
+ * instrument), grounded contact. Geometry footprint, interaction and
+ * the luma-driven vibration are UNCHANGED. Sound (§4) not approved —
+ * silent.
+ * Original notes: the tuning fork. Strike it and the arms ring in the real
  * fork mode (arms open/close in antiphase); the decay envelope is modulated
  * by the luminance of a hidden video — the metal remembers the footage.
  * 衰减是骨架,亮度是呼吸。
@@ -87,8 +95,10 @@ function makeBrushTexture() {
   return tex;
 }
 
-/** Fork geometry: arms carry aArmSide/aArmT for the vertex-stage mode. */
-function buildFork() {
+/** Bright fork body: arms + yoke, with aArmSide/aArmT for the
+ *  vertex-stage mode. Tips carry a slight swell — the counterweight of
+ *  a real fork — then round off. */
+function buildForkBody() {
   const parts: THREE.BufferGeometry[] = [];
   const tag = (g: THREE.BufferGeometry, side: number, tOf?: (y: number) => number) => {
     const n = g.attributes.position.count;
@@ -102,39 +112,55 @@ function buildFork() {
     return g;
   };
 
-  const ARM_ROOT = 0.31; // arms start above the yoke arc
+  const ARM_ROOT = 0.31;
   for (const side of [-1, 1]) {
     const arm = new THREE.BoxGeometry(0.045, ARM_H, 0.03, 1, 24, 1);
     arm.translate(0, ARM_H / 2, 0);
-    // rounded tip approximation: taper the last 0.02
     const pos = arm.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const y = pos.getY(i);
-      if (y > ARM_H - 0.02) {
-        const k = 1 - ((y - (ARM_H - 0.02)) / 0.02) * 0.45;
-        pos.setX(i, pos.getX(i) * k);
-        pos.setZ(i, pos.getZ(i) * k);
+      // weighted tip: a restrained swell over the last 0.07, rounding
+      // off in the final 0.018 — mass, not fat
+      if (y > ARM_H - 0.07) {
+        const k = (y - (ARM_H - 0.07)) / 0.07;
+        let scale = 1 + 0.15 * Math.sin(Math.min(1, k * 1.15) * Math.PI);
+        if (y > ARM_H - 0.018) {
+          const c = (y - (ARM_H - 0.018)) / 0.018;
+          scale *= 1 - 0.5 * c * c;
+        }
+        pos.setX(i, pos.getX(i) * scale);
+        pos.setZ(i, pos.getZ(i) * scale * 0.9); // slightly elliptical
       }
     }
     arm.translate(side * ARM_GAP, ARM_ROOT, 0);
     parts.push(tag(arm, side, (y) => (y - ARM_ROOT) / ARM_H));
   }
 
-  const yoke = new THREE.TorusGeometry(ARM_GAP, 0.018, 10, 18, Math.PI);
-  yoke.rotateZ(Math.PI); // arc opens upward, bridging the arm roots
+  const yoke = new THREE.TorusGeometry(ARM_GAP, 0.018, 12, 22, Math.PI);
+  yoke.rotateZ(Math.PI);
   yoke.translate(0, ARM_ROOT, 0);
   parts.push(tag(yoke, 0));
 
-  const stem = new THREE.CylinderGeometry(0.015, 0.015, 0.22, 12);
-  stem.translate(0, ARM_ROOT - ARM_GAP - 0.11, 0);
-  parts.push(tag(stem, 0));
-
-  const base = new THREE.CylinderGeometry(0.07, 0.07, 0.03, 24);
-  base.translate(0, 0.015, 0);
-  parts.push(tag(base, 0));
-
-  const merged = mergeGeometries(parts, false)!;
+  const flat = parts.map((p) => (p.index ? p.toNonIndexed() : p));
+  const merged = mergeGeometries(flat, false)!;
   parts.forEach((p) => p.dispose());
+  flat.forEach((p) => p.dispose());
+  return merged;
+}
+
+/** Dark stand: stem + a wider, planted base. Static — no attributes. */
+function buildStand() {
+  const ARM_ROOT = 0.31;
+  const stem = new THREE.CylinderGeometry(0.015, 0.017, 0.22, 14);
+  stem.translate(0, ARM_ROOT - ARM_GAP - 0.11, 0);
+  const base = new THREE.CylinderGeometry(0.082, 0.09, 0.032, 28);
+  base.translate(0, 0.016, 0);
+  const merged = mergeGeometries(
+    [stem.toNonIndexed(), base.toNonIndexed()],
+    false
+  )!;
+  stem.dispose();
+  base.dispose();
   return merged;
 }
 
@@ -160,13 +186,18 @@ export default function TuningFork({
     }),
     []
   );
-  const geometry = useMemo(buildFork, []);
+  const bodyGeom = useMemo(buildForkBody, []);
+  const standGeom = useMemo(buildStand, []);
+  const envMap = useMemo(makeBenchEnvMap, []);
   const material = useMemo(() => {
+    // polished instrument copper: low roughness + env reflections give
+    // the long axial highlight; no brush map on the arms anymore
     const m = new THREE.MeshPhysicalMaterial({
       color: "#8C6A3F",
-      metalness: 0.9,
-      roughness: 0.35,
-      roughnessMap: makeBrushTexture(),
+      metalness: 0.95,
+      roughness: 0.3,
+      envMap,
+      envMapIntensity: 0.55,
     });
     // anisotropy when the engine supports it; the brush map carries the
     // grain direction either way (spec'd fallback)
@@ -188,7 +219,7 @@ export default function TuningFork({
         );
     };
     return m;
-  }, [uniforms]);
+  }, [uniforms, envMap]);
 
   // ---- signal chain: hidden video → 12Hz row-luma sampler → EMA ----
   const luma = useRef(0);
@@ -311,10 +342,28 @@ export default function TuningFork({
         }}
         onClick={strike}
       >
-        <mesh geometry={geometry} material={material} />
+        <mesh geometry={bodyGeom} material={material} />
+        {/* stand: cold neutral grey (no blue), planted */}
+        <mesh geometry={standGeom}>
+          <meshStandardMaterial
+            color="#8A8884"
+            metalness={0.9}
+            roughness={0.42}
+            envMap={envMap}
+            envMapIntensity={0.4}
+          />
+        </mesh>
+        {/* grazing side light: hangs the axial highlight, short throw */}
+        <pointLight
+          position={[-0.5, 0.65, 0.38]}
+          intensity={1.1}
+          distance={1.2}
+          decay={2}
+          color="#fff2df"
+        />
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
-          <circleGeometry args={[0.28, 24]} />
-          <meshBasicMaterial color="#1a1714" transparent opacity={0.14} />
+          <circleGeometry args={[0.17, 24]} />
+          <meshBasicMaterial color="#1a1714" transparent opacity={0.22} />
         </mesh>
       </group>
     </group>
