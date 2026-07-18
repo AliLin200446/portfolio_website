@@ -1,9 +1,153 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { STATIONS } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
+
+const plateBase =
+  "fixed bottom-16 left-6 z-10 font-mono text-xs text-muted";
+const plateBtn =
+  "mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]";
+
+/** B2 companion piece: the luma sparkline. Display, not a control. */
+function LumaSparkline() {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const hist = useRef<number[]>([]);
+  const luma = useBenchStore((s) => s.b2Luma);
+
+  useEffect(() => {
+    hist.current.push(luma);
+    if (hist.current.length > 60) hist.current.shift();
+    const c = canvas.current;
+    if (!c) return;
+    const g = c.getContext("2d")!;
+    g.clearRect(0, 0, 60, 12);
+    g.strokeStyle = "#1a1714";
+    g.lineWidth = 1;
+    g.beginPath();
+    hist.current.forEach((v, i) => {
+      const x = i + 0.5;
+      const y = 11 - v * 10;
+      if (i === 0) g.moveTo(x, y);
+      else g.lineTo(x, y);
+    });
+    g.stroke();
+  }, [luma]);
+
+  return (
+    <div className="mt-2 flex items-center gap-2">
+      <canvas ref={canvas} width={60} height={12} aria-hidden />
+      <span style={{ fontSize: 9 }} className="text-muted">
+        driven by video luminance
+      </span>
+    </div>
+  );
+}
+
+function ResonanceNameplate() {
+  const berth = useBenchStore((s) => s.berth);
+  const strike = useBenchStore((s) => s.b2Strike);
+  if (berth !== 1) return null;
+  return (
+    <div className={plateBase}>
+      <p>
+        <span className="text-ink">RESONANCE</span> — physics for AI video ·{" "}
+        <a
+          href="https://resonance.alilinlab.com"
+          target="_blank"
+          rel="noreferrer"
+          className="transition-colors hover:text-bronze"
+        >
+          live → resonance.alilinlab.com
+        </a>
+      </p>
+      <button type="button" onClick={strike} className={plateBtn}>
+        敲击 · ENTER
+      </button>
+      <LumaSparkline />
+    </div>
+  );
+}
+
+function SilkNameplate() {
+  const berth = useBenchStore((s) => s.berth);
+  const bone = useBenchStore((s) => s.b3Bone);
+  if (berth !== 2) return null;
+  return (
+    <div className={plateBase}>
+      <p>
+        <span className="text-ink">SKELETAL SILK</span> — AI as material
+        interpreter ·{" "}
+        <a
+          href="https://skeletal-silk.alilinlab.com"
+          target="_blank"
+          rel="noreferrer"
+          className="transition-colors hover:text-bronze"
+        >
+          skeletal-silk.alilinlab.com
+        </a>
+      </p>
+      <button type="button" onClick={bone} className={plateBtn}>
+        起骨 · ENTER
+      </button>
+    </div>
+  );
+}
+
+function TeardownNameplate() {
+  const berth = useBenchStore((s) => s.berth);
+  if (berth !== 3) return null;
+  return (
+    <div className={plateBase}>
+      <p>
+        <span className="text-ink">TEARDOWN №1</span> — an API, instrumented ·{" "}
+        <a
+          href="https://teardown.alilinlab.com"
+          target="_blank"
+          rel="noreferrer"
+          className="transition-colors hover:text-bronze"
+        >
+          teardown.alilinlab.com
+        </a>
+      </p>
+    </div>
+  );
+}
+
+function AcubotNameplate() {
+  const berth = useBenchStore((s) => s.berth);
+  const idx = useBenchStore((s) => s.b6PointIdx);
+  const setIdx = useBenchStore((s) => s.setB6PointIdx);
+  const needle = useBenchStore((s) => s.b6Needle);
+  if (berth !== 5) return null;
+  return (
+    <div className={plateBase}>
+      <p>
+        <span className="text-ink">ACUBOT</span> — a lineage, structured ·{" "}
+        <span className="text-wood">136 points · 4,138 cases</span>
+      </p>
+      <div
+        role="slider"
+        tabIndex={0}
+        aria-label="selected point"
+        aria-valuemin={0}
+        aria-valuemax={11}
+        aria-valuenow={idx}
+        className={plateBtn}
+        onClick={needle}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft") { setIdx((idx + 11) % 12); e.preventDefault(); }
+          if (e.key === "ArrowRight") { setIdx((idx + 1) % 12); e.preventDefault(); }
+          if (e.key === "Enter") { needle(); e.preventDefault(); }
+        }}
+      >
+        穴 {String(idx + 1).padStart(2, "0")}/12 · ←→ · 落针 ENTER
+      </div>
+    </div>
+  );
+}
 
 /** B1 nameplate: DOM layer, shown at the LATENT berth. The slider is the
  *  keyboard path to the film pull; focus ring is warm light, not cinnabar. */
@@ -64,6 +208,10 @@ function StationLink({
   className?: string;
   children: React.ReactNode;
 }) {
+  if (!station.href) {
+    // no destination yet (ACUBOT): plain label, still readable in the nav
+    return <span className={className}>{children}</span>;
+  }
   if (station.external) {
     return (
       <a
@@ -112,8 +260,16 @@ export default function HomeShell() {
   return (
     <div className="min-h-svh">
       <BenchHome active={bench3d} />
-      {bench3d && <LatentNameplate />}
-      {bench3d && <VestigeNameplate />}
+      {bench3d && (
+        <>
+          <LatentNameplate />
+          <ResonanceNameplate />
+          <SilkNameplate />
+          <TeardownNameplate />
+          <VestigeNameplate />
+          <AcubotNameplate />
+        </>
+      )}
 
       {/* top bar: identity + full text navigation, always reachable */}
       <header className="relative z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-b border-line bg-paper/85 px-6 py-4">

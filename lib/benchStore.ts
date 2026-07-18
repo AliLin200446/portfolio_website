@@ -1,15 +1,29 @@
 import { create } from "zustand";
 
-/** Bench state. Berth index survives case-page round trips (相C);
- *  b1Strength links the film-roll pull to the DOM nameplate slider. */
+/** Bench state. Berth index survives case-page round trips (相C); the
+ *  b* fields are the DOM↔3D bridges for each instrument's keyboard path. */
 type BenchState = {
   berth: number;
   setBerth: (i: number) => void;
+  // B1 film roll
   b1Strength: number;
   setB1Strength: (s: number) => void;
-  /** increments to request a B5 seal stamp (keyboard path via nameplate) */
+  // B2 tuning fork
+  b2Luma: number;
+  setB2Luma: (v: number) => void;
+  b2StrikeNonce: number;
+  b2Strike: () => void;
+  // B3 cocoon
+  b3BoneNonce: number;
+  b3Bone: () => void;
+  // B5 seal
   b5StampNonce: number;
   b5Stamp: () => void;
+  // B6 bronze figure
+  b6PointIdx: number;
+  setB6PointIdx: (i: number) => void;
+  b6NeedleNonce: number;
+  b6Needle: () => void;
 };
 
 export const useBenchStore = create<BenchState>((set) => ({
@@ -18,6 +32,16 @@ export const useBenchStore = create<BenchState>((set) => ({
   b1Strength: 0,
   setB1Strength: (s) =>
     set({ b1Strength: Math.max(0, Math.min(100, Math.round(s))) }),
+  b2Luma: 0,
+  setB2Luma: (v) => set({ b2Luma: v }),
+  b2StrikeNonce: 0,
+  b2Strike: () => set((s) => ({ b2StrikeNonce: s.b2StrikeNonce + 1 })),
+  b3BoneNonce: 0,
+  b3Bone: () => set((s) => ({ b3BoneNonce: s.b3BoneNonce + 1 })),
   b5StampNonce: 0,
   b5Stamp: () => set((s) => ({ b5StampNonce: s.b5StampNonce + 1 })),
+  b6PointIdx: 0,
+  setB6PointIdx: (i) => set({ b6PointIdx: i }),
+  b6NeedleNonce: 0,
+  b6Needle: () => set((s) => ({ b6NeedleNonce: s.b6NeedleNonce + 1 })),
 }));

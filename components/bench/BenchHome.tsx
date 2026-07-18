@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { STATIONS } from "@/lib/bench";
+import { useBenchStore } from "@/lib/benchStore";
 
 const Bench = dynamic(() => import("./Bench"), { ssr: false });
 
@@ -18,6 +20,10 @@ export function useBench3d() {
       "(min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference)"
     ).matches;
     setMount(ok);
+    // ?berth=N deep-link (also used by case pages to return to a berth)
+    const b = Number(new URLSearchParams(window.location.search).get("berth"));
+    if (Number.isInteger(b) && b >= 0 && b < STATIONS.length)
+      useBenchStore.getState().setBerth(b);
   }, []);
   return mount;
 }

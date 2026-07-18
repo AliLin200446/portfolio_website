@@ -1,13 +1,16 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { BERTH_MAX, BERTH_SPACING, STATIONS } from "@/lib/bench";
+import { BERTH_MAX, BERTH_SPACING } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
+import BronzeFigure from "./BronzeFigure";
+import Cocoon from "./Cocoon";
 import FilmRoll from "./FilmRoll";
+import Movement from "./Movement";
 import Seal from "./Seal";
+import TuningFork from "./TuningFork";
 
 /*
  * 相A skeleton: matte worktop plane, five placeholder boxes, camera rail.
@@ -53,10 +56,16 @@ function Rig() {
   const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    // ?berth=N deep-link is authoritative at rig mount: pin camera + store
+    const b = Number(new URLSearchParams(window.location.search).get("berth"));
+    if (Number.isInteger(b) && b >= 0 && b * BERTH_SPACING <= BERTH_MAX) {
+      x.current = target.current = b * BERTH_SPACING;
+      setBerth(b);
+    }
     camera.rotation.set(CAM_PITCH, 0, 0);
     camera.position.set(x.current, CAM_HEIGHT, CAM_DIST);
     invalidate();
-  }, [camera, invalidate]);
+  }, [camera, invalidate, setBerth]);
 
   useEffect(() => {
     const el = gl.domElement;
@@ -125,40 +134,6 @@ function Rig() {
   return null;
 }
 
-function PlaceholderStation({ index }: { index: number }) {
-  const router = useRouter();
-  const station = STATIONS[index];
-  const [hover, setHover] = useState(false);
-  const berth = useBenchStore((s) => s.berth);
-  const awake = berth === index;
-
-  useEffect(() => {
-    document.body.style.cursor = hover ? "pointer" : "";
-    return () => {
-      document.body.style.cursor = "";
-    };
-  }, [hover]);
-
-  return (
-    <mesh
-      position={[index * BERTH_SPACING, awake ? 0.28 : 0.25, 0]}
-      onClick={() => {
-        if (station.external) window.open(station.href, "_blank", "noreferrer");
-        else router.push(station.href);
-      }}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}
-    >
-      <boxGeometry args={[1.5, 0.5, 0.9]} />
-      <meshStandardMaterial
-        color={awake || hover ? "#c8c0af" : "#d6cfc0"}
-        roughness={0.9}
-        metalness={0}
-      />
-    </mesh>
-  );
-}
-
 function Worktop() {
   const tex = useWorktopTexture();
   return (
@@ -183,12 +158,13 @@ export default function Bench() {
       <directionalLight position={[-3, 6, 4]} intensity={1.4} color="#fff6e8" />
       <ambientLight intensity={0.75} />
       <Worktop />
-      {/* B1 and B5 occupy their berths; the rest stay placeholders */}
+      {/* six berths, six instruments */}
       <FilmRoll position={[0, 0, 0]} />
-      {STATIONS.slice(1, 4).map((s, i) => (
-        <PlaceholderStation key={s.id} index={i + 1} />
-      ))}
+      <TuningFork position={[1 * BERTH_SPACING, 0, 0]} />
+      <Cocoon position={[2 * BERTH_SPACING, 0, 0]} />
+      <Movement position={[3 * BERTH_SPACING, 0, 0]} />
       <Seal position={[4 * BERTH_SPACING, 0, 0]} />
+      <BronzeFigure position={[5 * BERTH_SPACING, 0, 0]} />
       <Rig />
     </Canvas>
   );

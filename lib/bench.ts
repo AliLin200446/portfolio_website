@@ -2,7 +2,8 @@
 export type Station = {
   id: string;
   label: string;
-  href: string;
+  /** Absent = no destination yet (nav renders a plain label). */
+  href?: string;
   external?: boolean;
   /** One-line used by the DOM list fallback. Existing copy only. */
   line?: string;
@@ -38,6 +39,12 @@ export const STATIONS: Station[] = [
     label: "VESTIGE",
     href: "/work/vestige",
     line: "A digital product passport built to outlast the first sale.",
+  },
+  {
+    id: "acubot",
+    label: "ACUBOT",
+    // no public destination yet; the bench object is the index entry
+    line: "A lineage, structured.",
   },
 ];
 
