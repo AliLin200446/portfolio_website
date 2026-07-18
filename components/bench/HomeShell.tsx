@@ -6,6 +6,7 @@ import acupointsJson from "@/data/acupoints.json";
 import { STATIONS, berthOf, HOME_BERTH } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
+import BenchLoader from "./BenchLoader";
 
 const plateBase =
   "fixed bottom-16 left-6 z-10 font-mono text-xs text-muted";
@@ -294,6 +295,8 @@ export default function HomeShell() {
   return (
     <div className="min-h-svh">
       <BenchHome active={bench3d} />
+      {/* instrument boot: pure HTML/CSS, first paint before Three parses */}
+      {bench3d && <BenchLoader />}
       {bench3d && (
         <>
           <LatentNameplate />

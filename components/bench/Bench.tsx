@@ -227,13 +227,28 @@ function BerthNames() {
 }
 
 export default function Bench() {
+  // milestone: the three/r3f runtime chunk has arrived and parsed
+  useEffect(() => {
+    useBenchStore.getState().setBoot(35, "three runtime");
+  }, []);
   return (
     <Canvas
       frameloop="demand"
       dpr={[1, 1.5]}
       camera={{ fov: 40 }}
       gl={{ antialias: true, powerPreference: "low-power" }}
-      onCreated={({ gl }) => gl.setClearColor("#F5F2EC")}
+      onCreated={({ gl, scene, camera }) => {
+        gl.setClearColor("#F5F2EC");
+        const { setBoot } = useBenchStore.getState();
+        setBoot(60, "webgl context");
+        let meshes = 0;
+        scene.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh) meshes += 1;
+        });
+        setBoot(70, `shader compile · ${meshes} meshes`);
+        const done = () => setBoot(100, "ready");
+        gl.compileAsync(scene, camera).then(done).catch(done);
+      }}
       aria-hidden
     >
       {/* window light + low fill; no colored sources */}

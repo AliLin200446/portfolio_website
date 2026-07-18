@@ -6,6 +6,10 @@ import { HOME_BERTH } from "@/lib/bench";
 type BenchState = {
   berth: number;
   setBerth: (i: number) => void;
+  /** instrument boot: real milestones only, monotonic, never inflated */
+  bootTarget: number;
+  bootLabel: string;
+  setBoot: (t: number, label: string) => void;
   // B1 film roll (REV: click-to-feed toggle)
   b1FeedNonce: number;
   b1Feed: () => void;
@@ -38,6 +42,10 @@ type BenchState = {
 export const useBenchStore = create<BenchState>((set) => ({
   berth: HOME_BERTH,
   setBerth: (i) => set({ berth: i }),
+  bootTarget: 0,
+  bootLabel: "runtime fetch",
+  setBoot: (t, label) =>
+    set((s) => ({ bootTarget: Math.max(s.bootTarget, t), bootLabel: label })),
   b1FeedNonce: 0,
   b1Feed: () => set((s) => ({ b1FeedNonce: s.b1FeedNonce + 1 })),
   b2Luma: 0,
