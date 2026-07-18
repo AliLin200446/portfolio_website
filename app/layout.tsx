@@ -12,12 +12,26 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://alilinlab.com"),
   title: {
     default: "Ali Lin — Design Engineer",
     template: "%s — Ali Lin",
   },
   description:
     "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
+  openGraph: {
+    siteName: "Ali Lin",
+    type: "website",
+    title: "Ali Lin — Design Engineer",
+    description:
+      "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Ali Lin — Design Engineer",
+    description:
+      "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
+  },
 };
 
 export default function RootLayout({
