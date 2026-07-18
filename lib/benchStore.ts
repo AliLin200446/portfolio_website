@@ -18,12 +18,9 @@ type BenchState = {
   setB2Luma: (v: number) => void;
   b2StrikeNonce: number;
   b2Strike: () => void;
-  // B3 cocoon
-  b3BoneNonce: number;
-  b3Bone: () => void;
-  /** keyboard-focus equivalent of sustained hover (透态) */
-  b3Reveal: boolean;
-  setB3Reveal: (v: boolean) => void;
+  // B3 cocoon (REV: strand-pull toggle)
+  b3PullNonce: number;
+  b3Pull: () => void;
   // B4 movement
   b4Sel: number;
   setB4Sel: (i: number) => void;
@@ -47,10 +44,8 @@ export const useBenchStore = create<BenchState>((set) => ({
   setB2Luma: (v) => set({ b2Luma: v }),
   b2StrikeNonce: 0,
   b2Strike: () => set((s) => ({ b2StrikeNonce: s.b2StrikeNonce + 1 })),
-  b3BoneNonce: 0,
-  b3Bone: () => set((s) => ({ b3BoneNonce: s.b3BoneNonce + 1 })),
-  b3Reveal: false,
-  setB3Reveal: (v) => set({ b3Reveal: v }),
+  b3PullNonce: 0,
+  b3Pull: () => set((s) => ({ b3PullNonce: s.b3PullNonce + 1 })),
   b4Sel: 1, // queue wheel is the protagonist
   setB4Sel: (i) => set({ b4Sel: ((i % 3) + 3) % 3 }),
   b4GrabNonce: 0,

@@ -74,8 +74,7 @@ function ResonanceNameplate() {
 
 function SilkNameplate() {
   const berth = useBenchStore((s) => s.berth);
-  const bone = useBenchStore((s) => s.b3Bone);
-  const setReveal = useBenchStore((s) => s.setB3Reveal);
+  const pull = useBenchStore((s) => s.b3Pull);
   if (berth !== berthOf("skeletal-silk")) return null;
   return (
     <div className={plateBase}>
@@ -91,15 +90,8 @@ function SilkNameplate() {
           skeletal-silk.alilinlab.com
         </a>
       </p>
-      {/* focus = hover-equivalent: sustained focus also reads the cocoon */}
-      <button
-        type="button"
-        onClick={bone}
-        onFocus={() => setReveal(true)}
-        onBlur={() => setReveal(false)}
-        className={plateBtn}
-      >
-        起骨 · ENTER
+      <button type="button" onClick={pull} className={plateBtn}>
+        抽丝 · ENTER
       </button>
     </div>
   );
