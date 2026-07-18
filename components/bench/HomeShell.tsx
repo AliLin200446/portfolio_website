@@ -83,6 +83,29 @@ function StationLink({
   );
 }
 
+/** B5 nameplate: the keyboard path to the seal (Enter = stamp). */
+function VestigeNameplate() {
+  const berth = useBenchStore((s) => s.berth);
+  const stamp = useBenchStore((s) => s.b5Stamp);
+  if (berth !== 4) return null;
+
+  return (
+    <div className="fixed bottom-16 left-6 z-10 font-mono text-xs text-muted">
+      <p>
+        <span className="text-ink">VESTIGE</span> — provenance for physical
+        goods · <span className="text-wood">2 provisional patents</span>
+      </p>
+      <button
+        type="button"
+        onClick={stamp}
+        className="mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
+      >
+        落印 · ENTER
+      </button>
+    </div>
+  );
+}
+
 export default function HomeShell() {
   const bench3d = useBench3d();
 
@@ -90,6 +113,7 @@ export default function HomeShell() {
     <div className="min-h-svh">
       <BenchHome active={bench3d} />
       {bench3d && <LatentNameplate />}
+      {bench3d && <VestigeNameplate />}
 
       {/* top bar: identity + full text navigation, always reachable */}
       <header className="relative z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-b border-line bg-paper/85 px-6 py-4">
