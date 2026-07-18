@@ -91,7 +91,7 @@ function SilkNameplate() {
         </a>
       </p>
       <button type="button" onClick={pull} className={plateBtn}>
-        抽丝 · ENTER
+        轻推 · ENTER
       </button>
     </div>
   );

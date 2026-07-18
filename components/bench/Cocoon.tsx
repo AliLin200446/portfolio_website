@@ -9,8 +9,17 @@ import { useBenchStore } from "@/lib/benchStore";
 import { makeJadeMaterial } from "@/lib/jade";
 
 /*
- * B3-REV SKELETAL SILK — the cocoon reads as a COCOON now, not a
- * polished egg. This object's identity lives on its surface, not its
+ * B3-REV-2 SKELETAL SILK — the cocoon now HANGS: suspended mid-air on
+ * silk from an overhead anchor (p1), gravity-taut, and swings with an
+ * analytic damped pendulum when pushed. No physics engine — a
+ * semi-implicit oscillator (θ'' = −ω₀²θ − 2ζω₀θ', equivalent to
+ * θ₀e^(−ζt)cos(ωt+φ)) with impulse stacking on repeated clicks; the
+ * whole group (cocoon + threads) rotates about the anchor, so the silk
+ * swings WITH the cocoon. Sleep: everything dead still (§5 — the
+ * perpetual sway would need its own constitutional exception; not
+ * taken). Click = swing (click side sets direction); sustained hover =
+ * strand pull; surfaces untouched from B3-REV.
+ * B3-REV surface notes (kept): This object's identity lives on its surface, not its
  * silhouette. The three egg-makers, each fixed:
  *   (1) mirror-lit shell → specular/clearcoat cut to ~0; the light now
  *       comes from INSIDE (jade SSS, lib/jade path a) — white jade,
@@ -31,8 +40,14 @@ import { makeJadeMaterial } from "@/lib/jade";
 const TILT = THREE.MathUtils.degToRad(8);
 const HALF_L = 0.38; // 0.76 long axis
 const HALF_W = 0.2; // 0.40 short axes → 1.9:1
-const CENTER_Y = 0.21;
 const B3_LAYER = 3;
+// suspension: anchor overhead (top edge of frame), cocoon hangs below
+const ANCHOR_Y = 1.18;
+const DROP = 0.62; // anchor → cocoon center
+// pendulum: slow frequency for a light hanging body, 3–5 visible swings
+const OMEGA0 = (Math.PI * 2) / 2.3; // ~2.3s period
+const ZETA = 0.13; // underdamped, settles in ~2.5s
+const IMPULSE = 0.55; // rad/s per push
 
 function hash3(x: number, y: number, z: number) {
   const s = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453;
@@ -126,28 +141,24 @@ function makeSilkMaps() {
   return { normalMap: mk(normal), roughnessMap: mk(rough) };
 }
 
-/** Hanging threads: 3 strands, uneven lengths, gentle arcs, ONE merged
- *  geometry (the spec's only easy trap: never one mesh per strand). */
+/** Suspension silk: 4 strands from the overhead anchor down to the
+ *  cocoon's upper surface, taut with a whisper of arc — ONE merged
+ *  geometry, part of the swinging group. */
 function buildThreads() {
   const parts: THREE.BufferGeometry[] = [];
-  const defs: { root: [number, number, number]; tip: [number, number, number] }[] = [
-    { root: [-0.1, HALF_W * 0.9, 0.05], tip: [-0.16, HALF_W * 0.9 + 0.34, 0.1] },
-    { root: [0.08, HALF_W * 0.95, -0.03], tip: [0.16, HALF_W * 0.95 + 0.26, -0.09] },
-    { root: [-0.24, HALF_W * 0.7, -0.06], tip: [-0.38, HALF_W * 0.7 + 0.2, -0.12] },
+  const tips: [number, number, number][] = [
+    [-0.14, -DROP + HALF_W * 0.72, 0.03],
+    [0.1, -DROP + HALF_W * 0.9, -0.05],
+    [0.2, -DROP + HALF_W * 0.6, 0.06],
+    [-0.02, -DROP + HALF_W * 0.95, 0.09],
   ];
-  for (const d of defs) {
-    const mid = new THREE.Vector3(
-      (d.root[0] + d.tip[0]) / 2 + 0.02,
-      (d.root[1] + d.tip[1]) / 2,
-      (d.root[2] + d.tip[2]) / 2 + 0.03
-    );
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(...d.root),
-      mid,
-      new THREE.Vector3(...d.tip),
-    ]);
-    parts.push(new THREE.TubeGeometry(curve, 10, 0.0016, 4, false));
-  }
+  tips.forEach((tip, i) => {
+    const root = new THREE.Vector3((i - 1.5) * 0.02, 0, (i % 2) * 0.015);
+    const t = new THREE.Vector3(...tip);
+    const mid = root.clone().lerp(t, 0.5).add(new THREE.Vector3(0.008, 0, 0.006));
+    const curve = new THREE.CatmullRomCurve3([root, mid, t]);
+    parts.push(new THREE.TubeGeometry(curve, 10, 0.0015, 4, false));
+  });
   const merged = mergeGeometries(
     parts.map((p) => (p.index ? p.toNonIndexed() : p)),
     false
@@ -160,10 +171,10 @@ function buildThreads() {
  *  by uPull — the same honesty as the film feed. */
 function buildPullStrand() {
   const curve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0.3, HALF_W * 0.55, 0.08),
-    new THREE.Vector3(0.42, HALF_W * 0.55 + 0.1, 0.16),
-    new THREE.Vector3(0.5, HALF_W * 0.55 + 0.3, 0.2),
-    new THREE.Vector3(0.53, HALF_W * 0.55 + 0.52, 0.18),
+    new THREE.Vector3(0.18, -DROP - HALF_W * 0.5, 0.05),
+    new THREE.Vector3(0.22, -DROP - HALF_W * 0.5 - 0.12, 0.09),
+    new THREE.Vector3(0.2, -DROP - HALF_W * 0.5 - 0.28, 0.11),
+    new THREE.Vector3(0.16, -DROP - HALF_W * 0.5 - 0.45, 0.1),
   ]);
   return new THREE.TubeGeometry(curve, 24, 0.0016, 4, false);
 }
@@ -174,12 +185,11 @@ export default function Cocoon({
   position: [number, number, number];
 }) {
   const { invalidate, camera } = useThree();
-  const group = useRef<THREE.Group>(null);
-  const threads = useRef<THREE.Group>(null);
+  const swing = useRef<THREE.Group>(null);
   const light = useRef<THREE.PointLight>(null);
 
   const berth = useBenchStore((s) => s.berth);
-  const pullNonce = useBenchStore((s) => s.b3PullNonce);
+  const nudgeNonce = useBenchStore((s) => s.b3PullNonce); // nameplate 轻推
 
   const [hover, setHover] = useState(false);
   const awake = hover || berth === berthOf("skeletal-silk");
@@ -189,23 +199,24 @@ export default function Cocoon({
   const threadsGeom = useMemo(buildThreads, []);
   const strandGeom = useMemo(buildPullStrand, []);
 
+  // damped pendulum state: semi-implicit integration, impulse-stackable
+  const theta = useRef(0);
+  const omega = useRef(0);
   const pull = useRef(0);
   const pullTarget = useRef(0);
   const pullUniform = useMemo(() => ({ uPull: { value: 0 } }), []);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduced = useRef(false);
 
   const shellMat = useMemo(() => {
-    // jade base (Aura path a) with the mirror KILLED: identity comes
-    // from subsurface glow, not surface specular
     const m = makeJadeMaterial({ thickness: 0.5, roughness: 0.68 });
     m.clearcoat = 0;
     m.specularIntensity = 0.12;
-    m.attenuationColor = new THREE.Color("#E4D3A8"); // natural silk warmth
+    m.attenuationColor = new THREE.Color("#E4D3A8");
     m.normalMap = silkMaps.normalMap;
     m.normalScale = new THREE.Vector2(0.35, 0.35);
     m.roughnessMap = silkMaps.roughnessMap;
     m.onBeforeCompile = (s) => {
-      // grazing-angle fiber down: the halo of stray silk, very faint
       s.fragmentShader = s.fragmentShader.replace(
         "#include <emissivemap_fragment>",
         `#include <emissivemap_fragment>
@@ -234,9 +245,7 @@ export default function Cocoon({
           `#include <clipping_planes_fragment>
            if (vUv.x > uPull) discard;`
         );
-      s.vertexShader = s.vertexShader; // vUv comes from USE_UV
     };
-    // ensure vUv varying exists on basic material
     m.defines = { ...m.defines, USE_UV: "" };
     return m;
   }, [pullUniform]);
@@ -256,115 +265,145 @@ export default function Cocoon({
     };
   }, [hover]);
 
-  // 抽丝 toggle: click / nameplate Enter; leaving retracts
-  const togglePull = () => {
-    pullTarget.current = pullTarget.current > 0.5 ? 0 : 1;
+  /** Click = a push. Side of the hit sets the direction; mid-swing
+   *  clicks stack a new impulse smoothly (state carries over). */
+  const nudge = (dir: number) => {
+    if (reduced.current) return; // reduced-motion: no swinging
+    omega.current += IMPULSE * dir;
     invalidate();
   };
+
   const firstNonce = useRef(true);
   useEffect(() => {
     if (firstNonce.current) {
       firstNonce.current = false;
       return;
     }
-    togglePull();
+    nudge(omega.current >= 0 ? 1 : -1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pullNonce]);
+  }, [nudgeNonce]);
 
+  // sustained hover = the strand draws out; leave = it returns
   useEffect(() => {
-    if (!awake && pullTarget.current > 0) {
-      pullTarget.current = 0; // leaving: the strand returns
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    if (awake && hover) {
+      hoverTimer.current = setTimeout(() => {
+        pullTarget.current = 1;
+        invalidate();
+      }, 600);
+    } else {
+      pullTarget.current = 0;
       invalidate();
     }
-  }, [awake, invalidate]);
+    return () => {
+      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    };
+  }, [hover, awake, invalidate]);
 
-  useFrame((state, delta) => {
-    const sleeping =
-      !awake &&
-      pull.current < 0.001 &&
-      (light.current?.intensity ?? 0) < 0.004;
-    if (sleeping) return; // dormant: a still frame, zero work
+  useFrame((_, delta) => {
+    const swinging =
+      Math.abs(theta.current) > 0.0006 || Math.abs(omega.current) > 0.0006;
+    const pulling = Math.abs(pullTarget.current - pull.current) > 0.002;
+    const lightBusy =
+      Math.abs((light.current?.intensity ?? 0) - (awake ? 0.16 : 0)) > 0.003;
+    // dormant and settled: stop integrating entirely — no idle spin
+    if (!swinging && !pulling && !lightBusy && !awake) return;
 
     let busy = false;
+    const dt = Math.min(delta, 1 / 30);
 
-    // inner glow: the SSS reads "something inside" — 1.2s ease on wake
-    if (light.current) {
-      const target = awake ? 0.16 : 0;
-      if (Math.abs(light.current.intensity - target) > 0.003) {
-        light.current.intensity += (target - light.current.intensity) * (reduced.current ? 1 : 0.07);
-        busy = true;
+    // pendulum: θ'' = −ω₀²θ − 2ζω₀θ' (semi-implicit Euler)
+    if (swinging) {
+      omega.current +=
+        (-OMEGA0 * OMEGA0 * theta.current -
+          2 * ZETA * OMEGA0 * omega.current) *
+        dt;
+      theta.current += omega.current * dt;
+      if (
+        Math.abs(theta.current) < 0.0006 &&
+        Math.abs(omega.current) < 0.0006
+      ) {
+        theta.current = 0;
+        omega.current = 0; // settled: back to a true still frame
       }
+      if (swing.current) {
+        swing.current.rotation.z = theta.current;
+        swing.current.rotation.x = theta.current * 0.14; // a breath of 3D
+      }
+      busy = true;
     }
 
-    // 抽丝: reveal along the curve, ease-out, no bounce; reverse on leave
-    const diff = pullTarget.current - pull.current;
-    if (Math.abs(diff) > 0.002) {
+    if (light.current && lightBusy) {
+      const target = awake ? 0.16 : 0;
+      light.current.intensity +=
+        (target - light.current.intensity) * (reduced.current ? 1 : 0.07);
+      busy = true;
+    }
+
+    if (pulling) {
       if (reduced.current) pull.current = pullTarget.current;
-      else pull.current += diff * (1 - Math.exp(-delta / 0.22));
+      else
+        pull.current +=
+          (pullTarget.current - pull.current) * (1 - Math.exp(-dt / 0.22));
       pullUniform.uPull.value = pull.current;
       busy = true;
     }
 
-    // hanging threads: a whisper of drift, awake only (§5 exemption)
-    if (threads.current) {
-      const targetRot = awake && !reduced.current
-        ? Math.sin(state.clock.elapsedTime * Math.PI * 2 * 0.3) * 0.006
-        : 0;
-      threads.current.rotation.z = targetRot;
-      if (awake && !reduced.current) busy = true;
-    }
-
-    if (group.current)
-      group.current.position.y = position[1] + (awake ? 0.01 : 0);
     if (busy) invalidate();
   });
 
   return (
-    <group position={position}>
-      <group
-        ref={group}
-        rotation={[0, 0, TILT]}
-        onPointerOver={() => {
-          setHover(true);
-          invalidate();
-        }}
-        onPointerOut={() => {
-          setHover(false);
-          invalidate();
-        }}
-        onClick={togglePull}
-      >
-        {/* the shell: jade SSS under a wound-silk surface, mirror killed */}
-        <mesh
-          position={[0, CENTER_Y, 0]}
-          geometry={shellGeom}
-          onUpdate={(m) => m.layers.enable(B3_LAYER)}
+    <group position={[position[0], ANCHOR_Y, position[2]]}>
+      {/* the swinging group: anchor at origin, everything below rides θ */}
+      <group ref={swing}>
+        <group
+          onPointerOver={() => {
+            setHover(true);
+            invalidate();
+          }}
+          onPointerOut={() => {
+            setHover(false);
+            invalidate();
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            const dir = e.point.x < position[0] ? 1 : -1;
+            nudge(dir);
+          }}
         >
-          <primitive object={shellMat} attach="material" />
-        </mesh>
-        <pointLight
-          ref={light}
-          position={[0, CENTER_Y, 0]}
-          color="#FFD9A8"
-          intensity={0}
-          distance={0.9}
-          decay={2}
-        />
-
-        {/* hanging threads: one merged geometry, three strands */}
-        <group ref={threads} position={[0, CENTER_Y, 0]}>
+          {/* the shell, hanging at the end of the drop */}
+          <mesh
+            position={[0, -DROP, 0]}
+            rotation={[0, 0, TILT]}
+            geometry={shellGeom}
+            onUpdate={(m) => m.layers.enable(B3_LAYER)}
+          >
+            <primitive object={shellMat} attach="material" />
+          </mesh>
+          <pointLight
+            ref={light}
+            position={[0, -DROP, 0]}
+            color="#FFD9A8"
+            intensity={0}
+            distance={0.9}
+            decay={2}
+          />
+          {/* suspension silk: taut from anchor to shell, swings along */}
           <mesh geometry={threadsGeom}>
             <meshBasicMaterial color="#F3EEE2" transparent opacity={0.5} />
           </mesh>
-          {/* the drawable strand, revealed by uPull */}
+          {/* the drawable strand, trailing below, hover-revealed */}
           <mesh geometry={strandGeom} material={strandMat} />
         </group>
       </group>
 
-      {/* contact shadow */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
-        <circleGeometry args={[0.42, 24]} />
-        <meshBasicMaterial color="#1a1714" transparent opacity={0.14} />
+      {/* contact shadow stays on the worktop, outside the swing */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -ANCHOR_Y + 0.001, 0]}
+      >
+        <circleGeometry args={[0.34, 24]} />
+        <meshBasicMaterial color="#1a1714" transparent opacity={0.12} />
       </mesh>
     </group>
   );
