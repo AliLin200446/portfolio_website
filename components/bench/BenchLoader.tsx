@@ -55,7 +55,8 @@ export default function BenchLoader() {
         shown.current = t;
       } else {
         shown.current += (t - shown.current) * LERP;
-        if (t - shown.current < 0.05) shown.current = t;
+        // arrived is arrived: snap the asymptotic tail, never overshoot
+        if (t - shown.current < 0.4) shown.current = t;
       }
       const v = Math.floor(shown.current);
       if (numRef.current) numRef.current.textContent = String(v);

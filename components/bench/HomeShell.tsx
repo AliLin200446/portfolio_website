@@ -99,10 +99,6 @@ function SilkNameplate() {
 
 function TeardownNameplate() {
   const berth = useBenchStore((s) => s.berth);
-  const sel = useBenchStore((s) => s.b4Sel);
-  const setSel = useBenchStore((s) => s.setB4Sel);
-  const grab = useBenchStore((s) => s.b4Grab);
-  const labels = ["INFERENCE", "QUEUE", "NETWORK"];
   if (berth !== berthOf("teardown")) return null;
   return (
     <div className={plateBase}>
@@ -117,24 +113,6 @@ function TeardownNameplate() {
           teardown.alilinlab.com
         </a>
       </p>
-      <div
-        role="slider"
-        tabIndex={0}
-        aria-label="wheel selection"
-        aria-valuemin={0}
-        aria-valuemax={2}
-        aria-valuenow={sel}
-        aria-valuetext={labels[sel]}
-        className={plateBtn}
-        onClick={grab}
-        onKeyDown={(e) => {
-          if (e.key === "ArrowLeft") { setSel(sel - 1); e.preventDefault(); }
-          if (e.key === "ArrowRight") { setSel(sel + 1); e.preventDefault(); }
-          if (e.key === "Enter") { grab(); e.preventDefault(); }
-        }}
-      >
-        轮 {labels[sel]} · ←→ · 抓停 ENTER
-      </div>
     </div>
   );
 }

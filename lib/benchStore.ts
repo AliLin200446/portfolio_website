@@ -21,11 +21,6 @@ type BenchState = {
   // B3 cocoon (REV: strand-pull toggle)
   b3PullNonce: number;
   b3Pull: () => void;
-  // B4 movement
-  b4Sel: number;
-  setB4Sel: (i: number) => void;
-  b4GrabNonce: number;
-  b4Grab: () => void;
   // B5 seal
   b5StampNonce: number;
   b5Stamp: () => void;
@@ -46,10 +41,6 @@ export const useBenchStore = create<BenchState>((set) => ({
   b2Strike: () => set((s) => ({ b2StrikeNonce: s.b2StrikeNonce + 1 })),
   b3PullNonce: 0,
   b3Pull: () => set((s) => ({ b3PullNonce: s.b3PullNonce + 1 })),
-  b4Sel: 1, // queue wheel is the protagonist
-  setB4Sel: (i) => set({ b4Sel: ((i % 3) + 3) % 3 }),
-  b4GrabNonce: 0,
-  b4Grab: () => set((s) => ({ b4GrabNonce: s.b4GrabNonce + 1 })),
   b5StampNonce: 0,
   b5Stamp: () => set((s) => ({ b5StampNonce: s.b5StampNonce + 1 })),
 }));

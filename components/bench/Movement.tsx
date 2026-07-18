@@ -1,52 +1,96 @@
 "use client";
 
-import { Html } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import { E4, type Segment } from "@/lib/bench/teardownData";
 import { berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
- * B4 TEARDOWN — the open-back movement, per the full spec: latency data
- * cast in brass. A shared replay clock walks the 20 E4 calls at 3s each
- * (60s per lap, seamless); each wheel's speed is its segment of the
- * current call. Grab a wheel and the rest of the machine keeps going —
- * that is the body language of a teardown.
- *
- * NOTE on the speed formula: the spec writes speed = base·(ms/mean) but
- * also demands the 1500ms cold start read as a near-stall. Proportional
- * would spin it FASTEST, so this implements the stated intent instead:
- * speed = base·(mean/ms)^1.6 — longer latency, slower wheel. Lerp 0.15
- * per the "EMA 半径 ≤0.15, 保留顿挫" clause.
+ * B4-REV TEARDOWN — the movement reads as a MOVEMENT now, not a dark
+ * disc. The disease was material and light, not geometry:
+ *   (1) TWO materials pulled apart (决策A, highest priority): warm matte
+ *       copper plates (#8C6A3F, rough, machined ring grain) vs cold
+ *       neutral steel work (#C8C6C0 family, low roughness, hard
+ *       highlights, env-mapped) — the contrast IS the legibility
+ *   (2) light (决策B): a low grazing side light hangs sharp highlights
+ *       on gear teeth, bevels and screw slots; a tiny procedural
+ *       equirect env map gives the steel something to reflect
+ *       (paper-warm world, no blue)
+ *   (3) gears (决策C): fewer-but-bigger — three enlarged wheels with
+ *       deep clean teeth, the big wheel spoked; the bridge windows
+ *       widened so the lower layer reads through; five steel screws
+ *       (ONE InstancedMesh) with slotted heads
+ * Interaction per REV: wake = the movement runs — slow UNIFORM
+ * mechanical rotation (walking time), fixed gear ratios; sleep is a
+ * still frame; reduced-motion never turns. The E4 replay clock, wheel
+ * grabbing, tooltips and the nameplate cruise retired with this REV
+ * (teardownData.ts stays in the repo — the data contract is not dead,
+ * say the word and the stutter comes back).
  */
 
-const TILT = THREE.MathUtils.degToRad(12);
-const SECS_PER_CALL = 3;
+const TILT_X = THREE.MathUtils.degToRad(12);
+const TILT_Y = 0.32; // slight turn so the gear circle isn't flattened
 
-type WheelDef = {
-  seg: Segment;
-  label: string;
-  r: number;
-  teeth: number;
-  color: string;
-  pos: [number, number, number];
-  base: number; // rad/s at mean latency
-  dir: 1 | -1;
-};
+const COPPER = { color: "#8C6A3F", metalness: 0.85, roughness: 0.68 };
+const STEEL = { color: "#C8C6C0", metalness: 1.0, roughness: 0.26 };
 
-const WHEELS: WheelDef[] = [
-  { seg: "inference", label: "INFERENCE", r: 0.07, teeth: 24, color: "#A8813F", pos: [0.14, 0.06, -0.1], base: 1.8, dir: 1 },
-  { seg: "queue", label: "QUEUE", r: 0.13, teeth: 16, color: "#6E5230", pos: [-0.08, 0.06, 0.0], base: 1.1, dir: -1 },
-  { seg: "network", label: "NETWORK", r: 0.05, teeth: 20, color: "#8C6A3F", pos: [0.08, 0.06, 0.14], base: 1.5, dir: 1 },
+type GearDef = { r: number; teeth: number; pos: [number, number, number]; speed: number; dir: 1 | -1; spoked?: boolean };
+const GEARS: GearDef[] = [
+  { r: 0.16, teeth: 16, pos: [-0.07, 0.06, 0.0], speed: 0.35, dir: -1, spoked: true },
+  { r: 0.095, teeth: 24, pos: [0.15, 0.06, -0.09], speed: 0.59, dir: 1 },
+  { r: 0.07, teeth: 20, pos: [0.09, 0.06, 0.15], speed: 0.8, dir: 1 },
 ];
 
-/** Toothed wheel: polar polyline alternating root/tip radius (trapezoid
- *  teeth, count fixed by spec), extruded, lying flat. */
-function gearGeometry(rOuter: number, teeth: number) {
-  const rRoot = rOuter * 0.8;
+/** Machined ring grain for the copper plates: concentric hairlines. */
+function makePlateNormal() {
+  const S = 256;
+  const c = document.createElement("canvas");
+  c.width = c.height = S;
+  const g = c.getContext("2d")!;
+  const img = g.createImageData(S, S);
+  for (let y = 0; y < S; y++)
+    for (let x = 0; x < S; x++) {
+      const dx = x - S / 2, dy = y - S / 2;
+      const r = Math.sqrt(dx * dx + dy * dy);
+      const ring = Math.sin(r * 2.2) * 28 + (Math.random() - 0.5) * 12;
+      const i = (y * S + x) * 4;
+      img.data[i] = 128 + ring * (dx / (r + 1)) * 0.4;
+      img.data[i + 1] = 128 + ring * (dy / (r + 1)) * 0.4;
+      img.data[i + 2] = 255;
+      img.data[i + 3] = 255;
+    }
+  g.putImageData(img, 0, 0);
+  return new THREE.CanvasTexture(c);
+}
+
+/** Tiny procedural equirect world for the steel to reflect: paper-warm
+ *  sky, warm grey ground, one bright window band. 256×128, no blue. */
+function makeEnvMap() {
+  const c = document.createElement("canvas");
+  c.width = 256;
+  c.height = 128;
+  const g = c.getContext("2d")!;
+  const grad = g.createLinearGradient(0, 0, 0, 128);
+  grad.addColorStop(0, "#fdf8ee");
+  grad.addColorStop(0.55, "#e6dfd0");
+  grad.addColorStop(1, "#a89f8e");
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 256, 128);
+  g.fillStyle = "rgba(255,251,242,0.95)";
+  g.fillRect(24, 14, 52, 46); // the window
+  g.fillStyle = "rgba(120,110,95,0.5)";
+  g.fillRect(150, 80, 106, 48); // dark bench mass
+  const t = new THREE.CanvasTexture(c);
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+/** Clean deep-toothed wheel; the big one gets three spoke windows. */
+function gearGeometry(rOuter: number, teeth: number, spoked = false) {
+  const rRoot = rOuter * 0.76;
   const pts: THREE.Vector2[] = [];
   const steps = teeth * 4;
   for (let i = 0; i < steps; i++) {
@@ -56,58 +100,65 @@ function gearGeometry(rOuter: number, teeth: number) {
     pts.push(new THREE.Vector2(Math.cos(a) * r, Math.sin(a) * r));
   }
   const shape = new THREE.Shape(pts);
-  const g = new THREE.ExtrudeGeometry(shape, { depth: 0.018, bevelEnabled: false });
+  if (spoked) {
+    for (let k = 0; k < 3; k++) {
+      const a = (k / 3) * Math.PI * 2 + 0.4;
+      const cx = Math.cos(a) * rOuter * 0.42;
+      const cy = Math.sin(a) * rOuter * 0.42;
+      const hole = new THREE.Path();
+      hole.absarc(cx, cy, rOuter * 0.2, 0, Math.PI * 2, true);
+      shape.holes.push(hole);
+    }
+  }
+  const hub = new THREE.Path();
+  hub.absarc(0, 0, rOuter * 0.1, 0, Math.PI * 2, true);
+  shape.holes.push(hub);
+  const g = new THREE.ExtrudeGeometry(shape, { depth: 0.022, bevelEnabled: false });
   g.rotateX(-Math.PI / 2);
   return g;
 }
 
-/** Double plate: solid bottom + top plate with windows (the open back). */
-function plateGeometry() {
-  const bottom = new THREE.CylinderGeometry(0.3, 0.3, 0.018, 40);
-  bottom.translate(0, 0.009, 0);
+/** Copper base plate; the top bridge is separate (steel) so the two
+ *  materials can fight each other properly. */
+function basePlateGeometry() {
+  const g = new THREE.CylinderGeometry(0.3, 0.3, 0.02, 44);
+  g.translate(0, 0.01, 0);
+  return g;
+}
 
+function bridgeGeometry() {
   const shape = new THREE.Shape();
-  shape.absarc(0, 0, 0.3, 0, Math.PI * 2, false);
-  for (const w of WHEELS) {
+  shape.absarc(0, 0, 0.29, 0, Math.PI * 2, false);
+  for (const w of GEARS) {
     const hole = new THREE.Path();
-    hole.absarc(w.pos[0], -w.pos[2], w.r + 0.035, 0, Math.PI * 2, true);
+    // widened windows: the machinery reads through the plate
+    hole.absarc(w.pos[0], -w.pos[2], w.r + 0.055, 0, Math.PI * 2, true);
     shape.holes.push(hole);
   }
-  const top = new THREE.ExtrudeGeometry(shape, { depth: 0.014, bevelEnabled: false });
-  top.rotateX(-Math.PI / 2);
-  top.translate(0, 0.095, 0);
+  const g = new THREE.ExtrudeGeometry(shape, { depth: 0.012, bevelEnabled: false });
+  g.rotateX(-Math.PI / 2);
+  g.translate(0, 0.108, 0);
+  return g;
+}
 
-  // Extrude is non-indexed, Cylinder is indexed — unify before merging
-  const bottomFlat = bottom.toNonIndexed();
-  const merged = mergeGeometries([bottomFlat, top], false)!;
-  bottom.dispose();
-  bottomFlat.dispose();
-  top.dispose();
+/** One screw: slotted head. Shared geometry for the InstancedMesh. */
+function screwGeometry() {
+  const head = new THREE.CylinderGeometry(0.014, 0.014, 0.01, 12);
+  const slot = new THREE.BoxGeometry(0.02, 0.004, 0.004);
+  slot.translate(0, 0.005, 0);
+  const merged = mergeGeometries(
+    [head.toNonIndexed(), slot.toNonIndexed()],
+    false
+  )!;
+  head.dispose();
+  slot.dispose();
   return merged;
 }
 
-/** All three arbor pins, one mesh. */
-function pinsGeometry() {
-  const parts = WHEELS.map((w) => {
-    const p = new THREE.CylinderGeometry(0.011, 0.011, 0.11, 10);
-    p.translate(w.pos[0], 0.055, w.pos[2]);
-    return p;
-  });
-  const merged = mergeGeometries(parts, false)!;
-  parts.forEach((p) => p.dispose());
-  return merged;
-}
-
-/** Balance wheel: thin ring + cross spokes, one mesh. */
-function balanceGeometry() {
-  const ring = new THREE.TorusGeometry(0.04, 0.005, 8, 28);
-  ring.rotateX(Math.PI / 2);
-  const s1 = new THREE.BoxGeometry(0.076, 0.006, 0.008);
-  const s2 = new THREE.BoxGeometry(0.008, 0.006, 0.076);
-  const merged = mergeGeometries([ring, s1, s2], false)!;
-  [ring, s1, s2].forEach((g) => g.dispose());
-  return merged;
-}
+const SCREWS: [number, number, number][] = [
+  [0.24, 0.118, 0.1], [-0.24, 0.118, 0.12], [-0.16, 0.118, -0.2],
+  [0.2, 0.118, -0.18], [0.0, 0.118, 0.25],
+];
 
 export default function Movement({
   position,
@@ -116,194 +167,139 @@ export default function Movement({
 }) {
   const { invalidate } = useThree();
   const group = useRef<THREE.Group>(null);
-  const berth = useBenchStore((s) => s.berth);
-  const sel = useBenchStore((s) => s.b4Sel);
-  const grabNonce = useBenchStore((s) => s.b4GrabNonce);
-
-  const [hover, setHover] = useState<number | null>(null);
-  const [grabbed, setGrabbed] = useState<number | null>(null);
-  const [logLine, setLogLine] = useState<string | null>(null);
-  const awake = hover !== null || berth === berthOf("teardown");
-
   const wheelRefs = useRef<(THREE.Group | null)[]>([null, null, null]);
-  const balance = useRef<THREE.Group>(null);
+  const balance = useRef<THREE.Mesh>(null);
+  const screws = useRef<THREE.InstancedMesh>(null);
 
-  const plateGeom = useMemo(plateGeometry, []);
-  const pinsGeom = useMemo(pinsGeometry, []);
-  const balanceGeom = useMemo(balanceGeometry, []);
-  const gearGeoms = useMemo(() => WHEELS.map((w) => gearGeometry(w.r, w.teeth)), []);
-  const wheelMats = useMemo(
-    () =>
-      WHEELS.map(
-        (w) =>
-          new THREE.MeshStandardMaterial({
-            color: w.color,
-            metalness: 0.9,
-            roughness: 0.4,
-          })
-      ),
+  const berth = useBenchStore((s) => s.berth);
+  const [hover, setHover] = useState(false);
+  const awake = hover || berth === berthOf("teardown");
+
+  const plateNormal = useMemo(makePlateNormal, []);
+  const envMap = useMemo(makeEnvMap, []);
+  const baseGeom = useMemo(basePlateGeometry, []);
+  const bridgeGeom = useMemo(bridgeGeometry, []);
+  const gearGeoms = useMemo(
+    () => GEARS.map((w) => gearGeometry(w.r, w.teeth, w.spoked)),
     []
   );
+  const screwGeom = useMemo(screwGeometry, []);
 
-  // replay clock: 3s per call, resumes where it left off
-  const clock = useRef({ t: 0, speeds: [0, 0, 0], scale: 0 });
-  const grabTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const currentCall = () =>
-    E4.calls[Math.floor(clock.current.t / SECS_PER_CALL) % E4.calls.length];
-
-  const grab = (i: number) => {
-    if (grabbed === i) {
-      setGrabbed(null);
-      setLogLine(null);
-      if (grabTimer.current) clearTimeout(grabTimer.current);
-      invalidate();
-      return;
-    }
-    const call = currentCall();
-    const w = WHEELS[i];
-    const ms = call[`${w.seg}_ms` as const];
-    setGrabbed(i);
-    setLogLine(
-      `LOG #${String(call.id).padStart(2, "0")} · ${w.seg} ${ms}ms${
-        call.id === 1 && w.seg === "queue" ? " · cold start" : ""
-      }`
-    );
-    if (grabTimer.current) clearTimeout(grabTimer.current);
-    grabTimer.current = setTimeout(() => {
-      setGrabbed(null);
-      setLogLine(null);
-      invalidate();
-    }, 2000);
-    invalidate();
-  };
-
-  const firstNonce = useRef(true);
-  useEffect(() => {
-    if (firstNonce.current) {
-      firstNonce.current = false;
-      return;
-    }
-    grab(sel);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grabNonce]);
-
-  // selected-wheel warm outline (keyboard path): emissive on the selection
-  useEffect(() => {
-    wheelMats.forEach((m, i) => {
-      const isSel = berth === berthOf("teardown") && i === sel;
-      const isHover = hover === i;
-      m.emissive.set(isSel ? "#FFB46B" : isHover ? "#FFB46B" : "#000000");
-      m.emissiveIntensity = isSel ? 0.12 : isHover ? 0.06 : 0;
+  const steelMat = useMemo(() => {
+    const m = new THREE.MeshStandardMaterial({
+      ...STEEL,
+      envMap,
+      envMapIntensity: 0.9,
     });
+    return m;
+  }, [envMap]);
+
+  const reduced = useRef(false);
+  useEffect(() => {
+    reduced.current = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+  }, []);
+
+  // place the five screws once — one instanced draw
+  useEffect(() => {
+    const m = screws.current;
+    if (!m) return;
+    const dummy = new THREE.Object3D();
+    SCREWS.forEach((p, i) => {
+      dummy.position.set(...p);
+      dummy.rotation.y = i * 1.3; // slots at varied angles
+      dummy.updateMatrix();
+      m.setMatrixAt(i, dummy.matrix);
+    });
+    m.instanceMatrix.needsUpdate = true;
     invalidate();
-  }, [sel, hover, berth, wheelMats, invalidate]);
+  }, [invalidate]);
 
-  useFrame((_, delta) => {
-    const c = clock.current;
-    // sleep: cursor suspended, zero work
-    if (!awake && c.scale < 0.01) return;
+  const runScale = useRef(0);
 
-    // wake ease-in over 0.6s / ease-out on sleep
-    c.scale += ((awake ? 1 : 0) - c.scale) * (awake ? delta / 0.6 : 0.15);
-    if (c.scale > 0.001) c.t += delta * c.scale;
+  useFrame((state, delta) => {
+    // sleep: a still frame, zero work
+    if (!awake && runScale.current < 0.01) return;
+    if (reduced.current) return; // reduced-motion: the movement never turns
 
-    const call = currentCall();
-    WHEELS.forEach((w, i) => {
+    // wake ease-in / sleep ease-out of the run, then UNIFORM rotation —
+    // walking time, fixed ratios, no stutter, no easing surprises
+    runScale.current += ((awake ? 1 : 0) - runScale.current) * 0.08;
+    GEARS.forEach((w, i) => {
       const g = wheelRefs.current[i];
-      if (!g) return;
-      const ms = call[`${w.seg}_ms` as const];
-      // intent-form of the spec formula: longer latency = slower wheel
-      const target =
-        grabbed === i ? 0 : w.base * Math.pow(E4.stats[w.seg].mean / ms, 1.6);
-      // lerp 0.15: keeps the cold-start stall as a stall, not a fade
-      c.speeds[i] += (target - c.speeds[i]) * 0.15;
-      g.rotation.y += w.dir * c.speeds[i] * c.scale * delta;
+      if (g) g.rotation.y += w.dir * w.speed * runScale.current * delta;
     });
-
-    // balance: 2Hz beat, amplitude follows the current call's total
-    if (balance.current) {
-      const norm = Math.min(1, call.total_ms / 2200);
+    if (balance.current)
       balance.current.rotation.y =
-        Math.sin(c.t * Math.PI * 2 * 2) * (0.25 + 0.55 * norm);
-    }
+        Math.sin(state.clock.elapsedTime * Math.PI * 2 * 2) *
+        0.5 *
+        runScale.current;
 
     if (group.current)
       group.current.position.y = position[1] + (awake ? 0.01 : 0);
-    invalidate();
+    if (runScale.current > 0.005) invalidate();
   });
 
   return (
     <group position={position}>
       <group
         ref={group}
-        rotation={[TILT, 0, 0]}
+        rotation={[TILT_X, TILT_Y, 0]}
+        onPointerOver={() => {
+          setHover(true);
+          invalidate();
+        }}
         onPointerOut={() => {
-          setHover(null);
+          setHover(false);
           invalidate();
         }}
       >
-        <mesh geometry={plateGeom}>
-          <meshStandardMaterial color="#8C6A3F" metalness={0.9} roughness={0.42} />
+        {/* copper base plate: warm, matte, machined ring grain */}
+        <mesh geometry={baseGeom}>
+          <meshStandardMaterial
+            {...COPPER}
+            normalMap={plateNormal}
+            normalScale={new THREE.Vector2(0.3, 0.3)}
+          />
         </mesh>
-        <mesh geometry={pinsGeom}>
-          <meshStandardMaterial color="#5c452a" metalness={0.85} roughness={0.5} />
-        </mesh>
-        {WHEELS.map((w, i) => (
+
+        {/* steel work: gears, bridge, balance, screws — cold, sharp */}
+        {GEARS.map((w, i) => (
           <group
-            key={w.seg}
+            key={i}
             position={w.pos}
             ref={(el) => {
               wheelRefs.current[i] = el;
             }}
-            onPointerOver={(e) => {
-              e.stopPropagation();
-              setHover(i);
-              invalidate();
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              grab(i);
-            }}
           >
-            {/* generous pick proxy (2x), invisible */}
-            <mesh visible={false}>
-              <cylinderGeometry args={[w.r * 2, w.r * 2, 0.06, 12]} />
-            </mesh>
-            <mesh geometry={gearGeoms[i]} material={wheelMats[i]} />
+            <mesh geometry={gearGeoms[i]} material={steelMat} />
           </group>
         ))}
-        {/* balance wheel above the queue wheel: the heartbeat */}
-        <group ref={balance} position={[-0.08, 0.13, 0.0]}>
-          <mesh geometry={balanceGeom}>
-            <meshStandardMaterial color="#A8813F" metalness={0.9} roughness={0.35} />
-          </mesh>
-        </group>
+        <mesh geometry={bridgeGeom} material={steelMat} />
+        <mesh ref={balance} position={[-0.07, 0.125, -0.19]}>
+          <torusGeometry args={[0.045, 0.006, 8, 28]} />
+          <primitive object={steelMat} attach="material" />
+        </mesh>
+        <instancedMesh
+          ref={screws}
+          args={[screwGeom, steelMat, SCREWS.length]}
+        />
+
+        {/* grazing side key light: hangs the sharp highlights, throws
+            the long mechanical shadows; short throw, neighbours safe */}
+        <pointLight
+          position={[-0.55, 0.16, 0.42]}
+          intensity={1.6}
+          distance={1.3}
+          decay={2}
+          color="#fff2df"
+        />
       </group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
         <circleGeometry args={[0.42, 24]} />
         <meshBasicMaterial color="#1a1714" transparent opacity={0.14} />
       </mesh>
-
-      {/* tooltips: stats on hover, one real call while grabbed */}
-      {(hover !== null || logLine) && (
-        <Html position={[0, 0.55, 0]} center style={{ pointerEvents: "none", whiteSpace: "nowrap" }}>
-          <span
-            style={{
-              fontFamily: "var(--font-geist-mono), monospace",
-              fontSize: 11,
-              letterSpacing: "0.1em",
-              color: "#1a1714",
-            }}
-          >
-            {logLine ??
-              (hover !== null &&
-                `${WHEELS[hover].label} — mean ${E4.stats[WHEELS[hover].seg].mean}ms · std ${
-                  E4.stats[WHEELS[hover].seg].std
-                }ms · p95 ${E4.stats[WHEELS[hover].seg].p95}ms`)}
-          </span>
-        </Html>
-      )}
     </group>
   );
 }
