@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import acupointsJson from "@/data/acupoints.json";
-import { STATIONS } from "@/lib/bench";
+import { STATIONS, berthOf, HOME_BERTH } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
 
@@ -50,7 +50,7 @@ function LumaSparkline() {
 function ResonanceNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const strike = useBenchStore((s) => s.b2Strike);
-  if (berth !== 1) return null;
+  if (berth !== berthOf("resonance")) return null;
   return (
     <div className={plateBase}>
       <p>
@@ -76,7 +76,7 @@ function SilkNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const bone = useBenchStore((s) => s.b3Bone);
   const setReveal = useBenchStore((s) => s.setB3Reveal);
-  if (berth !== 2) return null;
+  if (berth !== berthOf("skeletal-silk")) return null;
   return (
     <div className={plateBase}>
       <p>
@@ -111,7 +111,7 @@ function TeardownNameplate() {
   const setSel = useBenchStore((s) => s.setB4Sel);
   const grab = useBenchStore((s) => s.b4Grab);
   const labels = ["INFERENCE", "QUEUE", "NETWORK"];
-  if (berth !== 3) return null;
+  if (berth !== berthOf("teardown")) return null;
   return (
     <div className={plateBase}>
       <p>
@@ -156,7 +156,7 @@ function AcubotNameplate() {
   const idx = useBenchStore((s) => s.b6PointIdx);
   const setIdx = useBenchStore((s) => s.setB6PointIdx);
   const needle = useBenchStore((s) => s.b6Needle);
-  if (berth !== 5) return null;
+  if (berth !== berthOf("acubot")) return null;
   return (
     <div className={plateBase}>
       <p>
@@ -188,7 +188,7 @@ function AcubotNameplate() {
 function LatentNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const feed = useBenchStore((s) => s.b1Feed);
-  if (berth !== 0) return null;
+  if (berth !== berthOf("latent")) return null;
 
   return (
     <div className={plateBase}>
@@ -214,7 +214,7 @@ function LatentNameplate() {
 function VestigeNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const stamp = useBenchStore((s) => s.b5Stamp);
-  if (berth !== 4) return null;
+  if (berth !== berthOf("vestige")) return null;
 
   return (
     <div className="fixed bottom-16 left-6 z-10 font-mono text-xs text-muted">
@@ -265,6 +265,29 @@ function StationLink({
   );
 }
 
+/** Nav entry in 3D mode: click springs the rail to the station's berth.
+ *  Current berth carries a copper marker — never cinnabar. */
+function NavJump({ station }: { station: (typeof STATIONS)[number] }) {
+  const berth = useBenchStore((s) => s.berth);
+  const setBerth = useBenchStore((s) => s.setBerth);
+  const mine = berthOf(station.id);
+  const current = berth === mine;
+  return (
+    <button
+      type="button"
+      onClick={() => setBerth(mine)}
+      aria-current={current ? "true" : undefined}
+      className={`transition-colors hover:text-bronze ${
+        current
+          ? "border-b border-bronze text-ink"
+          : "text-muted"
+      }`}
+    >
+      {station.label}
+    </button>
+  );
+}
+
 export default function HomeShell() {
   const bench3d = useBench3d();
 
@@ -294,15 +317,21 @@ export default function HomeShell() {
           aria-label="Projects"
           className="flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs"
         >
-          {STATIONS.map((s) => (
-            <StationLink
-              key={s.id}
-              station={s}
-              className="text-muted transition-colors hover:text-bronze"
-            >
-              {s.label}
-            </StationLink>
-          ))}
+          {STATIONS.map((s) =>
+            bench3d ? (
+              // 3D mode: nav is a jump menu — spring the rail to the berth.
+              // Nav keeps the narrative order; space keeps its own.
+              <NavJump key={s.id} station={s} />
+            ) : (
+              <StationLink
+                key={s.id}
+                station={s}
+                className="text-muted transition-colors hover:text-bronze"
+              >
+                {s.label}
+              </StationLink>
+            )
+          )}
           <Link
             href="/about"
             className="text-muted transition-colors hover:text-bronze"

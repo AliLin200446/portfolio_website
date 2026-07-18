@@ -4,6 +4,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
@@ -149,7 +150,7 @@ export default function TuningFork({
   const strikeNonce = useBenchStore((s) => s.b2StrikeNonce);
 
   const [hover, setHover] = useState(false);
-  const awake = hover || berth === 1;
+  const awake = hover || berth === berthOf("resonance");
 
   const uniforms = useMemo(
     () => ({

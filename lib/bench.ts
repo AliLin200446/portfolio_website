@@ -48,6 +48,23 @@ export const STATIONS: Station[] = [
   },
 ];
 
+/** Spatial order along the rail (BENCH-LAYOUT): the film canister sits
+ *  center as the landing berth, wings spread outward, the figure closes.
+ *  Decoupled from STATIONS, which stays the narrative order for nav and
+ *  the DOM list. */
+export const BERTH_ORDER = [
+  "resonance",
+  "skeletal-silk",
+  "latent",
+  "teardown",
+  "vestige",
+  "acubot",
+] as const;
+
+export const berthOf = (id: string) => BERTH_ORDER.indexOf(id as (typeof BERTH_ORDER)[number]);
+/** Landing berth: the film canister, dead center. */
+export const HOME_BERTH = berthOf("latent");
+
 /** World-unit spacing between berths on the bench. */
 export const BERTH_SPACING = 3.2;
-export const BERTH_MAX = (STATIONS.length - 1) * BERTH_SPACING;
+export const BERTH_MAX = (BERTH_ORDER.length - 1) * BERTH_SPACING;

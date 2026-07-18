@@ -4,6 +4,7 @@ import { Html } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import { makeJadeMaterial } from "@/lib/jade";
 
@@ -120,7 +121,7 @@ export default function Cocoon({
   const [hover, setHover] = useState(false);
   const [showParams, setShowParams] = useState(false);
   const [leaving, setLeaving] = useState(false);
-  const awake = hover || berth === 2;
+  const awake = hover || berth === berthOf("skeletal-silk");
 
   const uniforms = useMemo(
     () => ({ uRigidity: { value: RIG_REST }, uBirth: { value: 0 } }),

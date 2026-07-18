@@ -21,7 +21,8 @@ export function useBench3d() {
     ).matches;
     setMount(ok);
     // ?berth=N deep-link (also used by case pages to return to a berth)
-    const b = Number(new URLSearchParams(window.location.search).get("berth"));
+    const raw = new URLSearchParams(window.location.search).get("berth");
+    const b = raw === null ? NaN : Number(raw);
     if (Number.isInteger(b) && b >= 0 && b < STATIONS.length)
       useBenchStore.getState().setBerth(b);
   }, []);

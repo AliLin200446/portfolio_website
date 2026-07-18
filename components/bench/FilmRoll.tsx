@@ -3,6 +3,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
@@ -193,7 +194,7 @@ export default function FilmRoll({
   const feedNonce = useBenchStore((s) => s.b1FeedNonce);
 
   const [hover, setHover] = useState(false);
-  const awake = hover || berth === 0;
+  const awake = hover || berth === berthOf("latent");
 
   const progress = useRef(RETRACTED);
   const target = useRef(RETRACTED);

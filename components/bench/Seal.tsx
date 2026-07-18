@@ -5,6 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import { makeJadeMaterial } from "@/lib/jade";
 
@@ -182,7 +183,7 @@ export default function Seal({
   const stampNonce = useBenchStore((s) => s.b5StampNonce);
 
   const [hover, setHover] = useState(false);
-  const awake = hover || berth === 4;
+  const awake = hover || berth === berthOf("vestige");
 
   const stroke = useRef<{ t0: number; placed: boolean } | null>(null);
   const hashIdx = useRef(0);
@@ -224,7 +225,7 @@ export default function Seal({
   // leaving the berth: the MARK STAYS (this instrument's privilege);
   // any in-flight stroke snaps home and the lock releases
   useEffect(() => {
-    if (berth !== 4 && !hover && stroke.current) {
+    if (berth !== berthOf("vestige") && !hover && stroke.current) {
       stroke.current = null;
       if (group.current) group.current.position.set(0, 0, 0);
       invalidate();

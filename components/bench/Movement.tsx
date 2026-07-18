@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { E4, type Segment } from "@/lib/bench/teardownData";
+import { berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
@@ -122,7 +123,7 @@ export default function Movement({
   const [hover, setHover] = useState<number | null>(null);
   const [grabbed, setGrabbed] = useState<number | null>(null);
   const [logLine, setLogLine] = useState<string | null>(null);
-  const awake = hover !== null || berth === 3;
+  const awake = hover !== null || berth === berthOf("teardown");
 
   const wheelRefs = useRef<(THREE.Group | null)[]>([null, null, null]);
   const balance = useRef<THREE.Group>(null);
@@ -190,7 +191,7 @@ export default function Movement({
   // selected-wheel warm outline (keyboard path): emissive on the selection
   useEffect(() => {
     wheelMats.forEach((m, i) => {
-      const isSel = berth === 3 && i === sel;
+      const isSel = berth === berthOf("teardown") && i === sel;
       const isHover = hover === i;
       m.emissive.set(isSel ? "#FFB46B" : isHover ? "#FFB46B" : "#000000");
       m.emissiveIntensity = isSel ? 0.12 : isHover ? 0.06 : 0;

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { HOME_BERTH } from "@/lib/bench";
 
 /** Bench state. Berth index survives case-page round trips (相C); the
  *  b* fields are the DOM↔3D bridges for each instrument's keyboard path. */
@@ -35,7 +36,7 @@ type BenchState = {
 };
 
 export const useBenchStore = create<BenchState>((set) => ({
-  berth: 0,
+  berth: HOME_BERTH,
   setBerth: (i) => set({ berth: i }),
   b1FeedNonce: 0,
   b1Feed: () => set((s) => ({ b1FeedNonce: s.b1FeedNonce + 1 })),

@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import acupointsJson from "@/data/acupoints.json";
+import { berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
@@ -138,11 +139,11 @@ export default function BronzeFigure({
 
   const [hover, setHover] = useState<number | null>(null);
   const [pinned, setPinned] = useState<number | null>(null);
-  const awake = hover !== null || berth === 5;
+  const awake = hover !== null || berth === berthOf("acubot");
 
   // keyboard cruise pre-highlight (当前穴预亮)
   const preview =
-    berth === 5 ? FEATURED[pointIdx % FEATURED.length].i : null;
+    berth === berthOf("acubot") ? FEATURED[pointIdx % FEATURED.length].i : null;
   const figureGeom = useMemo(buildFigure, []);
   const lookup = useMemo(() => bakeSurfaceLookup(figureGeom), [figureGeom]);
   const threadTex = useMemo(makeThreadNormalMap, []);
