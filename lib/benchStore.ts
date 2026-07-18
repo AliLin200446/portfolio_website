@@ -5,9 +5,9 @@ import { create } from "zustand";
 type BenchState = {
   berth: number;
   setBerth: (i: number) => void;
-  // B1 film roll
-  b1Strength: number;
-  setB1Strength: (s: number) => void;
+  // B1 film roll (REV: click-to-feed toggle)
+  b1FeedNonce: number;
+  b1Feed: () => void;
   // B2 tuning fork
   b2Luma: number;
   setB2Luma: (v: number) => void;
@@ -37,9 +37,8 @@ type BenchState = {
 export const useBenchStore = create<BenchState>((set) => ({
   berth: 0,
   setBerth: (i) => set({ berth: i }),
-  b1Strength: 0,
-  setB1Strength: (s) =>
-    set({ b1Strength: Math.max(0, Math.min(100, Math.round(s))) }),
+  b1FeedNonce: 0,
+  b1Feed: () => set((s) => ({ b1FeedNonce: s.b1FeedNonce + 1 })),
   b2Luma: 0,
   setB2Luma: (v) => set({ b2Luma: v }),
   b2StrikeNonce: 0,

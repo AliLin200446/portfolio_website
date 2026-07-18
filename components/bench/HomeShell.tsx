@@ -184,16 +184,14 @@ function AcubotNameplate() {
   );
 }
 
-/** B1 nameplate: DOM layer, shown at the LATENT berth. The slider is the
- *  keyboard path to the film pull; focus ring is warm light, not cinnabar. */
+/** B1 nameplate: keyboard path is the feed toggle (B1-REV). */
 function LatentNameplate() {
   const berth = useBenchStore((s) => s.berth);
-  const strength = useBenchStore((s) => s.b1Strength);
-  const setStrength = useBenchStore((s) => s.setB1Strength);
+  const feed = useBenchStore((s) => s.b1Feed);
   if (berth !== 0) return null;
 
   return (
-    <div className="fixed bottom-16 left-6 z-10 font-mono text-xs text-muted">
+    <div className={plateBase}>
       <p>
         <span className="text-ink">LATENT</span> — film physics engine ·{" "}
         <span className="text-wood">shipped July 2026</span> ·{" "}
@@ -206,33 +204,34 @@ function LatentNameplate() {
           latentfilm.com
         </a>
       </p>
-      <div
-        role="slider"
-        tabIndex={0}
-        aria-label="engineStrength — pull the film leader"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={strength}
-        className="mt-2 inline-block cursor-ew-resize select-none outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
-        onKeyDown={(e) => {
-          const step = e.shiftKey ? 10 : 2;
-          if (e.key === "ArrowLeft") { setStrength(strength - step); e.preventDefault(); }
-          if (e.key === "ArrowRight") { setStrength(strength + step); e.preventDefault(); }
-          if (e.key === "Home") { setStrength(0); e.preventDefault(); }
-          if (e.key === "End") { setStrength(100); e.preventDefault(); }
-        }}
-      >
-        STRENGTH {String(strength).padStart(3, "0")}
-        <span className="text-bronze"> ·</span> ←→
-      </div>
+      <button type="button" onClick={feed} className={plateBtn}>
+        喂片 · ENTER
+      </button>
     </div>
   );
 }
 
-/*
- * THE BENCH homepage shell. All navigation is plain DOM (server-rendered
- * initial HTML), the 3D canvas is an enhancement layered underneath.
- */
+function VestigeNameplate() {
+  const berth = useBenchStore((s) => s.berth);
+  const stamp = useBenchStore((s) => s.b5Stamp);
+  if (berth !== 4) return null;
+
+  return (
+    <div className="fixed bottom-16 left-6 z-10 font-mono text-xs text-muted">
+      <p>
+        <span className="text-ink">VESTIGE</span> — provenance for physical
+        goods · <span className="text-wood">2 provisional patents</span>
+      </p>
+      <button
+        type="button"
+        onClick={stamp}
+        className="mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
+      >
+        落印 · ENTER
+      </button>
+    </div>
+  );
+}
 
 function StationLink({
   station,
@@ -263,29 +262,6 @@ function StationLink({
     <Link href={station.href} className={className}>
       {children}
     </Link>
-  );
-}
-
-/** B5 nameplate: the keyboard path to the seal (Enter = stamp). */
-function VestigeNameplate() {
-  const berth = useBenchStore((s) => s.berth);
-  const stamp = useBenchStore((s) => s.b5Stamp);
-  if (berth !== 4) return null;
-
-  return (
-    <div className="fixed bottom-16 left-6 z-10 font-mono text-xs text-muted">
-      <p>
-        <span className="text-ink">VESTIGE</span> — provenance for physical
-        goods · <span className="text-wood">2 provisional patents</span>
-      </p>
-      <button
-        type="button"
-        onClick={stamp}
-        className="mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
-      >
-        落印 · ENTER
-      </button>
-    </div>
   );
 }
 
