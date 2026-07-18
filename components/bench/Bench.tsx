@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { BERTH_MAX, BERTH_SPACING, STATIONS } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
+import FilmRoll from "./FilmRoll";
 
 /*
  * 相A skeleton: matte worktop plane, five placeholder boxes, camera rail.
@@ -181,8 +182,10 @@ export default function Bench() {
       <directionalLight position={[-3, 6, 4]} intensity={1.4} color="#fff6e8" />
       <ambientLight intensity={0.75} />
       <Worktop />
-      {STATIONS.map((s, i) => (
-        <PlaceholderStation key={s.id} index={i} />
+      {/* B1 occupies the LATENT berth; the rest stay placeholders */}
+      <FilmRoll position={[0, 0, 0]} />
+      {STATIONS.slice(1).map((s, i) => (
+        <PlaceholderStation key={s.id} index={i + 1} />
       ))}
       <Rig />
     </Canvas>

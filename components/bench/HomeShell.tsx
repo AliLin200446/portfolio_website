@@ -2,7 +2,53 @@
 
 import Link from "next/link";
 import { STATIONS } from "@/lib/bench";
+import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
+
+/** B1 nameplate: DOM layer, shown at the LATENT berth. The slider is the
+ *  keyboard path to the film pull; focus ring is warm light, not cinnabar. */
+function LatentNameplate() {
+  const berth = useBenchStore((s) => s.berth);
+  const strength = useBenchStore((s) => s.b1Strength);
+  const setStrength = useBenchStore((s) => s.setB1Strength);
+  if (berth !== 0) return null;
+
+  return (
+    <div className="fixed bottom-16 left-6 z-10 font-mono text-xs text-muted">
+      <p>
+        <span className="text-ink">LATENT</span> — film physics engine ·{" "}
+        <span className="text-wood">shipped July 2026</span> ·{" "}
+        <a
+          href="https://latentfilm.com"
+          target="_blank"
+          rel="noreferrer"
+          className="transition-colors hover:text-bronze"
+        >
+          latentfilm.com
+        </a>
+      </p>
+      <div
+        role="slider"
+        tabIndex={0}
+        aria-label="engineStrength — pull the film leader"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={strength}
+        className="mt-2 inline-block cursor-ew-resize select-none outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
+        onKeyDown={(e) => {
+          const step = e.shiftKey ? 10 : 2;
+          if (e.key === "ArrowLeft") { setStrength(strength - step); e.preventDefault(); }
+          if (e.key === "ArrowRight") { setStrength(strength + step); e.preventDefault(); }
+          if (e.key === "Home") { setStrength(0); e.preventDefault(); }
+          if (e.key === "End") { setStrength(100); e.preventDefault(); }
+        }}
+      >
+        STRENGTH {String(strength).padStart(3, "0")}
+        <span className="text-bronze"> ·</span> ←→
+      </div>
+    </div>
+  );
+}
 
 /*
  * THE BENCH homepage shell. All navigation is plain DOM (server-rendered
@@ -43,6 +89,7 @@ export default function HomeShell() {
   return (
     <div className="min-h-svh">
       <BenchHome active={bench3d} />
+      {bench3d && <LatentNameplate />}
 
       {/* top bar: identity + full text navigation, always reachable */}
       <header className="relative z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-b border-line bg-paper/85 px-6 py-4">
