@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import acupointsJson from "@/data/acupoints.json";
 import { STATIONS } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
@@ -146,6 +147,10 @@ function TeardownNameplate() {
   );
 }
 
+const B6_FEATURED = (acupointsJson as { points: { featured?: boolean }[] }).points.filter(
+  (p) => p.featured
+).length;
+
 function AcubotNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const idx = useBenchStore((s) => s.b6PointIdx);
@@ -163,17 +168,17 @@ function AcubotNameplate() {
         tabIndex={0}
         aria-label="selected point"
         aria-valuemin={0}
-        aria-valuemax={11}
+        aria-valuemax={B6_FEATURED - 1}
         aria-valuenow={idx}
         className={plateBtn}
         onClick={needle}
         onKeyDown={(e) => {
-          if (e.key === "ArrowLeft") { setIdx((idx + 11) % 12); e.preventDefault(); }
-          if (e.key === "ArrowRight") { setIdx((idx + 1) % 12); e.preventDefault(); }
+          if (e.key === "ArrowLeft") { setIdx((idx + B6_FEATURED - 1) % B6_FEATURED); e.preventDefault(); }
+          if (e.key === "ArrowRight") { setIdx((idx + 1) % B6_FEATURED); e.preventDefault(); }
           if (e.key === "Enter") { needle(); e.preventDefault(); }
         }}
       >
-        穴 {String(idx + 1).padStart(2, "0")}/12 · ←→ · 落针 ENTER
+        穴 {String(idx + 1).padStart(2, "0")}/{B6_FEATURED} · ←→ · 落针 ENTER
       </div>
     </div>
   );

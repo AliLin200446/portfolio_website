@@ -5,36 +5,45 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import acupointsJson from "@/data/acupoints.json";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
- * B6 ACUBOT — the bronze figure. An abstract reclining form (smooth, no
- * facial detail — respect, not realism), a fine needle hovering above,
- * a constellation of points that breathes at 0.05Hz — the bench's second
- * and last sanctioned idle motion. Hover a point for its bilingual name;
- * click and the needle drops with a needle's cadence: fast, then careful.
- * Names + numbers only. The homepage is an index, not a medical text.
+ * B6 ACUBOT — the bronze figure, per the full spec. B 系列终章.
+ * A craft's constellation: the bronze teaching figure, 136 points and
+ * 4,138 cases of family practice lying on the bench's last berth. The
+ * only instrument about a person. Abstract, solemn, ZERO medical info —
+ * an index, not a text; a memorial, not a specimen.
+ *
+ * Data is hot-swappable: data/acupoints.json (u along the body axis,
+ * v around the girth) is baked to surface positions at mount via
+ * raycasting the figure — swap the JSON, zero code change.
+ * The constellation breath (±10% @ 0.05Hz) is the bench's second and
+ * only other sanctioned idle motion (B6-only exemption). Needle drift
+ * 0.03Hz ±0.5px, awake only.
+ * Patina: roughness 0.5 + light clearcoat as the cheap approximation of
+ * "the touched high points shine first" (APPROX — curvature-baked map
+ * can replace it later).
  */
 
-// TODO-real-points: placeholder 12-point selection with hand-placed surface
-// coords. Replace from the exported JSON ({id, name_zh, name_alt, region,
-// u, v}) when the author's data lands — mapping u/v → surface positions.
-const POINTS: { id: string; zh: string; alt: string; pos: [number, number, number] }[] = [
-  { id: "GV20", zh: "百会", alt: "Bai Hui", pos: [-0.44, 0.14, 0.02] },
-  { id: "GB20", zh: "风池", alt: "Feng Chi", pos: [-0.36, 0.12, -0.04] },
-  { id: "GB21", zh: "肩井", alt: "Jian Jing", pos: [-0.26, 0.16, 0.0] },
-  { id: "LI11", zh: "曲池", alt: "Qu Chi", pos: [-0.12, 0.1, 0.13] },
-  { id: "PC6", zh: "内关", alt: "Nei Guan", pos: [-0.02, 0.08, 0.17] },
-  { id: "LI4", zh: "合谷", alt: "He Gu", pos: [0.04, 0.07, 0.19] },
-  { id: "GV4", zh: "命门", alt: "Ming Men", pos: [-0.06, 0.17, -0.05] },
-  { id: "BL40", zh: "委中", alt: "Wei Zhong", pos: [0.22, 0.12, 0.02] },
-  { id: "ST36", zh: "足三里", alt: "Zu San Li", pos: [0.3, 0.09, 0.1] },
-  { id: "SP6", zh: "三阴交", alt: "San Yin Jiao", pos: [0.36, 0.07, 0.08] },
-  { id: "LR3", zh: "太冲", alt: "Tai Chong", pos: [0.42, 0.05, 0.1] },
-  { id: "KI1", zh: "涌泉", alt: "Yong Quan", pos: [0.44, 0.04, 0.04] },
-];
+type Acupoint = {
+  id: string;
+  name_zh: string;
+  name_alt: string;
+  region: string;
+  u: number;
+  v: number;
+  featured?: boolean;
+};
+const POINTS: Acupoint[] = (acupointsJson as { points: Acupoint[] }).points;
+const FEATURED = POINTS.map((p, i) => ({ ...p, i })).filter((p) => p.featured);
 
-/** Abstract reclining form: capsules merged into one smooth bronze mass. */
+const NEEDLE_HOVER = 0.15;
+const WARM = new THREE.Color("#FFB46B");
+
+/** Smooth reclining form: a family of fused ellipsoids. No face, no
+ *  fingers, no anatomy — the lower arm pillowed under the head is only
+ *  hinted. */
 function buildFigure() {
   const parts: THREE.BufferGeometry[] = [];
   const add = (
@@ -50,21 +59,66 @@ function buildFigure() {
     g.translate(...pos);
     parts.push(g);
   };
-  // torso, lying along X
-  add(new THREE.CapsuleGeometry(0.085, 0.28, 6, 14), [-0.1, 0.095, 0], [0, 0, Math.PI / 2]);
-  // head
-  add(new THREE.SphereGeometry(0.065, 16, 12), [-0.4, 0.1, 0.01]);
+  // head, resting low
+  add(new THREE.SphereGeometry(0.065, 18, 14), [-0.36, 0.085, 0.01]);
+  // pillow arm hinted under the head
+  add(new THREE.CapsuleGeometry(0.028, 0.14, 6, 10), [-0.33, 0.045, 0.05], [0, 0.9, Math.PI / 2]);
+  // torso
+  add(new THREE.CapsuleGeometry(0.085, 0.26, 8, 16), [-0.08, 0.09, 0], [0, 0, Math.PI / 2]);
+  // resting arm along the flank
+  add(new THREE.CapsuleGeometry(0.032, 0.16, 6, 10), [-0.05, 0.1, 0.09], [0, 0.35, Math.PI / 2]);
   // folded legs: thigh + shin
-  add(new THREE.CapsuleGeometry(0.06, 0.2, 6, 12), [0.16, 0.085, 0.04], [0, 0.5, Math.PI / 2]);
-  add(new THREE.CapsuleGeometry(0.045, 0.22, 6, 12), [0.34, 0.065, 0.08], [0, -0.3, Math.PI / 2]);
-  // arm resting in front
-  add(new THREE.CapsuleGeometry(0.035, 0.18, 6, 10), [-0.08, 0.08, 0.12], [0, 0.4, Math.PI / 2]);
+  add(new THREE.CapsuleGeometry(0.058, 0.2, 8, 12), [0.17, 0.08, 0.03], [0, 0.45, Math.PI / 2]);
+  add(new THREE.CapsuleGeometry(0.042, 0.22, 8, 12), [0.34, 0.058, 0.08], [0, -0.25, Math.PI / 2]);
   const merged = mergeGeometries(parts, false)!;
   parts.forEach((p) => p.dispose());
   return merged;
 }
 
-const NEEDLE_HOVER = 0.15;
+/** Thread hint for the needle grip: fine ring normal map. */
+function makeThreadNormalMap() {
+  const c = document.createElement("canvas");
+  c.width = 16;
+  c.height = 64;
+  const g = c.getContext("2d")!;
+  const img = g.createImageData(16, 64);
+  for (let y = 0; y < 64; y++)
+    for (let x = 0; x < 16; x++) {
+      const i = (y * 16 + x) * 4;
+      const dy = Math.sin((y / 64) * Math.PI * 24) * 60;
+      img.data[i] = 128;
+      img.data[i + 1] = 128 + dy;
+      img.data[i + 2] = 255;
+      img.data[i + 3] = 255;
+    }
+  g.putImageData(img, 0, 0);
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
+/** Bake u/v → surface positions by raycasting the figure from outside
+ *  toward the body axis. u: along X (head→feet), v: around the girth. */
+function bakeSurfaceLookup(geometry: THREE.BufferGeometry) {
+  const probe = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
+  const ray = new THREE.Raycaster();
+  const AXIS_Y = 0.085;
+  return POINTS.map((p) => {
+    const x = -0.44 + p.u * 0.86;
+    const ang = p.v * Math.PI * 2;
+    const oy = AXIS_Y + Math.cos(ang) * 0.5;
+    const oz = Math.sin(ang) * 0.5;
+    const origin = new THREE.Vector3(x, oy, oz);
+    const dir = new THREE.Vector3(0, AXIS_Y - oy, -oz).normalize();
+    ray.set(origin, dir);
+    const hit = ray.intersectObject(probe, false)[0];
+    if (!hit || !hit.face) {
+      return { pos: new THREE.Vector3(x, 0.12, 0), n: new THREE.Vector3(0, 1, 0) };
+    }
+    const n = hit.face.normal.clone();
+    return { pos: hit.point.clone().add(n.clone().multiplyScalar(0.004)), n };
+  });
+}
 
 export default function BronzeFigure({
   position,
@@ -74,8 +128,9 @@ export default function BronzeFigure({
   const { invalidate } = useThree();
   const group = useRef<THREE.Group>(null);
   const needle = useRef<THREE.Group>(null);
-  const points = useRef<THREE.InstancedMesh>(null);
-  const pointsMat = useRef<THREE.MeshBasicMaterial>(null);
+  const stars = useRef<THREE.InstancedMesh>(null);
+  const hitboxes = useRef<THREE.InstancedMesh>(null);
+  const starsMat = useRef<THREE.MeshBasicMaterial>(null);
 
   const berth = useBenchStore((s) => s.berth);
   const pointIdx = useBenchStore((s) => s.b6PointIdx);
@@ -85,34 +140,41 @@ export default function BronzeFigure({
   const [pinned, setPinned] = useState<number | null>(null);
   const awake = hover !== null || berth === 5;
 
+  // keyboard cruise pre-highlight (当前穴预亮)
+  const preview =
+    berth === 5 ? FEATURED[pointIdx % FEATURED.length].i : null;
   const figureGeom = useMemo(buildFigure, []);
-  const drop = useRef<{ t0: number; from: THREE.Vector3; to: THREE.Vector3 } | null>(null);
+  const lookup = useMemo(() => bakeSurfaceLookup(figureGeom), [figureGeom]);
+  const threadTex = useMemo(makeThreadNormalMap, []);
 
-  // place instances once
-  useEffect(() => {
-    const m = points.current;
-    if (!m) return;
-    const o = new THREE.Object3D();
-    POINTS.forEach((p, i) => {
-      o.position.set(...p.pos);
-      o.updateMatrix();
-      m.setMatrixAt(i, o.matrix);
-    });
-    m.instanceMatrix.needsUpdate = true;
-    invalidate();
-  }, [invalidate]);
+  // wake ramp per star (stagger), plus scales for hover emphasis
+  const wakeT0 = useRef(0);
+  const wasAwake = useRef(false);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+
+  // needle stroke: 移(0.2) → 落(0.4, ease-in, 末端骤减速) → 驻(quiver)
+  const stroke = useRef<
+    | { kind: "lift"; t0: number; from: THREE.Vector3; next: number }
+    | { kind: "move"; t0: number; from: THREE.Vector3; target: number }
+    | { kind: "drop"; t0: number; target: number }
+    | { kind: "dwell"; t0: number; target: number }
+    | null
+  >(null);
+  const queued = useRef<number | null>(null); // debounce: keep last only
 
   const dropTo = (i: number) => {
-    const p = POINTS[i];
+    if (stroke.current && stroke.current.kind !== "dwell") {
+      queued.current = i; // mid-animation: queue, keep last
+      return;
+    }
     const from = needle.current
       ? needle.current.position.clone()
-      : new THREE.Vector3(p.pos[0], p.pos[1] + NEEDLE_HOVER, p.pos[2]);
-    drop.current = {
-      t0: performance.now(),
-      from,
-      to: new THREE.Vector3(p.pos[0], p.pos[1] + 0.01, p.pos[2]),
-    };
-    setPinned(i);
+      : lookup[i].pos.clone().add(new THREE.Vector3(0, NEEDLE_HOVER, 0));
+    if (stroke.current?.kind === "dwell") {
+      stroke.current = { kind: "lift", t0: performance.now(), from, next: i };
+    } else {
+      stroke.current = { kind: "move", t0: performance.now(), from, target: i };
+    }
     invalidate();
   };
 
@@ -122,49 +184,144 @@ export default function BronzeFigure({
       firstNonce.current = false;
       return;
     }
-    dropTo(pointIdx % POINTS.length);
+    const f = FEATURED[pointIdx % FEATURED.length];
+    dropTo(f.i);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [needleNonce]);
 
-  useFrame((state) => {
-    let busy = false;
+  useEffect(() => {
+    if (awake && !wasAwake.current) {
+      wakeT0.current = performance.now();
+      invalidate();
+    }
+    wasAwake.current = awake;
+  }, [awake, invalidate]);
 
-    // constellation breath: 0.05Hz, ±10%, awake only (sanctioned idle)
-    if (pointsMat.current) {
-      const target = awake
-        ? 0.9 * (1 + 0.1 * Math.sin(state.clock.elapsedTime * Math.PI * 2 * 0.05))
-        : 0;
-      if (Math.abs(pointsMat.current.opacity - target) > 0.002) {
-        pointsMat.current.opacity +=
-          awake ? (target - pointsMat.current.opacity) * 0.5 : (0 - pointsMat.current.opacity) * 0.12;
-        busy = true;
-      } else if (awake) {
-        pointsMat.current.opacity = target;
-        busy = true; // keep the slow breath alive while awake
-      }
+  // place hitboxes once (3x pick radius, invisible but raycastable)
+  useEffect(() => {
+    const hb = hitboxes.current;
+    if (!hb) return;
+    lookup.forEach((l, i) => {
+      dummy.position.copy(l.pos);
+      dummy.scale.setScalar(3);
+      dummy.updateMatrix();
+      hb.setMatrixAt(i, dummy.matrix);
+    });
+    hb.instanceMatrix.needsUpdate = true;
+  }, [lookup, dummy]);
+
+  useFrame(() => {
+    const sleeping = !awake && !stroke.current;
+    if (sleeping && (starsMat.current?.opacity ?? 0) < 0.01) return; // 眠: zero work
+
+    let busy = false;
+    const now = performance.now();
+    const t = (now - wakeT0.current) / 1000;
+
+    // ---- constellation: stagger light-up, then the sanctioned breath ----
+    if (stars.current && starsMat.current) {
+      const breath = 1 + 0.1 * Math.sin((now / 1000) * Math.PI * 2 * 0.05);
+      const targetOp = awake ? 0.9 * breath : 0;
+      starsMat.current.opacity +=
+        (targetOp - starsMat.current.opacity) * (awake ? 0.5 : 0.12);
+      lookup.forEach((l, i) => {
+        const delay = (i / lookup.length) * 0.3;
+        const ramp = awake ? Math.min(1, Math.max(0, (t - delay) / 0.12)) : 1;
+        const active = pinned === i || hover === i || preview === i;
+        dummy.position.copy(l.pos);
+        dummy.scale.setScalar(0.0001 + ramp * (active ? 1.3 : 1));
+        dummy.updateMatrix();
+        stars.current!.setMatrixAt(i, dummy.matrix);
+        stars.current!.setColorAt(
+          i,
+          active ? WARM.clone().multiplyScalar(1.6) : WARM
+        );
+      });
+      stars.current.instanceMatrix.needsUpdate = true;
+      if (stars.current.instanceColor) stars.current.instanceColor.needsUpdate = true;
+      if (awake) busy = true;
     }
 
-    // needle drop: 0.4s — ease-in flight, the last 0.05s decelerates
-    if (drop.current && needle.current) {
-      const t = (performance.now() - drop.current.t0) / 1000;
-      const D = 0.4;
-      let k: number;
-      if (t >= D) {
-        k = 1;
-        drop.current = null;
-      } else if (t < D - 0.05) {
-        const u = t / (D - 0.05);
-        k = 0.92 * u * u; // ease-in to 92% of the way
-      } else {
-        const u = (t - (D - 0.05)) / 0.05;
-        k = 0.92 + 0.08 * (1 - (1 - u) * (1 - u)); // gentle finish
+    // ---- needle: drift, and the three-beat drop ----
+    if (needle.current) {
+      const s = stroke.current;
+      if (!s && awake) {
+        // imperceptible hover drift, 0.03Hz ±0.5px — alive, not performing
+        const base = pinned !== null ? lookup[pinned].pos : lookup[0].pos;
+        const y =
+          (pinned !== null ? 0.004 : NEEDLE_HOVER) +
+          0.0016 * Math.sin((now / 1000) * Math.PI * 2 * 0.03);
+        if (pinned === null)
+          needle.current.position.set(base.x, base.y + y, base.z);
+        busy = true;
+      } else if (s) {
+        const st = (now - s.t0) / 1000;
+        if (s.kind === "lift") {
+          const k = Math.min(1, st / 0.25);
+          const e = 1 - (1 - k) * (1 - k);
+          const target = s.from.clone().add(new THREE.Vector3(0, 0.1, 0));
+          needle.current.position.lerpVectors(s.from, target, e);
+          if (k >= 1)
+            stroke.current = {
+              kind: "move",
+              t0: now,
+              from: needle.current.position.clone(),
+              target: s.next,
+            };
+        } else if (s.kind === "move") {
+          const k = Math.min(1, st / 0.2);
+          const e = k * k * (3 - 2 * k);
+          const p = lookup[s.target].pos;
+          const target = new THREE.Vector3(p.x, p.y + NEEDLE_HOVER, p.z);
+          needle.current.position.lerpVectors(s.from, target, e);
+          if (k >= 1) {
+            setPinned(null);
+            stroke.current = { kind: "drop", t0: now, target: s.target };
+          }
+        } else if (s.kind === "drop") {
+          // 落 0.4s: ease-in flight, the last 0.05s slams the brakes —
+          // fast fall, light touch, steady. 进针的手感.
+          const k = Math.min(1, st / 0.4);
+          let e: number;
+          if (k < 0.875) {
+            const u = k / 0.875;
+            e = 0.94 * u * u;
+          } else {
+            const u = (k - 0.875) / 0.125;
+            e = 0.94 + 0.06 * (1 - (1 - u) * (1 - u) * (1 - u));
+          }
+          const p = lookup[s.target].pos;
+          needle.current.position.set(
+            p.x,
+            p.y + NEEDLE_HOVER * (1 - e) + 0.004,
+            p.z
+          );
+          if (k >= 1) {
+            setPinned(s.target);
+            stroke.current = { kind: "dwell", t0: now, target: s.target };
+          }
+        } else if (s.kind === "dwell") {
+          // 驻: tail quiver, one 0.5px shiver decaying over 0.3s — 得气
+          const p = lookup[s.target].pos;
+          const q =
+            st < 0.3 ? 0.0016 * Math.sin(st * 40) * (1 - st / 0.3) : 0;
+          needle.current.position.set(p.x + q, p.y + 0.004, p.z);
+          if (st >= 1.2 && queued.current !== null) {
+            const nxt = queued.current;
+            queued.current = null;
+            stroke.current = {
+              kind: "lift",
+              t0: now,
+              from: needle.current.position.clone(),
+              next: nxt,
+            };
+          } else if (st < 1.5) {
+            busy = true;
+          }
+        }
+        if (stroke.current && stroke.current.kind !== "dwell") busy = true;
+        else if (stroke.current?.kind === "dwell") busy = busy || st < 1.5;
       }
-      needle.current.position.lerpVectors(
-        drop.current?.from ?? needle.current.position,
-        drop.current?.to ?? needle.current.position,
-        k
-      );
-      busy = true;
     }
 
     if (group.current)
@@ -172,7 +329,7 @@ export default function BronzeFigure({
     if (busy) invalidate();
   });
 
-  const active = pinned ?? hover;
+  const active = pinned ?? hover ?? preview;
 
   return (
     <group position={position}>
@@ -184,14 +341,25 @@ export default function BronzeFigure({
           invalidate();
         }}
       >
-        {/* the figure: smooth bronze, no detail */}
+        {/* the figure: old bronze, patina approximated (see header note) */}
         <mesh geometry={figureGeom}>
-          <meshStandardMaterial color="#8C6A3F" metalness={0.85} roughness={0.38} />
+          <meshPhysicalMaterial
+            color="#8C6A3F"
+            metalness={0.85}
+            roughness={0.5}
+            clearcoat={0.15}
+            clearcoatRoughness={0.35}
+          />
         </mesh>
 
-        {/* point constellation, one instanced draw; generous pick radius */}
+        {/* constellation: one instanced draw */}
+        <instancedMesh ref={stars} args={[undefined, undefined, POINTS.length]}>
+          <sphereGeometry args={[0.008, 8, 6]} />
+          <meshBasicMaterial ref={starsMat} color="#FFB46B" transparent opacity={0} />
+        </instancedMesh>
+        {/* invisible 3x hitboxes for generous picking */}
         <instancedMesh
-          ref={points}
+          ref={hitboxes}
           args={[undefined, undefined, POINTS.length]}
           onPointerOver={(e) => {
             e.stopPropagation();
@@ -203,24 +371,24 @@ export default function BronzeFigure({
             if (e.instanceId !== undefined) dropTo(e.instanceId);
           }}
         >
-          <sphereGeometry args={[0.024, 8, 6]} />
-          <meshBasicMaterial
-            ref={pointsMat}
-            color="#FFB46B"
-            transparent
-            opacity={0}
-          />
+          <sphereGeometry args={[0.008, 6, 4]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </instancedMesh>
 
-        {/* the needle: fine shaft + hinted grip, hovering until called */}
-        <group ref={needle} position={[-0.02, 0.08 + NEEDLE_HOVER, 0.17]}>
-          <mesh position={[0, 0.16, 0]}>
-            <cylinderGeometry args={[0.006, 0.003, 0.32, 8]} />
-            <meshStandardMaterial color="#E8E6E0" metalness={0.9} roughness={0.25} />
+        {/* the needle: silver shaft + threaded grip, hovering until called */}
+        <group ref={needle} position={[-0.08, 0.09 + NEEDLE_HOVER, 0]}>
+          <mesh position={[0, 0.14, 0]}>
+            <cylinderGeometry args={[0.006, 0.002, 0.28, 10]} />
+            <meshStandardMaterial color="#C9C9CE" metalness={1} roughness={0.2} />
           </mesh>
-          <mesh position={[0, 0.34, 0]}>
-            <cylinderGeometry args={[0.009, 0.009, 0.05, 8]} />
-            <meshStandardMaterial color="#CFCBC2" metalness={0.8} roughness={0.45} />
+          <mesh position={[0, 0.305, 0]}>
+            <cylinderGeometry args={[0.008, 0.008, 0.05, 10]} />
+            <meshStandardMaterial
+              color="#C9C9CE"
+              metalness={1}
+              roughness={0.3}
+              normalMap={threadTex}
+            />
           </mesh>
         </group>
 
@@ -230,12 +398,16 @@ export default function BronzeFigure({
         </mesh>
       </group>
 
-      {/* bilingual name, mono, held while pinned */}
+      {/* bilingual floating label: follows the point, offset clear of the
+          needle; PLACEHOLDER names until the authored JSON lands */}
       {active !== null && (
         <Html
-          position={[POINTS[active].pos[0], POINTS[active].pos[1] + 0.26, POINTS[active].pos[2]]}
-          center
-          style={{ pointerEvents: "none", whiteSpace: "nowrap" }}
+          position={[lookup[active].pos.x, lookup[active].pos.y + 0.08, lookup[active].pos.z]}
+          style={{
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+            transform: "translate(12px, -12px)",
+          }}
         >
           <span
             style={{
@@ -245,7 +417,7 @@ export default function BronzeFigure({
               color: "#1a1714",
             }}
           >
-            {POINTS[active].zh} · {POINTS[active].alt}
+            {POINTS[active].name_zh} · {POINTS[active].name_alt}
           </span>
         </Html>
       )}
