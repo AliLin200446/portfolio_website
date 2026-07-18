@@ -348,7 +348,7 @@ export default function HomeShell() {
                   <span className="font-mono text-xs text-bronze">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="font-serif text-2xl decoration-oxblood decoration-1 underline-offset-4 group-hover:underline">
+                  <span className="font-serif text-2xl decoration-bronze decoration-1 underline-offset-4 group-hover:underline">
                     {s.label}
                   </span>
                   {s.line && (

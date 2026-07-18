@@ -5,6 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useBenchStore } from "@/lib/benchStore";
+import { makeJadeMaterial } from "@/lib/jade";
 
 /*
  * B3 SKELETAL SILK — the cocoon, per the full spec.
@@ -143,18 +144,10 @@ export default function Cocoon({
   }, []);
 
   const material = useMemo(() => {
-    // Aura path (a): physical parameter set, spec values
-    const m = new THREE.MeshPhysicalMaterial({
-      color: "#F2EDE3",
-      attenuationColor: "#D9C9A8",
-      attenuationDistance: 0.8,
-      thickness: 0.4,
-      transmission: 0.55,
-      roughness: 0.42,
-      clearcoat: 0.12,
-      normalMap: makeSilkNormalMap(),
-      normalScale: new THREE.Vector2(0.15, 0.15),
-    });
+    // jade from lib/jade (Aura path a), silk normals on top
+    const m = makeJadeMaterial({ thickness: 0.4 });
+    m.normalMap = makeSilkNormalMap();
+    m.normalScale = new THREE.Vector2(0.15, 0.15);
     m.onBeforeCompile = (s) => {
       s.uniforms.uRigidity = uniforms.uRigidity;
       s.uniforms.uBirth = uniforms.uBirth;
