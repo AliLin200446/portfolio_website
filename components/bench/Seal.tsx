@@ -188,6 +188,8 @@ export default function Seal({
   const stroke = useRef<{ t0: number; placed: boolean } | null>(null);
   const hashIdx = useRef(0);
   const [curHash, setCurHash] = useState<string | null>(null);
+  const curMark = useRef<THREE.Mesh>(null);
+  const spread = useRef(1);
   const [prevOn, setPrevOn] = useState(false);
   const [chars, setChars] = useState(0);
   const [markHover, setMarkHover] = useState(false);
@@ -240,6 +242,7 @@ export default function Seal({
         prevMat.current.opacity = curMat.current.opacity;
     }
     if (curMat.current) curMat.current.opacity = 0;
+    spread.current = 0; // §3 secondary: ink breathes out one beat
     const h = HASHES[hashIdx.current++ % HASHES.length];
     setCurHash(h);
     setChars(0);
@@ -322,6 +325,14 @@ export default function Seal({
         z = 0;
       }
       group.current.position.set(0, baseY + y, z);
+      busy = true;
+    }
+    // ink spread: the fresh mark expands 0.94→1.0 over ~0.12s — the
+    // existing mark quad, one scale write, no new geometry
+    if (spread.current < 1 && curMark.current) {
+      spread.current = Math.min(1, spread.current + delta / 0.12);
+      const sc = 0.94 + 0.06 * spread.current;
+      curMark.current.scale.set(sc, sc, 1);
       busy = true;
     } else if (group.current) {
       group.current.position.set(0, baseY, 0);
@@ -411,6 +422,7 @@ export default function Seal({
       )}
       {curHash && (
         <mesh
+          ref={curMark}
           rotation={[-Math.PI / 2, 0, 0]}
           position={[0, 0.003, STAMP_Z]}
           onPointerOver={(e) => {

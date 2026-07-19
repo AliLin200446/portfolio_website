@@ -68,15 +68,30 @@ body {
   }
 }
 
-/* one-shot film halation on the LATENT cut: fires once, never loops */
+/* one-shot film halation on the LATENT cut: fires once, never loops;
+   the slight scale-up softens the halo edge as it dies (§3) */
 @keyframes bench-halation {
   from {
     opacity: 0;
+    transform: scale(1);
   }
   30% {
     opacity: 1;
   }
   to {
     opacity: 0;
+    transform: scale(1.06);
+  }
+}
+
+/* TEARDOWN cut: the wheels stop first, the measurement floats in after */
+@keyframes bench-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

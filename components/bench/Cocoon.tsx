@@ -202,6 +202,7 @@ export default function Cocoon({
   // damped pendulum state: semi-implicit integration, impulse-stackable
   const theta = useRef(0);
   const omega = useRef(0);
+  const glowKick = useRef(false);
   const pull = useRef(0);
   const pullTarget = useRef(0);
   const pullUniform = useMemo(() => ({ uPull: { value: 0 } }), []);
@@ -308,6 +309,13 @@ export default function Cocoon({
     // extreme — no new mechanism, no bloom, just the lantern turned up
     const glowing =
       useBenchStore.getState().transitionId === "skeletal-silk";
+    // §3 secondary: the suspension answers the lantern — one tiny
+    // lagged sway through the EXISTING pendulum (silk inertia)
+    if (glowing && !glowKick.current) {
+      glowKick.current = true;
+      omega.current += 0.05;
+    }
+    if (!glowing && glowKick.current) glowKick.current = false;
     const lightGoal = glowing ? 1.3 : awake ? 0.16 : 0;
     const lightBusy =
       Math.abs((light.current?.intensity ?? 0) - lightGoal) > 0.003;

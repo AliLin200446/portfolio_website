@@ -21,6 +21,12 @@ const CUT_BG: Record<string, string> = {
   vestige: "#F5F2EC",
 };
 
+/** silk holds its warm white a touch longer, then falls off */
+const VEIL_MS: Record<string, number> = { "skeletal-silk": 500 };
+const VEIL_EASE: Record<string, string> = {
+  "skeletal-silk": "cubic-bezier(0.5, 0, 0.75, 1)",
+};
+
 export default function BenchArrival({ slug }: { slug: string }) {
   const [veil, setVeil] = useState<string | null>(null);
 
@@ -33,7 +39,7 @@ export default function BenchArrival({ slug }: { slug: string }) {
         [{ transform: "scale(1.015)" }, { transform: "scale(1)" }],
         { duration: 400, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
       );
-    const id = setTimeout(() => setVeil(null), 380);
+    const id = setTimeout(() => setVeil(null), (VEIL_MS[slug] ?? 350) + 30);
     return () => clearTimeout(id);
   }, [slug]);
 
@@ -47,7 +53,9 @@ export default function BenchArrival({ slug }: { slug: string }) {
         zIndex: 40,
         background: veil,
         pointerEvents: "none",
-        animation: "bench-veil 0.35s ease forwards",
+        animation: `bench-veil ${VEIL_MS[slug] ?? 350}ms ${
+          VEIL_EASE[slug] ?? "ease"
+        } forwards`,
       }}
     />
   );

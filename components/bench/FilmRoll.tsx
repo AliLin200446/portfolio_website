@@ -291,6 +291,18 @@ export default function FilmRoll({
     }
   }, [hover, invalidate]);
 
+  // §3 secondary: during the enter-transition the SAME glint sweep
+  // rides the feed-out — light trailing the leader, no new asset
+  const transitingLatent = useBenchStore(
+    (s) => s.transitionId === "latent"
+  );
+  useEffect(() => {
+    if (transitingLatent) {
+      glintT0.current = performance.now();
+      invalidate();
+    }
+  }, [transitingLatent, invalidate]);
+
   useFrame((_, delta) => {
     let busy = false;
 
@@ -312,10 +324,14 @@ export default function FilmRoll({
     }
 
     // sprocket back-light: wake fade-in only, dark when asleep
-    const targetEm = awake ? 0.55 : 0;
+    // follow-through: in-transition the sprocket glow chases the feed
+    // with extra lag and keeps rising after it stops — damped, never
+    // overshooting (same lerp, slower constant)
+    const targetEm = transitingLatent ? 0.9 : awake ? 0.55 : 0;
     if (Math.abs(ribbonMat.emissiveIntensity - targetEm) > 0.01) {
       ribbonMat.emissiveIntensity +=
-        (targetEm - ribbonMat.emissiveIntensity) * 0.12;
+        (targetEm - ribbonMat.emissiveIntensity) *
+        (transitingLatent ? 0.06 : 0.12);
       busy = true;
     }
 

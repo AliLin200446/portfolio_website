@@ -171,6 +171,7 @@ export default function TuningFork({
 }) {
   const { invalidate } = useThree();
   const group = useRef<THREE.Group>(null);
+  const stand = useRef<THREE.Mesh>(null);
   const berth = useBenchStore((s) => s.berth);
   const setLuma = useBenchStore((s) => s.setB2Luma);
   const strikeNonce = useBenchStore((s) => s.b2StrikeNonce);
@@ -322,6 +323,15 @@ export default function TuningFork({
       }
     }
 
+    // transition secondary (§3): the stand answers the arms with a
+    // lagged counter-shiver, ≤15% of the modal amplitude — spent
+    // inertia through the SAME uniforms, not a new move
+    if (stand.current)
+      stand.current.position.x =
+        useBenchStore.getState().transitionId === "resonance"
+          ? -0.15 * uniforms.uAmp.value * Math.sin(uniforms.uPhase.value)
+          : 0;
+
     if (group.current) {
       group.current.position.y = position[1] + (awake ? 0.01 : 0);
     }
@@ -344,7 +354,7 @@ export default function TuningFork({
       >
         <mesh geometry={bodyGeom} material={material} />
         {/* stand: cold neutral grey (no blue), planted */}
-        <mesh geometry={standGeom}>
+        <mesh ref={stand} geometry={standGeom}>
           <meshStandardMaterial
             color="#8A8884"
             metalness={0.9}

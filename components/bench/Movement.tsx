@@ -195,18 +195,29 @@ export default function Movement({
   }, [invalidate]);
 
   const runScale = useRef(0);
+  const spin = useRef<number | null>(null); // transition inertia budget
 
   useFrame((state, delta) => {
     // sleep: a still frame, zero work
     if (!awake && runScale.current < 0.01) return;
     if (reduced.current) return; // reduced-motion: the movement never turns
 
-    // transition answer beat (抓停入册): all three wheels stop the same
-    // instant — the run mechanism's own stop, no easing
+    // transition answer beat (抓停入册): the two big wheels stop the
+    // same instant; §3 secondary — the smallest wheel spends its
+    // inertia, an extra half tooth on a decaying glide, then dead
     if (useBenchStore.getState().transitionId === "teardown") {
       runScale.current = 0;
+      if (spin.current === null) spin.current = Math.PI / GEARS[2].teeth;
+      const g2 = wheelRefs.current[2];
+      if (g2 && spin.current > 0.002) {
+        const step = spin.current * Math.min(1, delta * 10);
+        g2.rotation.y += GEARS[2].dir * step;
+        spin.current -= step;
+        invalidate();
+      }
       return;
     }
+    spin.current = null;
     // wake ease-in / sleep ease-out of the run, then UNIFORM rotation —
     // walking time, fixed ratios, no stutter, no easing surprises
     runScale.current += ((awake ? 1 : 0) - runScale.current) * 0.08;

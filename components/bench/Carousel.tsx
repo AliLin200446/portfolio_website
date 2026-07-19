@@ -61,12 +61,39 @@ const OVER_PITCH = THREE.MathUtils.degToRad(-75);
 const ARRIVED_KEY = "bench-carousel-arrived";
 const CUT_KEY = "bench-cut";
 
-/* Transition timeline (seconds): answer beat → dive → cut. 0.74s
- * forward, reverse runs at 1.5× (≈0.5s), which is also the walk-back. */
-const T_ANSWER = 0.22;
-const T_DIVE = 0.52;
-const T_TOTAL = T_ANSWER + T_DIVE;
-const T_FADE = 0.2; // overlay takes the viewport over the last 0.2s
+/* Transition timeline (§5): ONE 1.0s grammar — answer ~0.2 / dive
+ * ~0.55 / cut ~0.25 — but the beats are WINDOWS on a single master
+ * curve, not chained tweens: camera progress is C1-continuous across
+ * every boundary (§1), so the reverse (1.5×) and the walk-back inherit
+ * the same velocity profile for free. The route handover fires at
+ * T_NAV, after the overlay is opaque; the visual cut (overlay crossing
+ * ~50%) lands near peak camera speed — the invisible-cut trick (§7). */
+const T_TOTAL = 1.0;
+const T_NAV = 0.85;
+const FADE_START = 0.6;
+const FADE_LEN = 0.22;
+
+/** cubic-bezier(x1,y1,x2,y2) easing — Newton on x, like CSS. */
+function cubicBezierEase(x1: number, y1: number, x2: number, y2: number) {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  return (x: number) => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let u = x;
+    for (let i = 0; i < 5; i++) {
+      const f = ((ax * u + bx) * u + cx) * u - x;
+      if (Math.abs(f) < 1e-4) break;
+      const d = (3 * ax * u + 2 * bx) * u + cx;
+      if (d !== 0) u -= f / d;
+    }
+    return ((ay * u + by) * u + cy) * u;
+  };
+}
+/** The weighty master curve (§4): slow creep through the answer beat,
+ *  peak velocity mid-dive, still moving when the overlay covers. */
+const MASTER = cubicBezierEase(0.65, 0, 0.35, 1);
+const ROLL_MAX = THREE.MathUtils.degToRad(2.2);
 
 type DivePose = { y: number; z: number; pitch: number };
 /** Where the camera lands inside each instrument's surface (front berth
@@ -90,7 +117,6 @@ const CUT_SURFACE: Record<string, { bg: string; label?: string }> = {
   vestige: { bg: "#F5F2EC" },
 };
 
-const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 
 /** Matte tabletop: same paper-noise recipe as the rail worktop. */
@@ -152,29 +178,42 @@ function Rig({
   const poseAt = (out: {
     pos: THREE.Vector3;
     pitch: number;
+    roll: number;
   }): void => {
     // base pose from the descent…
     const p = t.current;
     out.pos.lerpVectors(OVER_POS, READ_POS, p);
     out.pitch = OVER_PITCH + (READ_PITCH - OVER_PITCH) * p;
-    // …then the dive blends on top (continuous even mid-descent)
+    out.roll = 0;
+    // …then the dive ARCS on top (§2): a quadratic bezier that drifts
+    // sideways and sinks a touch instead of the shortest line, with a
+    // path-inherent lean ≤2.2° — no orbit, no free look. dp comes off
+    // the single MASTER curve, so it is C1 through every beat.
     const id = useBenchStore.getState().transitionId;
     const dive = id ? DIVES[id] : undefined;
     if (dive) {
-      const dp = easeOutCubic(clamp01((tt.current - T_ANSWER) / T_DIVE));
-      out.pos.x += (0 - out.pos.x) * dp;
-      out.pos.y += (dive.y - out.pos.y) * dp;
-      out.pos.z += (dive.z - out.pos.z) * dp;
+      const dp = MASTER(clamp01(tt.current / T_TOTAL));
+      const bx = out.pos.x, by = out.pos.y, bz = out.pos.z;
+      const cx = bx / 2 + 0.38;
+      const cy = (by + dive.y) / 2 - 0.14;
+      const cz = (bz + dive.z) / 2;
+      const q = 1 - dp;
+      out.pos.set(
+        q * q * bx + 2 * q * dp * cx,
+        q * q * by + 2 * q * dp * cy + dp * dp * dive.y,
+        q * q * bz + 2 * q * dp * cz + dp * dp * dive.z
+      );
       out.pitch +=
         (THREE.MathUtils.degToRad(dive.pitch) - out.pitch) * dp;
+      out.roll = Math.sin(dp * Math.PI) * ROLL_MAX;
     }
   };
 
-  const scratch = useRef({ pos: new THREE.Vector3(), pitch: 0 });
+  const scratch = useRef({ pos: new THREE.Vector3(), pitch: 0, roll: 0 });
   const applyCamera = (cam: THREE.Camera) => {
     poseAt(scratch.current);
     cam.position.copy(scratch.current.pos);
-    cam.rotation.set(scratch.current.pitch, 0, 0);
+    cam.rotation.set(scratch.current.pitch, 0, scratch.current.roll);
   };
 
   useEffect(() => {
@@ -200,7 +239,7 @@ function Rig({
     const back = sessionStorage.getItem(CUT_KEY);
     if (engaged && back && BERTH_ORDER[initial] === back && DIVES[back]) {
       sessionStorage.removeItem(CUT_KEY);
-      tt.current = T_TOTAL;
+      tt.current = T_NAV; // resume at the handover frame
       if (overlayEl.current) overlayEl.current.style.opacity = "1";
       useBenchStore.getState().startTransition(back);
       useBenchStore.getState().reverseTransition();
@@ -354,10 +393,10 @@ function Rig({
       tt.current += delta * (dir === 1 ? 1 : -1.5);
       if (overlayEl.current)
         overlayEl.current.style.opacity = String(
-          clamp01((tt.current - (T_TOTAL - T_FADE)) / T_FADE)
+          clamp01((tt.current - FADE_START) / FADE_LEN)
         );
-      if (dir === 1 && tt.current >= T_TOTAL) {
-        tt.current = T_TOTAL;
+      if (dir === 1 && tt.current >= T_NAV) {
+        tt.current = T_NAV;
         if (!cutDone.current) {
           cutDone.current = true;
           onCut(state.transitionId);
@@ -596,6 +635,8 @@ function CutOverlay({
             fontSize: 11,
             letterSpacing: "0.3em",
             color: "#C8C6C0",
+            // §3: the wheels stop FIRST, the measurement floats in after
+            animation: "bench-label-in 0.2s ease 0.05s both",
           }}
         >
           {surface.label}
