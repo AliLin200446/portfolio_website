@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProject, projects } from "@/lib/projects";
 import HeroVideo from "@/components/HeroVideo";
+import BenchArrival from "@/components/bench/BenchArrival";
+import { berthOf } from "@/lib/bench";
 
 export const dynamicParams = false;
 
@@ -32,8 +34,14 @@ export default async function WorkPage({
 
   return (
     <main className="mx-auto max-w-5xl px-6">
+      {/* CAROUSEL match-cut arrival: veil continues the bench overlay,
+          then dissolves; direct visits render nothing */}
+      <BenchArrival slug={project.slug} />
       <header className="flex items-baseline justify-between py-6 font-mono text-xs text-muted">
-        <Link href="/" className="transition-colors hover:text-bronze">
+        <Link
+          href={`/?berth=${berthOf(project.slug)}`}
+          className="transition-colors hover:text-bronze"
+        >
           ← Index
         </Link>
         <span>Ali Lin</span>

@@ -1,9 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { BERTH_ORDER, berthOf } from "@/lib/bench";
+import { BERTH_ORDER, STATIONS, berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BronzeFigure from "./BronzeFigure";
 import Cocoon from "./Cocoon";
@@ -20,20 +21,31 @@ import TuningFork from "./TuningFork";
  * camera never orbits.
  *
  * Entrance move (§2) status: NOT APPROVED — skipped. Compliant
- * fallback: first visit parks a STATIC overhead establishing shot (the
- * whole table, six objects, zero motion); any input (wheel/drag/key/
- * click) hands the camera a damped descent to the reading pose — user-
- * driven, not autoplay. sessionStorage remembers arrival, so returns
- * land at the reading pose directly. Deep links (?berth=) land engaged.
- * reduced-motion / <768px never mount this scene at all (useBench3d
- * gate) — the DOM list is the whole story there.
+ * fallback: first visit parks a STATIC overhead establishing shot; any
+ * input hands the camera a damped descent to the reading pose — user-
+ * driven, not autoplay. sessionStorage remembers arrival; ?berth= deep
+ * links land engaged. reduced-motion / <768px never mount this scene
+ * (useBench3d gate) — the DOM list is the whole story there.
  *
- * Constitution: damping 0.08, spring snap always settles on a berth
- * (never between two), no overshoot, frameloop="demand", settled ring =
- * zero rAF, DOM above 3D. Only the front instrument is awake (store
- * berth contract unchanged — instruments' own wake/sleep logic does the
- * resource work); the rest are their static sleep frames. Depth is one
- * warm fog (paper haze, no blue) + perspective shrink: cheap, honest.
+ * HOVER (§决策C): pointer over an instrument raises a one-line Geist
+ * Mono DOM card (facts only) + prefetches the case route + pulses the
+ * table-edge glint. Hover never fires an instrument's mechanism.
+ *
+ * TRANSITION (穿过表面进入): click the FRONT instrument → three beats,
+ * ≤1.0s total: (1) the instrument answers with its OWN existing
+ * mechanism (feed / strike / lantern / hard-stop / stamp — triggered
+ * through the same store bridges the nameplates use, zero new
+ * choreography), (2) the camera dives ease-out toward the object,
+ * (3) a DOM surface matching that object's material takes the viewport
+ * and the case page arrives already dressed in it (BenchArrival veil) —
+ * no black, no curtain, zero new render targets. Esc / any press
+ * during the dive reverses at 1.5×; walking back in from a case page
+ * plays the same path backwards in 0.5s. ACUBOT has no destination yet
+ * (and its needle mechanism retired with B6-REV), so it hovers but
+ * does not enter — wiring waits for mechanism/data/page to exist.
+ *
+ * Constitution: damping 0.08, snap always ON a berth, no overshoot,
+ * frameloop="demand", settled = zero rAF, DOM above 3D, warm fog only.
  */
 
 const STEP = Math.PI / 3;
@@ -47,6 +59,39 @@ const READ_PITCH = THREE.MathUtils.degToRad(-15);
 const OVER_POS = new THREE.Vector3(0, 10, 2.8);
 const OVER_PITCH = THREE.MathUtils.degToRad(-75);
 const ARRIVED_KEY = "bench-carousel-arrived";
+const CUT_KEY = "bench-cut";
+
+/* Transition timeline (seconds): answer beat → dive → cut. 0.74s
+ * forward, reverse runs at 1.5× (≈0.5s), which is also the walk-back. */
+const T_ANSWER = 0.22;
+const T_DIVE = 0.52;
+const T_TOTAL = T_ANSWER + T_DIVE;
+const T_FADE = 0.2; // overlay takes the viewport over the last 0.2s
+
+type DivePose = { y: number; z: number; pitch: number };
+/** Where the camera lands inside each instrument's surface (front berth
+ *  world frame: object at (0,0,RADIUS)). Chosen per §3: leader / arms /
+ *  shell / bridge slit / stamp face. */
+const DIVES: Record<string, DivePose> = {
+  latent: { y: 0.5, z: RADIUS + 1.0, pitch: -6 },
+  resonance: { y: 0.62, z: RADIUS + 1.05, pitch: -4 },
+  "skeletal-silk": { y: 0.56, z: RADIUS + 0.95, pitch: -2 },
+  teardown: { y: 0.85, z: RADIUS + 0.7, pitch: -38 },
+  vestige: { y: 0.5, z: RADIUS + 1.0, pitch: -18 },
+};
+
+/** The surface each cut hands to the case page. Colors match
+ *  BenchArrival's CUT_BG so the route change is invisible. */
+const CUT_SURFACE: Record<string, { bg: string; label?: string }> = {
+  latent: { bg: "#14100d" },
+  resonance: { bg: "#F5F2EC" },
+  "skeletal-silk": { bg: "#FBF5E8" },
+  teardown: { bg: "#241C15", label: "LOG #—" },
+  vestige: { bg: "#F5F2EC" },
+};
+
+const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
+const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 
 /** Matte tabletop: same paper-noise recipe as the rail worktop. */
 function useTableTexture() {
@@ -79,28 +124,57 @@ const berthPos = (i: number): [number, number, number] => [
 ];
 
 /**
- * Camera + ring driver. The ring rotation θ is the springed value
- * (θ = -berth·STEP puts that berth at the front); descent progress t
- * lerps the camera overhead→reading pose once the user engages.
+ * Camera + ring + transition driver. Ring rotation θ springs to
+ * -berth·STEP; descent progress t lerps overhead→reading; transition
+ * time tt lerps reading→dive and drives the overlay handover.
  */
-function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
+function Rig({
+  ring,
+  overlayEl,
+  onCut,
+}: {
+  ring: React.RefObject<THREE.Group | null>;
+  overlayEl: React.RefObject<HTMLDivElement | null>;
+  onCut: (id: string) => void;
+}) {
   const { camera, invalidate, gl } = useThree();
   const berth = useBenchStore((s) => s.berth);
   const setBerth = useBenchStore((s) => s.setBerth);
+  const transitionId = useBenchStore((s) => s.transitionId);
   const theta = useRef(0);
   const target = useRef(0);
   const t = useRef(0); // descent progress 0 overhead → 1 reading
   const tTarget = useRef(0);
+  const tt = useRef(0); // transition time (s)
+  const cutDone = useRef(false);
   const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const applyCamera = (camObj: THREE.Camera) => {
+  const poseAt = (out: {
+    pos: THREE.Vector3;
+    pitch: number;
+  }): void => {
+    // base pose from the descent…
     const p = t.current;
-    camObj.position.lerpVectors(OVER_POS, READ_POS, p);
-    camObj.rotation.set(
-      OVER_PITCH + (READ_PITCH - OVER_PITCH) * p,
-      0,
-      0
-    );
+    out.pos.lerpVectors(OVER_POS, READ_POS, p);
+    out.pitch = OVER_PITCH + (READ_PITCH - OVER_PITCH) * p;
+    // …then the dive blends on top (continuous even mid-descent)
+    const id = useBenchStore.getState().transitionId;
+    const dive = id ? DIVES[id] : undefined;
+    if (dive) {
+      const dp = easeOutCubic(clamp01((tt.current - T_ANSWER) / T_DIVE));
+      out.pos.x += (0 - out.pos.x) * dp;
+      out.pos.y += (dive.y - out.pos.y) * dp;
+      out.pos.z += (dive.z - out.pos.z) * dp;
+      out.pitch +=
+        (THREE.MathUtils.degToRad(dive.pitch) - out.pitch) * dp;
+    }
+  };
+
+  const scratch = useRef({ pos: new THREE.Vector3(), pitch: 0 });
+  const applyCamera = (cam: THREE.Camera) => {
+    poseAt(scratch.current);
+    cam.position.copy(scratch.current.pos);
+    cam.rotation.set(scratch.current.pitch, 0, 0);
   };
 
   useEffect(() => {
@@ -118,10 +192,35 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
     theta.current = target.current = -initial * STEP;
     t.current = tTarget.current = engaged ? 1 : 0;
     if (ring.current) ring.current.rotation.y = theta.current;
+
+    // stale transition from an outbound nav dies here; then, if we came
+    // back from a case page entered THROUGH an instrument, resume at the
+    // cut frame and reverse out — the 0.5s walk-back (器物落回醒态)
+    useBenchStore.getState().endTransition();
+    const back = sessionStorage.getItem(CUT_KEY);
+    if (engaged && back && BERTH_ORDER[initial] === back && DIVES[back]) {
+      sessionStorage.removeItem(CUT_KEY);
+      tt.current = T_TOTAL;
+      if (overlayEl.current) overlayEl.current.style.opacity = "1";
+      useBenchStore.getState().startTransition(back);
+      useBenchStore.getState().reverseTransition();
+    } else {
+      tt.current = 0;
+    }
+    cutDone.current = false;
     applyCamera(camera);
     invalidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [camera, invalidate, setBerth, ring]);
+  }, [camera, invalidate, setBerth, ring, overlayEl]);
+
+  // a fresh forward transition starts its clock here
+  useEffect(() => {
+    if (transitionId && useBenchStore.getState().transitionDir === 1) {
+      tt.current = 0;
+      cutDone.current = false;
+    }
+    invalidate();
+  }, [transitionId, invalidate]);
 
   // nav / keyboard / side-click jumps: store is truth — spring the ring
   // to the nearest equivalent angle (shortest way around)
@@ -138,6 +237,7 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
 
   useEffect(() => {
     const el = gl.domElement;
+    const transiting = () => useBenchStore.getState().transitionId !== null;
     const engage = () => {
       if (tTarget.current !== 1) {
         tTarget.current = 1;
@@ -158,6 +258,7 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      if (transiting()) return;
       engage();
       target.current -= (e.deltaY + e.deltaX) * 0.0016;
       scheduleSnap();
@@ -168,6 +269,7 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
     let startX = 0;
     let startTarget = 0;
     const onDown = (e: PointerEvent) => {
+      if (transiting()) return;
       dragging = true;
       startX = e.clientX;
       startTarget = target.current;
@@ -186,7 +288,12 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
 
     // global ←/→ stepping — the ring wraps, no ends
     const onKey = (e: KeyboardEvent) => {
-      if (e.target !== document.body) return;
+      if (e.key === "Escape" && transiting()) {
+        useBenchStore.getState().reverseTransition();
+        invalidate();
+        return;
+      }
+      if (e.target !== document.body || transiting()) return;
       const b = useBenchStore.getState().berth;
       if (e.key === "ArrowLeft") {
         engage();
@@ -200,10 +307,18 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
       }
     };
     const onAnyClick = () => engage();
+    // any press mid-transition = pull back out (1.5× reverse)
+    const onPressCapture = () => {
+      if (transiting()) {
+        useBenchStore.getState().reverseTransition();
+        invalidate();
+      }
+    };
 
     el.addEventListener("wheel", onWheel, { passive: false });
     el.addEventListener("pointerdown", onDown);
     el.addEventListener("click", onAnyClick);
+    window.addEventListener("pointerdown", onPressCapture, true);
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("keydown", onKey);
@@ -211,6 +326,7 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
       el.removeEventListener("wheel", onWheel);
       el.removeEventListener("pointerdown", onDown);
       el.removeEventListener("click", onAnyClick);
+      window.removeEventListener("pointerdown", onPressCapture, true);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("keydown", onKey);
@@ -221,18 +337,48 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
   useFrame((_, delta) => {
     const dTheta = target.current - theta.current;
     theta.current += dTheta * DAMPING;
-    // descent: frame-rate-independent damped approach, ease-out, no
-    // overshoot; ~1.6s to visually settled
+    // descent: frame-rate-independent damped approach, ease-out
     const dT = tTarget.current - t.current;
     if (dT > 0.0005) {
       t.current += dT * (1 - Math.exp(-2.8 * delta));
     } else if (dT !== 0) {
       t.current = tTarget.current;
     }
+
+    // transition clock: forward 1×, reverse 1.5×; overlay is written
+    // directly (no per-frame React)
+    const state = useBenchStore.getState();
+    let transBusy = false;
+    if (state.transitionId) {
+      const dir = state.transitionDir;
+      tt.current += delta * (dir === 1 ? 1 : -1.5);
+      if (overlayEl.current)
+        overlayEl.current.style.opacity = String(
+          clamp01((tt.current - (T_TOTAL - T_FADE)) / T_FADE)
+        );
+      if (dir === 1 && tt.current >= T_TOTAL) {
+        tt.current = T_TOTAL;
+        if (!cutDone.current) {
+          cutDone.current = true;
+          onCut(state.transitionId);
+        }
+      } else if (dir === -1 && tt.current <= 0) {
+        tt.current = 0;
+        state.endTransition();
+        if (overlayEl.current) overlayEl.current.style.opacity = "0";
+      } else {
+        transBusy = true;
+      }
+    }
+
     if (ring.current) ring.current.rotation.y = theta.current;
     applyCamera(camera);
     // settled = stop: no residual rAF, the frame goes still
-    if (Math.abs(dTheta) > 0.0008 || tTarget.current - t.current > 0.0005)
+    if (
+      Math.abs(dTheta) > 0.0008 ||
+      tTarget.current - t.current > 0.0005 ||
+      transBusy
+    )
       invalidate();
   });
 
@@ -240,12 +386,14 @@ function Rig({ ring }: { ring: React.RefObject<THREE.Group | null> }) {
 }
 
 /**
- * Focus glint (#FFB46B, functional): when a berth arrives at the front,
- * one short arc sweeps along the table edge in front of it. One mesh,
- * opacity+rotation animated ~0.6s, then fully transparent and silent.
+ * Focus glint (#FFB46B, functional): one short arc sweeps along the
+ * table edge when a berth arrives at the front, and again when the
+ * front instrument is hovered (§1 既有可供性). One mesh, ~0.6s, then
+ * fully transparent and silent.
  */
 function GlintArc() {
   const berth = useBenchStore((s) => s.berth);
+  const hovered = useBenchStore((s) => s.hovered);
   const { invalidate } = useThree();
   const mesh = useRef<THREE.Mesh>(null);
   const mat = useRef<THREE.MeshBasicMaterial>(null);
@@ -266,6 +414,14 @@ function GlintArc() {
     pulse.current = 0;
     invalidate();
   }, [berth, invalidate]);
+
+  // hover on the FRONT instrument re-arms the glint once per hover
+  useEffect(() => {
+    if (hovered && hovered === BERTH_ORDER[berth]) {
+      pulse.current = 0;
+      invalidate();
+    }
+  }, [hovered, berth, invalidate]);
 
   useFrame((_, delta) => {
     if (pulse.current >= 1) return;
@@ -290,43 +446,52 @@ function GlintArc() {
 }
 
 /**
- * Invisible click-interceptors over every NON-front berth: clicking a
- * side/rear instrument rotates it to the front instead of firing its
- * own interaction. visible=false meshes still raycast in three — zero
- * draw calls. The front berth has no interceptor, so the awake
- * instrument keeps its native clicks (strike/feed/nudge/stamp).
- * TODO(project-page hook): front-instrument click-through to the split
- * live-demo page is wired in a separate prompt once live URLs are
- * confirmed; until then the nameplate link is the route in.
+ * Invisible pointer targets over every berth (visible=false still
+ * raycasts — zero draw calls). Hover raises the info card (+prefetch,
+ * +glint via store). Click: side berth rotates to front; FRONT berth
+ * begins the enter-transition. Instruments' own pointer handlers are
+ * shadowed by design — mechanisms fire through the nameplate buttons
+ * and as transition answer beats, never from a stray hover (§1).
  */
-function SideClickTargets() {
+function PointerTargets({
+  beginTransition,
+}: {
+  beginTransition: (id: string) => void;
+}) {
   const berth = useBenchStore((s) => s.berth);
   const setBerth = useBenchStore((s) => s.setBerth);
+  const setHovered = useBenchStore((s) => s.setHovered);
   return (
     <>
-      {BERTH_ORDER.map((id, i) =>
-        i === berth ? null : (
-          <group key={id} position={berthPos(i)} rotation={[0, berthAngle(i), 0]}>
-            <mesh
-              position={[0, 0.75, 0]}
-              visible={false}
-              onClick={(e) => {
-                e.stopPropagation();
-                setBerth(i);
-              }}
-              onPointerOver={(e) => {
-                e.stopPropagation();
-                document.body.style.cursor = "pointer";
-              }}
-              onPointerOut={() => {
-                document.body.style.cursor = "";
-              }}
-            >
-              <boxGeometry args={[1.3, 1.7, 1.3]} />
-            </mesh>
-          </group>
-        )
-      )}
+      {BERTH_ORDER.map((id, i) => (
+        <group
+          key={id}
+          position={berthPos(i)}
+          rotation={[0, berthAngle(i), 0]}
+        >
+          <mesh
+            position={[0, 0.75, 0]}
+            visible={false}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (useBenchStore.getState().transitionId) return;
+              if (i === berth) beginTransition(id);
+              else setBerth(i);
+            }}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              setHovered(id);
+              document.body.style.cursor = "pointer";
+            }}
+            onPointerOut={() => {
+              setHovered(null);
+              document.body.style.cursor = "";
+            }}
+          >
+            <boxGeometry args={[1.3, 1.7, 1.3]} />
+          </mesh>
+        </group>
+      ))}
     </>
   );
 }
@@ -341,61 +506,197 @@ function Table() {
   );
 }
 
+/** §1 hover card: one Geist Mono line, no thumbnails, no adjectives.
+ *  DOM above 3D; fade 0.2s; prefetches the internal case route. */
+function HoverCard() {
+  const hovered = useBenchStore((s) => s.hovered);
+  const router = useRouter();
+  const last = useRef<string | null>(null);
+  if (hovered) last.current = hovered;
+  const station = last.current
+    ? STATIONS.find((s) => s.id === last.current)
+    : undefined;
+
+  useEffect(() => {
+    if (!hovered) return;
+    const st = STATIONS.find((s) => s.id === hovered);
+    if (st?.href && !st.external) router.prefetch(st.href);
+  }, [hovered, router]);
+
+  if (!station?.hover) return null;
+  return (
+    <div
+      aria-hidden
+      className="fixed z-10 font-mono"
+      style={{
+        left: "50%",
+        bottom: 148,
+        transform: "translateX(-50%)",
+        fontSize: 11,
+        letterSpacing: "0.08em",
+        color: "#1a1714",
+        background: "rgba(245,242,236,0.92)",
+        border: "0.5px solid #E3DED4",
+        padding: "6px 12px",
+        whiteSpace: "nowrap",
+        pointerEvents: "none",
+        opacity: hovered ? 1 : 0,
+        transition: "opacity 0.2s ease",
+      }}
+    >
+      {station.hover}
+    </div>
+  );
+}
+
+/** The cut surface: a DOM sheet the dive hands the viewport to. Its
+ *  opacity is written directly by the Rig each frame; its face matches
+ *  BenchArrival's veil so the route swap is invisible. Zero RT. */
+function CutOverlay({
+  overlayEl,
+}: {
+  overlayEl: React.RefObject<HTMLDivElement | null>;
+}) {
+  const transitionId = useBenchStore((s) => s.transitionId);
+  const surface = transitionId ? CUT_SURFACE[transitionId] : undefined;
+  return (
+    <div
+      ref={(el) => {
+        overlayEl.current = el;
+        // opacity lives OUTSIDE React so per-frame writes survive rerenders
+        if (el && !el.dataset.init) {
+          el.style.opacity = "0";
+          el.dataset.init = "1";
+        }
+      }}
+      aria-hidden
+      className="fixed inset-0 z-[6] flex items-center justify-center"
+      style={{
+        background: surface?.bg ?? "transparent",
+        pointerEvents: "none",
+      }}
+    >
+      {transitionId === "latent" && (
+        <div
+          // one-shot halation: the film base answers with a single warm
+          // bloom-free flare (existing aesthetic, CSS only, no RT)
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(circle at 50% 44%, rgba(255,140,70,0.32), transparent 55%)",
+            animation: "bench-halation 0.45s ease-out 0.5s both",
+          }}
+        />
+      )}
+      {surface?.label && (
+        <span
+          className="font-mono"
+          style={{
+            fontSize: 11,
+            letterSpacing: "0.3em",
+            color: "#C8C6C0",
+          }}
+        >
+          {surface.label}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function Carousel() {
   const ring = useRef<THREE.Group>(null);
+  const overlayEl = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
   useEffect(() => {
     useBenchStore.getState().setBoot(35, "three runtime");
   }, []);
+
+  /** Beat 1: the instrument answers with its own mechanism, through the
+   *  same store bridge the nameplate buttons use. Cocoon (lantern) and
+   *  Movement (hard stop) respond to transitionId directly. */
+  const beginTransition = (id: string) => {
+    const station = STATIONS.find((s) => s.id === id);
+    if (!station?.href || !DIVES[id]) return; // ACUBOT: no entry yet
+    const s = useBenchStore.getState();
+    if (s.transitionId) return;
+    if (id === "latent") s.b1Feed();
+    if (id === "resonance") s.b2Strike();
+    if (id === "vestige") s.b5Stamp();
+    s.startTransition(id);
+  };
+
+  /** Beat 3: the surface owns the viewport — hand over to the route.
+   *  The CUT_KEY flag dresses the case page in the same surface
+   *  (BenchArrival) and later arms the 0.5s walk-back reverse. */
+  const onCut = (id: string) => {
+    const station = STATIONS.find((s) => s.id === id);
+    if (!station?.href) return;
+    sessionStorage.setItem(CUT_KEY, id);
+    if (station.external) window.location.href = station.href;
+    else router.push(station.href);
+  };
+
   return (
-    <Canvas
-      frameloop="demand"
-      dpr={[1, 1.5]}
-      camera={{ fov: 40 }}
-      gl={{ antialias: true, powerPreference: "low-power" }}
-      onCreated={({ gl, scene, camera }) => {
-        gl.setClearColor("#F5F2EC");
-        const { setBoot } = useBenchStore.getState();
-        setBoot(60, "webgl context");
-        let meshes = 0;
-        scene.traverse((o) => {
-          if ((o as THREE.Mesh).isMesh) meshes += 1;
-        });
-        setBoot(70, `shader compile · ${meshes} meshes`);
-        const done = () => setBoot(100, "ready");
-        gl.compileAsync(scene, camera).then(done).catch(done);
-      }}
-      aria-hidden
-    >
-      {/* warm paper haze: rear of the ring dims and recedes — no blue */}
-      <fog attach="fog" args={["#E9E3D6", 7, 20]} />
-      <directionalLight position={[-3, 6, 4]} intensity={1.4} color="#fff6e8" />
-      <ambientLight intensity={0.75} />
-      <Table />
-      <group ref={ring}>
-        {/* outward-facing: each berth rotated to its tangent normal so
-            the face always addresses the viewing arc */}
-        <group position={berthPos(berthOf("resonance"))} rotation={[0, berthAngle(berthOf("resonance")), 0]}>
-          <TuningFork position={[0, 0, 0]} />
+    <>
+      <Canvas
+        frameloop="demand"
+        dpr={[1, 1.5]}
+        camera={{ fov: 40 }}
+        gl={{ antialias: true, powerPreference: "low-power" }}
+        onCreated={({ gl, scene, camera }) => {
+          gl.setClearColor("#F5F2EC");
+          const { setBoot } = useBenchStore.getState();
+          setBoot(60, "webgl context");
+          let meshes = 0;
+          scene.traverse((o) => {
+            if ((o as THREE.Mesh).isMesh) meshes += 1;
+          });
+          setBoot(70, `shader compile · ${meshes} meshes`);
+          const done = () => setBoot(100, "ready");
+          gl.compileAsync(scene, camera).then(done).catch(done);
+        }}
+        aria-hidden
+      >
+        {/* warm paper haze: rear of the ring dims and recedes — no blue */}
+        <fog attach="fog" args={["#E9E3D6", 7, 20]} />
+        <directionalLight
+          position={[-3, 6, 4]}
+          intensity={1.4}
+          color="#fff6e8"
+        />
+        <ambientLight intensity={0.75} />
+        <Table />
+        <group ref={ring}>
+          {/* outward-facing: each berth rotated to its tangent normal so
+              the face always addresses the viewing arc */}
+          <group position={berthPos(berthOf("resonance"))} rotation={[0, berthAngle(berthOf("resonance")), 0]}>
+            <TuningFork position={[0, 0, 0]} />
+          </group>
+          <group position={berthPos(berthOf("skeletal-silk"))} rotation={[0, berthAngle(berthOf("skeletal-silk")), 0]}>
+            <Cocoon position={[0, 0, 0]} />
+          </group>
+          <group position={berthPos(berthOf("latent"))} rotation={[0, berthAngle(berthOf("latent")), 0]}>
+            <FilmRoll position={[0, 0, 0]} />
+          </group>
+          <group position={berthPos(berthOf("teardown"))} rotation={[0, berthAngle(berthOf("teardown")), 0]}>
+            <Movement position={[0, 0, 0]} />
+          </group>
+          <group position={berthPos(berthOf("vestige"))} rotation={[0, berthAngle(berthOf("vestige")), 0]}>
+            <Seal position={[0, 0, 0]} />
+          </group>
+          <group position={berthPos(berthOf("acubot"))} rotation={[0, berthAngle(berthOf("acubot")), 0]}>
+            <BronzeFigure position={[0, 0, 0]} />
+          </group>
+          <PointerTargets beginTransition={beginTransition} />
         </group>
-        <group position={berthPos(berthOf("skeletal-silk"))} rotation={[0, berthAngle(berthOf("skeletal-silk")), 0]}>
-          <Cocoon position={[0, 0, 0]} />
-        </group>
-        <group position={berthPos(berthOf("latent"))} rotation={[0, berthAngle(berthOf("latent")), 0]}>
-          <FilmRoll position={[0, 0, 0]} />
-        </group>
-        <group position={berthPos(berthOf("teardown"))} rotation={[0, berthAngle(berthOf("teardown")), 0]}>
-          <Movement position={[0, 0, 0]} />
-        </group>
-        <group position={berthPos(berthOf("vestige"))} rotation={[0, berthAngle(berthOf("vestige")), 0]}>
-          <Seal position={[0, 0, 0]} />
-        </group>
-        <group position={berthPos(berthOf("acubot"))} rotation={[0, berthAngle(berthOf("acubot")), 0]}>
-          <BronzeFigure position={[0, 0, 0]} />
-        </group>
-        <SideClickTargets />
-      </group>
-      <GlintArc />
-      <Rig ring={ring} />
-    </Canvas>
+        <GlintArc />
+        <Rig ring={ring} overlayEl={overlayEl} onCut={onCut} />
+      </Canvas>
+      <HoverCard />
+      <CutOverlay overlayEl={overlayEl} />
+    </>
   );
 }

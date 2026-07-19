@@ -433,8 +433,10 @@ export default function Seal({
           />
         </mesh>
       )}
-      {/* 印文: 8-char demo hash types out under the mark; the mark is a link */}
-      {curHash && (
+      {/* 印文: 8-char demo hash types out under the mark; the mark is a
+          link. FIX ③: gated on awake — sleep (and the carousel overhead/
+          rear arc) shows the physical mark only, no floating DOM */}
+      {curHash && awake && (
         <Html
           position={[0, 0.02, STAMP_Z + 0.26]}
           center

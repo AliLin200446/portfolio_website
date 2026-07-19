@@ -304,8 +304,13 @@ export default function Cocoon({
     const swinging =
       Math.abs(theta.current) > 0.0006 || Math.abs(omega.current) > 0.0006;
     const pulling = Math.abs(pullTarget.current - pull.current) > 0.002;
+    // transition answer beat (看透): the SAME inner light, pushed to its
+    // extreme — no new mechanism, no bloom, just the lantern turned up
+    const glowing =
+      useBenchStore.getState().transitionId === "skeletal-silk";
+    const lightGoal = glowing ? 1.3 : awake ? 0.16 : 0;
     const lightBusy =
-      Math.abs((light.current?.intensity ?? 0) - (awake ? 0.16 : 0)) > 0.003;
+      Math.abs((light.current?.intensity ?? 0) - lightGoal) > 0.003;
     // dormant and settled: stop integrating entirely — no idle spin
     if (!swinging && !pulling && !lightBusy && !awake) return;
 
@@ -334,9 +339,9 @@ export default function Cocoon({
     }
 
     if (light.current && lightBusy) {
-      const target = awake ? 0.16 : 0;
       light.current.intensity +=
-        (target - light.current.intensity) * (reduced.current ? 1 : 0.07);
+        (lightGoal - light.current.intensity) *
+        (reduced.current ? 1 : glowing ? 0.35 : 0.07);
       busy = true;
     }
 

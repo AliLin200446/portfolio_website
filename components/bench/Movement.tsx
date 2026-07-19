@@ -201,6 +201,12 @@ export default function Movement({
     if (!awake && runScale.current < 0.01) return;
     if (reduced.current) return; // reduced-motion: the movement never turns
 
+    // transition answer beat (抓停入册): all three wheels stop the same
+    // instant — the run mechanism's own stop, no easing
+    if (useBenchStore.getState().transitionId === "teardown") {
+      runScale.current = 0;
+      return;
+    }
     // wake ease-in / sleep ease-out of the run, then UNIFORM rotation —
     // walking time, fixed ratios, no stutter, no easing surprises
     runScale.current += ((awake ? 1 : 0) - runScale.current) * 0.08;

@@ -57,3 +57,26 @@ body {
     animation: none;
   }
 }
+
+/* case-page match-cut veil (CAROUSEL transitions): opaque -> gone */
+@keyframes bench-veil {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* one-shot film halation on the LATENT cut: fires once, never loops */
+@keyframes bench-halation {
+  from {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
