@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { STATIONS } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 
-const Bench = dynamic(() => import("./Bench"), { ssr: false });
+// CAROUSEL experiment (this branch): the round table replaces the rail.
+// feature/bench-home keeps Bench.tsx untouched for the A/B.
+const Bench = dynamic(() => import("./Carousel"), { ssr: false });
 
 /*
  * Mounts the 3D bench only on desktop fine-pointer displays without

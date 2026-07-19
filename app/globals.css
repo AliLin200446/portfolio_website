@@ -42,3 +42,18 @@ body {
   background: var(--oxblood);
   color: var(--paper);
 }
+
+/* nameplate fade-in on berth arrival (carousel §3); one-shot, cheap */
+@keyframes plate-in {
+  from {
+    opacity: 0;
+  }
+}
+.plate-in {
+  animation: plate-in 0.4s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .plate-in {
+    animation: none;
+  }
+}

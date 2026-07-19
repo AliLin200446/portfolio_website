@@ -8,7 +8,7 @@ import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
 
 const plateBase =
-  "fixed bottom-16 left-6 z-10 font-mono text-xs text-muted";
+  "plate-in fixed bottom-16 left-6 z-10 font-mono text-xs text-muted";
 const plateBtn =
   "mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]";
 
@@ -163,7 +163,7 @@ function VestigeNameplate() {
   if (berth !== berthOf("vestige")) return null;
 
   return (
-    <div className="fixed bottom-16 left-6 z-10 font-mono text-xs text-muted">
+    <div className={plateBase}>
       <p>
         <span className="text-ink">VESTIGE</span> — provenance for physical
         goods · <span className="text-wood">2 provisional patents</span>
