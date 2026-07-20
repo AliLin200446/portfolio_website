@@ -6,9 +6,13 @@
  * specifies; unspecified diagrams render a labeled placeholder.
  */
 
+/* iframe kind REMOVED (CASE-v2-MERGE §1): embedding the live site
+ * depended on the target being unprotected (no frame-ancestors), and
+ * broke the single-exhibit stance. Red line beats a single round's
+ * spec. When the recording arrives, TEARDOWN ships 录屏 + open live ↗
+ * external link — never an iframe. */
 export type CaseHero =
   | { kind: "latent-comparator" } // live before/after 拉杆 (existing SVG instrument)
-  | { kind: "iframe"; src: string }
   | { kind: "gate"; priority: string }; // asset missing: page not shippable
 
 export type CasePageData = {
@@ -63,7 +67,7 @@ export const casePages: Record<string, CasePageData> = {
     metaLine:
       "TEARDOWN №1 — 〔回填:类型〕 · 〔回填:技术栈〕 · 2026 · live · teardown.alilinlab.com",
     claim: "Docs describe. Instruments verify.",
-    hero: { kind: "iframe", src: "https://teardown.alilinlab.com" },
+    hero: { kind: "gate", priority: "仪表带全开录屏(到手后:录屏 + open live ↗ 外链,不用 iframe)" },
     heroCaption:
       "19.52ms/step · R²=0.9978 · seed → byte-identical · 48h sprint",
     what: "A live measurement bench for a hosted image-generation API, for engineers deciding whether to build on it. Seeded runs replay against the live endpoint; step time regresses linearly at 19.52 ms per step, R² 0.9978. Fourteen documented behaviors did not match measurement, while identical seeds returned byte-identical outputs.",

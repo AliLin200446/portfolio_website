@@ -27,14 +27,6 @@ function Hero({ data }: { data: CasePageData }) {
   return (
     <section className="py-10">
       {h.kind === "latent-comparator" && <HalationHero />}
-      {h.kind === "iframe" && (
-        <iframe
-          src={h.src}
-          title={`${data.name} live`}
-          loading="lazy"
-          className="h-[70svh] w-full border border-line"
-        />
-      )}
       {h.kind === "gate" && (
         <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-[#EDE9E0]">
           <span className="font-mono text-xs text-oxblood">
