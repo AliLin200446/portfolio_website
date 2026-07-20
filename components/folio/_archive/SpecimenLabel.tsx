@@ -1,10 +1,11 @@
+// DEPRECATED (CASE-v2-MERGE Step 5): off the routes, kept for reuse.
 import BenchArrival from "@/components/bench/BenchArrival";
 import {
   ColophonHead,
   ColophonTail,
   FolioBar,
   SectionNo,
-} from "./FolioChrome";
+} from "../FolioChrome";
 import SpecimenPiece from "./SpecimenPiece";
 
 /*

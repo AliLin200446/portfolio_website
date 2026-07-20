@@ -1,20 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProject, projects } from "@/lib/projects";
-import HeroVideo from "@/components/HeroVideo";
-import BenchArrival from "@/components/bench/BenchArrival";
-import { berthOf } from "@/lib/bench";
-import { ColophonTail, FolioBar } from "@/components/folio/FolioChrome";
-import SpecimenLabel from "@/components/folio/SpecimenLabel";
-import LabFolio from "@/components/folio/LabFolio";
-import { projectContent, toLabFolio, toSpecimen } from "@/content/projects";
 import CasePage from "@/components/folio/CasePage";
 import { casePages } from "@/content/case/casepages";
+
+/*
+ * CASE-v2-MERGE Step 5: the single dispatch. content/case/casepages.ts
+ * is the ONLY data source; content/projects/ and the legacy notebook
+ * body are gone (their content migrated or preserved in casepages.ts —
+ * see the PRESERVED CONTENT block there). Old templates live in
+ * components/folio/_archive/, off the routes.
+ */
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  // CASE-v2: one route per case page (six), superset of lib/projects
   return Object.keys(casePages).map((slug) => ({ slug }));
 }
 
@@ -23,14 +22,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const slug = (await params).slug;
-  const cp = casePages[slug];
-  if (cp) return { title: cp.name, description: cp.claim };
-  const project = getProject(slug);
-  return {
-    title: project?.title,
-    description: project?.thesis,
-  };
+  const cp = casePages[(await params).slug];
+  return cp ? { title: cp.name, description: cp.claim } : {};
 }
 
 export default async function WorkPage({
@@ -38,203 +31,7 @@ export default async function WorkPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const slug = (await params).slug;
-  // CASE-v2 (PROJECT_PAGES_filled_v2): the unified ①-⑦ template drives
-  // all six routes; ⑤⑥ toggle by page type inside CasePage.
-  const casePage = casePages[slug];
-  if (casePage) return <CasePage data={casePage} />;
-
-  const project = getProject(slug);
-  if (!project) notFound();
-
-  // FOLIO-TEMPLATE: data-driven dispatch — the author fills a file in
-  // content/projects/, kind picks the template; null (unfilled) falls
-  // through to the legacy notebook body below. Zero component edits.
-  const content = projectContent[project.slug];
-  if (content)
-    return content.body.kind === "folio" ? (
-      <LabFolio data={toLabFolio(project.slug, content)} />
-    ) : (
-      <SpecimenLabel data={toSpecimen(project.slug, content)} />
-    );
-
-  // next internal project for the shared colophon tail
-  const idx = projects.findIndex((p) => p.slug === project.slug);
-  const next = projects[(idx + 1) % projects.length];
-
-  return (
-    <main className="mx-auto max-w-5xl px-6">
-      {/* CAROUSEL match-cut arrival: veil continues the bench overlay,
-          then dissolves; direct visits render nothing */}
-      <BenchArrival slug={project.slug} />
-      <FolioBar backHref={`/?berth=${berthOf(project.slug)}`} />
-
-      {/* 1. Title and thesis */}
-      <section className="py-10">
-        {project.live && (
-          <p className="mb-5 font-mono text-xs">
-            <span className="text-wood">LIVE</span>
-            <span className="text-muted"> → </span>
-            <a
-              href={project.live.url}
-              target="_blank"
-              rel="noreferrer"
-              className="transition-colors hover:text-bronze"
-            >
-              {new URL(project.live.url).hostname.replace(/^www\./, "")}
-            </a>
-            {project.live.thread && (
-              <>
-                <span className="text-muted"> · </span>
-                <a
-                  href={project.live.thread}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="transition-colors hover:text-bronze"
-                >
-                  launch thread →
-                </a>
-              </>
-            )}
-          </p>
-        )}
-        <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">
-          {project.title}
-        </h1>
-        <p className="mt-4 max-w-[32ch] font-serif text-2xl italic leading-snug sm:text-3xl">
-          {project.thesis}
-        </p>
-      </section>
-
-      {/* 2. Media slot and demo link. Media height is capped so the demo
-          link stays above the fold on common screens. */}
-      <section>
-        {project.heroVideo ? (
-          <HeroVideo
-            src={project.heroVideo.src}
-            poster={project.heroVideo.poster}
-          />
-        ) : (
-          <div
-            className="flex aspect-video items-center justify-center border border-line bg-[#EDE9E0]"
-            style={{ width: "min(100%, calc(52svh * 16 / 9))" }}
-          >
-            <span className="font-mono text-xs text-muted">
-              {["video slot · 16:9 · 30s screen recording", project.mediaNote]
-                .filter(Boolean)
-                .join(" · ")}
-            </span>
-          </div>
-        )}
-
-        <div className="mt-5 flex items-baseline gap-4">
-          {project.demo ? (
-            /* Seal-marked link: this cluster is the page's one cinnabar
-               element. Not a button on purpose. */
-            <a
-              href={project.demo}
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex items-center gap-3 font-mono text-sm"
-            >
-              <span aria-hidden className="h-3 w-3 bg-oxblood" />
-              <span className="border-b border-bronze pb-px transition-colors group-hover:border-oxblood group-hover:text-oxblood">
-                Open live demo →
-              </span>
-            </a>
-          ) : (
-            <span className="font-mono text-sm text-muted">
-              {project.demoNote}
-            </span>
-          )}
-        </div>
-      </section>
-
-      {/* 3. Metadata row */}
-      <section className="mt-12 border-y border-line py-4">
-        <dl className="flex flex-wrap gap-x-10 gap-y-2 font-mono text-xs">
-          <Meta label="Role" value={project.role} />
-          <Meta label="Type" value={project.type} />
-          <Meta label="Stack" value={project.stack} />
-          <Meta label="Year" value={project.year} />
-        </dl>
-      </section>
-
-      {/* 4. Interaction */}
-      <Section title="Interaction">
-        {project.interaction.map((paragraph) => (
-          <p key={paragraph} className="mb-4 leading-relaxed">
-            {paragraph}
-          </p>
-        ))}
-        {project.interactionList && (
-          <ul className="mt-6 space-y-2 font-mono text-sm text-muted">
-            {project.interactionList.map((item) => (
-              <li key={item} className="border-l border-bronze pl-4">
-                {item}
-              </li>
-            ))}
-          </ul>
-        )}
-      </Section>
-
-      {/* 5. Technical architecture */}
-      <Section title="Technical architecture">
-        {project.architecture.intro && (
-          <p className="mb-6 leading-relaxed">{project.architecture.intro}</p>
-        )}
-        {project.architecture.points.length > 0 && (
-          <ul className="space-y-2 font-mono text-sm text-muted">
-            {project.architecture.points.map((point) => (
-              <li key={point} className="border-l border-bronze pl-4">
-                {point}
-              </li>
-            ))}
-          </ul>
-        )}
-      </Section>
-
-      {/* 6. Forward-looking */}
-      <Section title="Where this goes next">
-        <p className="leading-relaxed">{project.extend.body}</p>
-      </Section>
-
-      {/* shared colophon tail (FolioChrome): couplet awaits the author */}
-      <ColophonTail
-        year={project.year}
-        next={
-          next && next.slug !== project.slug
-            ? { label: next.title.toUpperCase(), href: `/work/${next.slug}` }
-            : undefined
-        }
-      />
-      <div className="pb-12" />
-    </main>
-  );
-}
-
-function Meta({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex gap-2">
-      <dt className="text-bronze">{label}</dt>
-      <dd>{value}</dd>
-    </div>
-  );
-}
-
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="grid gap-6 border-b border-line py-14 sm:grid-cols-[14rem_1fr]">
-      <h2 className="font-mono text-xs uppercase tracking-widest text-bronze">
-        {title}
-      </h2>
-      <div className="max-w-[68ch] text-[15px]">{children}</div>
-    </section>
-  );
+  const cp = casePages[(await params).slug];
+  if (!cp) notFound();
+  return <CasePage data={cp} />;
 }

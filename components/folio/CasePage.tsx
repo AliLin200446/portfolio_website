@@ -1,6 +1,7 @@
 import BenchArrival from "@/components/bench/BenchArrival";
 import { berthOf } from "@/lib/bench";
 import type { CasePageData } from "@/content/case/casepages";
+import ExhibitFlow from "./ExhibitFlow";
 import { FolioBar } from "./FolioChrome";
 import HalationHero from "./HalationHero";
 
@@ -110,8 +111,19 @@ export default function CasePage({ data }: { data: CasePageData }) {
         <MechDiagram mech={data.mech} />
       </section>
 
-      {/* ⑤ PROCESS — 手记 only */}
-      {data.type === "folio" && data.process && (
+      {/* ⑤ PROCESS — 手记 only. With exhibitFlow: the split-screen
+          scrollytelling movement returns (ExhibitFlow — IntersectionObserver,
+          js-scrolly enhancement layer, single-column degradation with zero
+          content loss). Without it: the v2 static grid. */}
+      {data.type === "folio" && data.exhibitFlow && (
+        <section className="border-t border-line py-8">
+          <p className="font-mono text-xs uppercase tracking-widest text-bronze">
+            PROCESS
+          </p>
+          <ExhibitFlow exhibits={data.exhibitFlow} />
+        </section>
+      )}
+      {data.type === "folio" && !data.exhibitFlow && data.process && (
         <section className="border-t border-line py-14">
           <p className="font-mono text-xs uppercase tracking-widest text-bronze">
             PROCESS

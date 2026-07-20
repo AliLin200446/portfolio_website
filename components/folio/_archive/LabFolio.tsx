@@ -1,12 +1,13 @@
+// DEPRECATED (CASE-v2-MERGE Step 5): off the routes, kept for reuse.
 import BenchArrival from "@/components/bench/BenchArrival";
 import type { LabFolioData } from "@/lib/labfolio";
-import ExhibitFlow from "./ExhibitFlow";
+import ExhibitFlow from "../ExhibitFlow";
 import {
   ColophonHead,
   ColophonTail,
   FolioBar,
   SectionNo,
-} from "./FolioChrome";
+} from "../FolioChrome";
 
 /*
  * LAB FOLIO v2 (手记 · 分屏) — the notebook template, upgraded: the

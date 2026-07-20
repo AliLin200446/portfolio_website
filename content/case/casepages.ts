@@ -15,6 +15,8 @@ export type CaseHero =
   | { kind: "latent-comparator" } // live before/after 拉杆 (existing SVG instrument)
   | { kind: "gate"; priority: string }; // asset missing: page not shippable
 
+import type { Exhibit } from "@/lib/labfolio";
+
 export type CasePageData = {
   slug: string;
   type: "folio" | "specimen"; // 手记 | 陈列签 — toggles ⑤⑥
@@ -25,12 +27,30 @@ export type CasePageData = {
   heroCaption: string; // ③ mono: content · condition · date
   what: string; // ④ verbatim 2-3 sentences
   mech: { nodes?: string[]; placeholder?: string }; // ④ half-width diagram
+  /** 手记分屏证物流 (CASE-v2-MERGE Step 1): when present, ⑤ mounts
+   *  ExhibitFlow (split scrollytelling + IntersectionObserver +
+   *  js-scrolly enhancement + full degradation) instead of the static
+   *  grid. v2 的 ≤1句观察 lives in caption/marginNote — not dropped. */
+  exhibitFlow?: Exhibit[];
   process?: { n: string; title: string; caption: string; observation: string }[];
   findings?: string[];
   role: string; // ⑦ 〔回填:角色〕 until supplied
   next: { label: string; href: string };
   zh?: string; // optional single Chinese line (absent = not rendered)
 };
+
+/** Build-time discipline (ported from content/projects defineProject):
+ *  warn on any WHAT sentence over 25 words (v2 hard rule). Empty src →
+ *  [EVIDENCE] frame and empty marginNote/zh → not rendered are renderer
+ *  behaviors (ExhibitFlow / CasePage), inherited automatically. */
+function defineCase(c: CasePageData): CasePageData {
+  for (const sent of c.what.split(/(?<=[.!?])\s+/)) {
+    const words = sent.trim().split(/\s+/).filter(Boolean).length;
+    if (words > 25)
+      console.warn(`[case] ${c.slug}: WHAT sentence ${words} words (>25)`);
+  }
+  return c;
+}
 
 export const casePages: Record<string, CasePageData> = {
   latent: {
@@ -47,15 +67,51 @@ export const casePages: Record<string, CasePageData> = {
     mech: {
       nodes: ["input", "spectral response", "halation", "grain", "output"],
     },
-    process: [
-      { n: "01", title: "四轮校准对比", caption: "〔回填:条件〕", observation: "〔TODO〕" },
-      { n: "02", title: "自有底片 vs 引擎输出并置", caption: "〔回填:条件〕", observation: "〔TODO〕" },
-      { n: "03", title: "SPECTRUM 诊断截图", caption: "〔回填:条件〕", observation: "〔TODO〕" },
+    // 分屏证物流 (migrated verbatim from content/projects/latent.ts);
+    // v2 三条 EXHIBIT(四轮校准/底片并置/SPECTRUM 诊断)的图注条件与
+    // 观察仍〔回填〕— 挂在 caption 尾部,evidence 图到位时填 src
+    exhibitFlow: [
+      {
+        no: "01",
+        heading: "CineStill 800T · calibration(四轮校准对比)",
+        paras: [
+          "Every parameter comes from measurement: I shot CineStill 800T at night, developed it, scanned it, and pulled the numbers off my own negatives.",
+          "Channel bias. Halation radius in pixels. Grain σ per luminance zone.",
+        ],
+        caption:
+          "shot at night on CineStill 800T · developed · scanned · numbers pulled off the negatives · 观察:〔TODO〕",
+        visual: "placeholder",
+        placeholderLabel: "[EVIDENCE: EXHIBIT 01 · 四轮校准对比]",
+      },
+      {
+        no: "02",
+        heading: "the spectral analyzer(底片 vs 引擎输出并置)",
+        paras: [
+          "A spectral analyzer fits the radial power spectrum of any frame against natural-image statistics — the same math forensics researchers use to detect AI images, turned around and used as a repair target.",
+          "The engine moves a frame's spectral falloff from −3.2 toward the −2 of the natural world. Measured, not vibes.",
+        ],
+        note: "第三轮推翻前两轮,因为探针位置错了。",
+        caption:
+          "radial power spectrum fit against natural-image statistics · repair target −2 · 观察:〔TODO〕",
+        visual: "placeholder",
+        placeholderLabel: "[EVIDENCE: EXHIBIT 02 · 底片 vs 引擎输出并置]",
+      },
+      {
+        no: "03",
+        heading: "the instrument(SPECTRUM 诊断)",
+        paras: [
+          "Halation, grain, highlight roll-off, dye crosstalk — simulated as physics, not filters.",
+          "Drag the radius, or just keep reading — the comparator follows the scroll.",
+        ],
+        caption:
+          "demonstration comparator · procedural test pattern, radius exaggerated for reading — not a measurement · 观察:〔TODO〕",
+        visual: "instrument",
+      },
     ],
     findings: [
       "Halation radius follows a power law; fit at α=〔回填:α值〕 against my own scans.",
-      "〔TODO〕",
-      "〔TODO,可选〕",
+      "Every engine parameter traces to a measured negative — channel bias, halation radius in pixels, grain σ per luminance zone.",
+      "The forensics math that detects AI images works, turned around, as a repair target.",
     ],
     role: "〔回填:角色〕",
     next: { label: "TEARDOWN №1", href: "/work/teardown" },
@@ -145,3 +201,28 @@ export const casePages: Record<string, CasePageData> = {
     next: { label: "LATENT", href: "/work/latent" },
   },
 };
+
+for (const k of Object.keys(casePages)) defineCase(casePages[k]);
+
+/* ---- PRESERVED CONTENT (闸①: nothing lost with content/projects/) ----
+ * RESONANCE specimen extras from content/projects/resonance.ts — the v2
+ * 陈列签 structure has no label/specs sections; kept here verbatim for
+ * the day they return:
+ * label (~94 words, drafted from author repo copy, 待改):
+ *   "A physical feedback interface for world model outputs. Every frame
+ *   of an AI-generated video becomes sculptable material in real time:
+ *   brightness sculpts geometry, motion energy drives surface
+ *   frequency. Built with Three.js and GLSL — a VideoTexture-to-GPU
+ *   pipeline at 60fps, a pingpong framebuffer that lets the mesh
+ *   remember previous frames, a 4×4 frequency map that shapes where the
+ *   surface answers. Watch the form as the video plays: when something
+ *   is wrong, you feel it in the mesh before you can say it in words."
+ * specs: 60fps VideoTexture → GPU · Three.js / GLSL · pingpong
+ *   framebuffer · MEMORY · 4×4 DataTexture · RESONANCE · Claude API ·
+ *   fal.ai · live
+ * piece.poster: /work/resonance-poster.jpg (real file, future 录屏 poster)
+ * piece.liveHref: https://resonance.alilinlab.com/
+ * LATENT projects finding not carried into ⑥ (already inside EXHIBIT 02
+ * paras): "A frame's spectral falloff can be moved from −3.2 toward the
+ * −2 of the natural world."
+ * -------------------------------------------------------------------- */
