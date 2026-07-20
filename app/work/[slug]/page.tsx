@@ -7,6 +7,8 @@ import { berthOf } from "@/lib/bench";
 import { ColophonTail, FolioBar } from "@/components/folio/FolioChrome";
 import SpecimenLabel from "@/components/folio/SpecimenLabel";
 import { specimens } from "@/lib/specimen";
+import LabFolio from "@/components/folio/LabFolio";
+import { labFolios } from "@/lib/labfolio";
 
 export const dynamicParams = false;
 
@@ -38,6 +40,11 @@ export default async function WorkPage({
   // the second template — same chrome, thinner body (决策B: Resonance)
   const specimen = specimens[project.slug];
   if (specimen) return <SpecimenLabel data={specimen} />;
+
+  // LAB-FOLIO v2 (分屏手记): notebook pages with real exhibit material
+  // render the scrollytelling body (样板: Latent)
+  const folio = labFolios[project.slug];
+  if (folio) return <LabFolio data={folio} />;
 
   // next internal project for the shared colophon tail
   const idx = projects.findIndex((p) => p.slug === project.slug);
