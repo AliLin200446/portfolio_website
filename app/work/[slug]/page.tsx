@@ -8,11 +8,14 @@ import { ColophonTail, FolioBar } from "@/components/folio/FolioChrome";
 import SpecimenLabel from "@/components/folio/SpecimenLabel";
 import LabFolio from "@/components/folio/LabFolio";
 import { projectContent, toLabFolio, toSpecimen } from "@/content/projects";
+import CasePage from "@/components/folio/CasePage";
+import { casePages } from "@/content/case/casepages";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+  // CASE-v2: one route per case page (six), superset of lib/projects
+  return Object.keys(casePages).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -20,7 +23,10 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const project = getProject((await params).slug);
+  const slug = (await params).slug;
+  const cp = casePages[slug];
+  if (cp) return { title: cp.name, description: cp.claim };
+  const project = getProject(slug);
   return {
     title: project?.title,
     description: project?.thesis,
@@ -32,7 +38,13 @@ export default async function WorkPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const project = getProject((await params).slug);
+  const slug = (await params).slug;
+  // CASE-v2 (PROJECT_PAGES_filled_v2): the unified ①-⑦ template drives
+  // all six routes; ⑤⑥ toggle by page type inside CasePage.
+  const casePage = casePages[slug];
+  if (casePage) return <CasePage data={casePage} />;
+
+  const project = getProject(slug);
   if (!project) notFound();
 
   // FOLIO-TEMPLATE: data-driven dispatch — the author fills a file in
