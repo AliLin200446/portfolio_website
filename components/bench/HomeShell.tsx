@@ -6,6 +6,7 @@ import { STATIONS, berthOf, HOME_BERTH } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
+import LogoMark from "@/components/LogoMark";
 
 const plateBase =
   "plate-in fixed bottom-16 left-6 z-10 font-mono text-xs text-muted";
@@ -255,7 +256,8 @@ export default function HomeShell() {
 
       {/* top bar: identity + full text navigation, always reachable */}
       <header className="relative z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-b border-line bg-paper/85 px-6 py-4">
-        <p className="font-mono text-xs">
+        <p className="flex items-center gap-3 font-mono text-xs">
+          <LogoMark />
           <span className="text-ink">ALI LIN</span>
           <span className="text-muted">
             {" — design engineer · I instrument what AI fakes"}
