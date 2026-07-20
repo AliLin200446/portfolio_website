@@ -6,9 +6,8 @@ import BenchArrival from "@/components/bench/BenchArrival";
 import { berthOf } from "@/lib/bench";
 import { ColophonTail, FolioBar } from "@/components/folio/FolioChrome";
 import SpecimenLabel from "@/components/folio/SpecimenLabel";
-import { specimens } from "@/lib/specimen";
 import LabFolio from "@/components/folio/LabFolio";
-import { labFolios } from "@/lib/labfolio";
+import { projectContent, toLabFolio, toSpecimen } from "@/content/projects";
 
 export const dynamicParams = false;
 
@@ -36,15 +35,16 @@ export default async function WorkPage({
   const project = getProject((await params).slug);
   if (!project) notFound();
 
-  // SPECIMEN-LABEL (陈列签): projects without notebook material render
-  // the second template — same chrome, thinner body (决策B: Resonance)
-  const specimen = specimens[project.slug];
-  if (specimen) return <SpecimenLabel data={specimen} />;
-
-  // LAB-FOLIO v2 (分屏手记): notebook pages with real exhibit material
-  // render the scrollytelling body (样板: Latent)
-  const folio = labFolios[project.slug];
-  if (folio) return <LabFolio data={folio} />;
+  // FOLIO-TEMPLATE: data-driven dispatch — the author fills a file in
+  // content/projects/, kind picks the template; null (unfilled) falls
+  // through to the legacy notebook body below. Zero component edits.
+  const content = projectContent[project.slug];
+  if (content)
+    return content.body.kind === "folio" ? (
+      <LabFolio data={toLabFolio(project.slug, content)} />
+    ) : (
+      <SpecimenLabel data={toSpecimen(project.slug, content)} />
+    );
 
   // next internal project for the shared colophon tail
   const idx = projects.findIndex((p) => p.slug === project.slug);

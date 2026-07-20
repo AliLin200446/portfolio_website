@@ -84,6 +84,9 @@ function Visual({ ex, idSuffix }: { ex: Exhibit; idSuffix: string }) {
     <figure>
       {ex.visual === "instrument" ? (
         <Instrument idSuffix={idSuffix} />
+      ) : ex.src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={ex.src} alt="" className="w-full border border-line" />
       ) : (
         <div className="relative flex aspect-[16/10] items-center justify-center border border-line bg-[#EDE9E0]">
           <span className="px-6 text-center font-mono text-[10px] tracking-wide text-muted">
