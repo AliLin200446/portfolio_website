@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProject, projects } from "@/lib/projects";
 import HeroVideo from "@/components/HeroVideo";
 import BenchArrival from "@/components/bench/BenchArrival";
 import { berthOf } from "@/lib/bench";
+import { ColophonTail, FolioBar } from "@/components/folio/FolioChrome";
+import SpecimenLabel from "@/components/folio/SpecimenLabel";
+import { specimens } from "@/lib/specimen";
 
 export const dynamicParams = false;
 
@@ -32,20 +34,21 @@ export default async function WorkPage({
   const project = getProject((await params).slug);
   if (!project) notFound();
 
+  // SPECIMEN-LABEL (陈列签): projects without notebook material render
+  // the second template — same chrome, thinner body (决策B: Resonance)
+  const specimen = specimens[project.slug];
+  if (specimen) return <SpecimenLabel data={specimen} />;
+
+  // next internal project for the shared colophon tail
+  const idx = projects.findIndex((p) => p.slug === project.slug);
+  const next = projects[(idx + 1) % projects.length];
+
   return (
     <main className="mx-auto max-w-5xl px-6">
       {/* CAROUSEL match-cut arrival: veil continues the bench overlay,
           then dissolves; direct visits render nothing */}
       <BenchArrival slug={project.slug} />
-      <header className="flex items-baseline justify-between py-6 font-mono text-xs text-muted">
-        <Link
-          href={`/?berth=${berthOf(project.slug)}`}
-          className="transition-colors hover:text-bronze"
-        >
-          ← Index
-        </Link>
-        <span>Ali Lin</span>
-      </header>
+      <FolioBar backHref={`/?berth=${berthOf(project.slug)}`} />
 
       {/* 1. Title and thesis */}
       <section className="py-10">
@@ -177,7 +180,16 @@ export default async function WorkPage({
         <p className="leading-relaxed">{project.extend.body}</p>
       </Section>
 
-      <div className="pb-24" />
+      {/* shared colophon tail (FolioChrome): couplet awaits the author */}
+      <ColophonTail
+        year={project.year}
+        next={
+          next && next.slug !== project.slug
+            ? { label: next.title.toUpperCase(), href: `/work/${next.slug}` }
+            : undefined
+        }
+      />
+      <div className="pb-12" />
     </main>
   );
 }
