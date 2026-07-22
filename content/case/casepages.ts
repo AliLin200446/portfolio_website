@@ -204,8 +204,9 @@ export const casePages: Record<string, CasePageData> = {
     slug: "resonance",
     type: "specimen",
     name: "RESONANCE",
+    // 定位定稿(全站统一,替换旧二选一);stack/role/type 作者逐字
     metaLine:
-      "RESONANCE — real-time AI video physics · Three.js / R3F · 〔回填:年〕 · 〔回填:状态〕",
+      "RESONANCE — a physical feedback interface for world model outputs · Three.js · GLSL · Claude API · Fal.ai · React · Vercel · 〔回填:年〕 · 〔回填:状态〕",
     claim: "AI video, given physical consequences.",
     hero: {
       kind: "facade",
@@ -217,7 +218,9 @@ export const casePages: Record<string, CasePageData> = {
       "video-luminance-driven sim · 60fps · fal pipeline, strength verified in payload",
     what: "An interface that turns AI-generated video into a live physical simulation, for creators who judge output by feel, not by frame. A VideoTexture streams each frame to the GPU, where shaders read it as input fields for the simulation. Luminance maps to vertex displacement: pixels above a set threshold push the mesh outward, scaled by amplitude; pixels below it exert nothing.",
     mech: { nodes: ["亮度", "模拟参数"] },
-    role: "〔回填:角色〕",
+    // type: Solo project(schema 无 type 槽,记此);Problem/Solution
+    // 段原文未随 prompt 附上——到手后入 WHAT/label,现 WHAT 保持 v2 逐字
+    role: "Sole Designer & Engineer",
     next: { label: "SKELETAL SILK", href: "/work/skeletal-silk" },
   },
   "skeletal-silk": {
@@ -226,7 +229,10 @@ export const casePages: Record<string, CasePageData> = {
     name: "SKELETAL SILK",
     metaLine:
       "SKELETAL SILK — vision-to-shader pipeline · Claude Vision → GLSL · 〔回填:年〕 · 〔回填:状态〕",
-    claim: "The model outputs a coordinate, not an image.",
+    // claim 上屏取自作者原句("…every shader parameter is inferred,
+    // not chosen");v2 旧 claim 逐字封存:"The model outputs a
+    // coordinate, not an image."
+    claim: "Inferred, not chosen.",
     hero: {
       kind: "facade",
       liveUrl: "https://skeletal-silk.alilinlab.com",
@@ -235,7 +241,15 @@ export const casePages: Record<string, CasePageData> = {
     },
     heroCaption:
       "Claude Vision → 4 params → GLSL uniforms · temp 0 · schema/clamp/fallback",
-    what: "A pipeline that lets a vision model drive a material shader, for interfaces where AI must change rendering, not generate pictures. Claude Vision reads a fabric swatch and returns four constrained parameters as JSON, which bind directly to GLSL uniforms. Calls run at temperature 0 behind a schema; out-of-range values clamp, and a failed parse falls back to defaults.",
+    // label 润色稿上屏;v2 旧 WHAT 逐字封存:
+    // "A pipeline that lets a vision model drive a material shader,
+    //  for interfaces where AI must change rendering, not generate
+    //  pictures. Claude Vision reads a fabric swatch and returns four
+    //  constrained parameters as JSON, which bind directly to GLSL
+    //  uniforms. Calls run at temperature 0 behind a schema;
+    //  out-of-range values clamp, and a failed parse falls back to
+    //  defaults."
+    what: "Skeletal Silk asks whether AI can read a material and translate it into physics — a closed-loop pipeline from a photo of cloth, through Claude Vision, to GLSL, where every shader parameter is inferred, not chosen.",
     mech: { nodes: ["Vision", "4参数", "uniforms"] },
     role: "〔回填:角色〕",
     next: { label: "VESTIGE", href: "/work/vestige" },
@@ -244,8 +258,9 @@ export const casePages: Record<string, CasePageData> = {
     slug: "vestige",
     type: "specimen",
     name: "VESTIGE",
+    // 一句话定位为作者原文(微调大小写);年/role 作者供稿
     metaLine:
-      "VESTIGE — digital product passport · ZK-SNARKs / NFC / smart contracts · provisional patent filed · 〔回填:年〕 · 〔回填:状态〕",
+      "VESTIGE — turning EU Digital Product Passport compliance into luxury brand value · ZK-SNARKs / NFC / smart contracts · provisional patent filed · 2026 · 〔回填:状态〕",
     claim: "Provenance is a verb.",
     hero: {
       kind: "facade",
@@ -255,9 +270,21 @@ export const casePages: Record<string, CasePageData> = {
     },
     heroCaption:
       "ZK-SNARKs · NFC · smart contracts · EU DPP · PwC/JPM/Tapestry validated",
-    what: "A digital product passport for luxury goods, built for brands facing the EU's ESPR disclosure rules. An NFC tag on the object anchors a smart contract record; ZK-SNARK proofs verify claims without exposing the underlying data. Two provisional patents cover the mechanism; the design was validated with PwC, JPMorgan, and Tapestry.",
+    // 作者原文归位(原标 Problem 实为定义)。v2 旧 WHAT 逐字封存:
+    // "A digital product passport for luxury goods, built for brands
+    //  facing the EU's ESPR disclosure rules. An NFC tag on the object
+    //  anchors a smart contract record; ZK-SNARK proofs verify claims
+    //  without exposing the underlying data. Two provisional patents
+    //  cover the mechanism; the design was validated with PwC,
+    //  JPMorgan, and Tapestry."
+    // SPECS/stack 逐字(schema 无 SPECS 槽,封存待位):
+    //   ZK-SNARKs — privacy-preserving provenance
+    //   NFC (NTAG 424 DNA) — tamper-resistant physical authentication
+    //   smart-contract royalty protocols — perpetual secondary-market participation
+    // Problem 位:〔回填:真正的问题陈述——EU DPP 合规压力方向〕
+    what: "Vestige is a Digital Product Passport infrastructure that gives every item a verifiable, traceable identity while routing smart-contract royalties back to the brand on every resale.",
     mech: { placeholder: "机制图〔回填: 溯源系统架构〕" },
-    role: "〔回填:角色〕",
+    role: "Design Engineer",
     next: { label: "MATERIAL MEMORY", href: "/work/material-memory" },
   },
   "material-memory": {
@@ -274,9 +301,14 @@ export const casePages: Record<string, CasePageData> = {
       posterNote: "待接素材:布面录屏(poster 位;live 按钮已可用)",
     },
     heroCaption: "〔回填:内容 · 条件 · 日期〕",
-    // LABEL 落位 what;SPECS 当前 schema 无槽(不发明区块,回填时议):
-    // 〔回填:仅可验证硬项;patent 仅 filed 才可写〕
-    what: "〔回填:≤120词签文〕",
+    // LABEL 落位 what。润色稿上屏(LIVE-FACADE+COPY §2);作者原文未随
+    // prompt 附上,润色处后半句(drape/pull/read a textile)属
+    // 〔润色补写,待作者确认〕,不合意直接回滚本段。
+    // NAMING: pending author decision (Material Memory vs Material
+    // Simulator)——裁定前铭牌/hover/case 三处统一站 title。
+    // SPECS 当前 schema 无槽(不发明区块):〔回填:仅可验证硬项;
+    // patent 仅 filed 才可写〕
+    what: "E-commerce returns run high because shoppers cannot feel fabric before buying. Material Memory closes that gap: hand-written cloth physics that lets a browser drape, pull, and read a textile.",
     mech: { placeholder: "机制图〔回填〕" },
     role: "〔回填:角色〕",
     next: { label: "LATENT", href: "/work/latent" }, // closing berth → loop

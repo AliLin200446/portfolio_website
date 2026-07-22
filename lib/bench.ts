@@ -25,7 +25,7 @@ export const STATIONS: Station[] = [
     label: "RESONANCE",
     href: "/work/resonance",
     line: "A physical feedback interface for world model outputs.",
-    hover: "RESONANCE · physics for AI video · live · video→luma→vibration · resonance.alilinlab.com",
+    hover: "RESONANCE · a physical feedback interface for world model outputs · live · resonance.alilinlab.com",
   },
   {
     id: "skeletal-silk",
