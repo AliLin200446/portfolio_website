@@ -5,6 +5,7 @@ import type { CasePageData } from "@/content/case/casepages";
 import ExhibitFlow from "./ExhibitFlow";
 import { FolioBar } from "./FolioChrome";
 import HalationHero from "./HalationHero";
+import LiveFacade from "./LiveFacade";
 
 /*
  * CASE PAGE v2 — ONE template for all six project pages, ⑤⑥ toggled
@@ -32,6 +33,15 @@ function Hero({ data }: { data: CasePageData }) {
       className="scroll-mt-8 py-10"
     >
       {h.kind === "latent-comparator" && <HalationHero />}
+      {h.kind === "facade" && (
+        <LiveFacade
+          liveUrl={h.liveUrl}
+          embeddable={h.embeddable}
+          poster={h.poster}
+          posterNote={h.posterNote}
+          base={h.base}
+        />
+      )}
       {h.kind === "gate" && (
         <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-[#EDE9E0]">
           <span className="font-mono text-xs text-oxblood">

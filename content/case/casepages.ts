@@ -19,7 +19,20 @@
  * external link — never an iframe. */
 export type CaseHero =
   | { kind: "latent-comparator" } // live before/after 拉杆 (existing SVG instrument)
-  | { kind: "gate"; priority: string }; // asset missing: page not shippable
+  | { kind: "gate"; priority: string } // asset missing: page not shippable
+  /* LIVE-FACADE (§1): poster/recording resting layer + click-mounted
+   * iframe. The iframe NEVER exists before the click; embeddable comes
+   * from the per-site frame-ancestors probe (content/case/README.md,
+   * probed 2026-07-22: all six sites 200, no framing headers = embeds
+   * allowed; hardening snippet for the author in the README). */
+  | {
+      kind: "facade";
+      liveUrl: string;
+      embeddable: boolean;
+      poster?: string;
+      posterNote?: string;
+      base?: "comparator";
+    };
 
 import type { Exhibit } from "@/lib/labfolio";
 
@@ -66,7 +79,12 @@ export const casePages: Record<string, CasePageData> = {
     metaLine:
       "LATENT — film physics engine · WebGL2 / GLSL · shipped July 2026 · latentfilm.com",
     claim: "“Filmic” can be measured.",
-    hero: { kind: "latent-comparator" },
+    hero: {
+      kind: "facade",
+      liveUrl: "https://latentfilm.com",
+      embeddable: true,
+      base: "comparator", // the SVG拉杆 stays the resting layer
+    },
     heroCaption:
       "CineStill 800T emulation · WebGL2 30fps · calibrated vs own scans · Jul 2026",
     what: "A WebGL2 engine that puts film physics onto AI-generated frames, for creators whose footage never passed through a camera. Each frame runs a GLSL pipeline of spectral response, then halation, then grain, calibrated against my own CineStill 800T scans. Halation radius follows a power law fit to those scans; grain σ is set per luminance zone.",
@@ -129,7 +147,12 @@ export const casePages: Record<string, CasePageData> = {
     metaLine:
       "TEARDOWN №1 — 〔回填:类型〕 · 〔回填:技术栈〕 · 2026 · live · teardown.alilinlab.com",
     claim: "Docs describe. Instruments verify.",
-    hero: { kind: "gate", priority: "仪表带全开录屏(到手后:录屏 + open live ↗ 外链,不用 iframe)" },
+    hero: {
+      kind: "facade",
+      liveUrl: "https://teardown.alilinlab.com",
+      embeddable: true,
+      posterNote: "待接素材:仪表带全开录屏(poster 位;live 按钮已可用)",
+    },
     heroCaption:
       "19.52ms/step · R²=0.9978 · seed → byte-identical · 48h sprint",
     what: "A live measurement bench for a hosted image-generation API, for engineers deciding whether to build on it. Seeded runs replay against the live endpoint; step time regresses linearly at 19.52 ms per step, R² 0.9978. Fourteen documented behaviors did not match measurement, while identical seeds returned byte-identical outputs. FIDELITY-LOCK — an evidence framework locating the AI-to-human boundary for fashion/beauty production imaging. 〔回填:benchmark 范围表述,发布前完成 NDA 自查〕",
@@ -184,7 +207,12 @@ export const casePages: Record<string, CasePageData> = {
     metaLine:
       "RESONANCE — real-time AI video physics · Three.js / R3F · 〔回填:年〕 · 〔回填:状态〕",
     claim: "AI video, given physical consequences.",
-    hero: { kind: "gate", priority: "交互录屏" },
+    hero: {
+      kind: "facade",
+      liveUrl: "https://resonance.alilinlab.com",
+      embeddable: true,
+      poster: "/work/resonance-poster.jpg",
+    },
     heroCaption:
       "video-luminance-driven sim · 60fps · fal pipeline, strength verified in payload",
     what: "An interface that turns AI-generated video into a live physical simulation, for creators who judge output by feel, not by frame. A VideoTexture streams each frame to the GPU, where shaders read it as input fields for the simulation. Luminance maps to vertex displacement: pixels above a set threshold push the mesh outward, scaled by amplitude; pixels below it exert nothing.",
@@ -199,7 +227,12 @@ export const casePages: Record<string, CasePageData> = {
     metaLine:
       "SKELETAL SILK — vision-to-shader pipeline · Claude Vision → GLSL · 〔回填:年〕 · 〔回填:状态〕",
     claim: "The model outputs a coordinate, not an image.",
-    hero: { kind: "gate", priority: "swatch 点击 → JSON → 起骨 的 20s 录屏" },
+    hero: {
+      kind: "facade",
+      liveUrl: "https://skeletal-silk.alilinlab.com",
+      embeddable: true,
+      posterNote: "待接素材:swatch 点击 → JSON → 起骨 的 20s 录屏",
+    },
     heroCaption:
       "Claude Vision → 4 params → GLSL uniforms · temp 0 · schema/clamp/fallback",
     what: "A pipeline that lets a vision model drive a material shader, for interfaces where AI must change rendering, not generate pictures. Claude Vision reads a fabric swatch and returns four constrained parameters as JSON, which bind directly to GLSL uniforms. Calls run at temperature 0 behind a schema; out-of-range values clamp, and a failed parse falls back to defaults.",
@@ -214,7 +247,12 @@ export const casePages: Record<string, CasePageData> = {
     metaLine:
       "VESTIGE — digital product passport · ZK-SNARKs / NFC / smart contracts · provisional patent filed · 〔回填:年〕 · 〔回填:状态〕",
     claim: "Provenance is a verb.",
-    hero: { kind: "gate", priority: "系统图 或 NFC 交互实拍" },
+    hero: {
+      kind: "facade",
+      liveUrl: "https://vestige.alilinlab.com",
+      embeddable: true,
+      posterNote: "待接素材:系统图 或 NFC 交互实拍",
+    },
     heroCaption:
       "ZK-SNARKs · NFC · smart contracts · EU DPP · PwC/JPM/Tapestry validated",
     what: "A digital product passport for luxury goods, built for brands facing the EU's ESPR disclosure rules. An NFC tag on the object anchors a smart contract record; ZK-SNARK proofs verify claims without exposing the underlying data. Two provisional patents cover the mechanism; the design was validated with PwC, JPMorgan, and Tapestry.",
@@ -229,7 +267,12 @@ export const casePages: Record<string, CasePageData> = {
     metaLine:
       "MATERIAL MEMORY — hand-written cloth physics · Verlet integration · live · material-memory.alilinlab.com · 〔回填:年〕 · 〔回填:status〕",
     claim: "〔回填:定位句未定〕",
-    hero: { kind: "gate", priority: "布面录屏(到手后:录屏 + open live ↗ 外链)" },
+    hero: {
+      kind: "facade",
+      liveUrl: "https://material-memory.alilinlab.com",
+      embeddable: true,
+      posterNote: "待接素材:布面录屏(poster 位;live 按钮已可用)",
+    },
     heroCaption: "〔回填:内容 · 条件 · 日期〕",
     // LABEL 落位 what;SPECS 当前 schema 无槽(不发明区块,回填时议):
     // 〔回填:仅可验证硬项;patent 仅 filed 才可写〕
