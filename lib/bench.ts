@@ -49,11 +49,11 @@ export const STATIONS: Station[] = [
     hover: "VESTIGE · provenance for physical goods · 2 provisional patents · NFC/zk",
   },
   {
-    id: "acubot",
-    label: "ACUBOT",
-    // no public destination yet; the bench object is the index entry
-    line: "A lineage, structured.",
-    hover: "ACUBOT · a lineage, structured · in progress · 136 points · 4,138 cases",
+    id: "material-memory",
+    label: "MATERIAL MEMORY",
+    href: "https://material-memory.alilinlab.com",
+    external: true,
+    hover: "MATERIAL MEMORY · 〔回填:定位句〕 · live · material-memory.alilinlab.com",
   },
 ];
 
@@ -67,7 +67,7 @@ export const BERTH_ORDER = [
   "latent",
   "teardown",
   "vestige",
-  "acubot",
+  "material-memory",
 ] as const;
 
 export const berthOf = (id: string) => BERTH_ORDER.indexOf(id as (typeof BERTH_ORDER)[number]);

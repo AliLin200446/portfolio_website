@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { BERTH_ORDER, STATIONS, berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
-import BronzeFigure from "./BronzeFigure";
 import Cocoon from "./Cocoon";
 import FilmRoll from "./FilmRoll";
 import Movement from "./Movement";
@@ -728,9 +727,7 @@ export default function Carousel() {
           <group position={berthPos(berthOf("vestige"))} rotation={[0, berthAngle(berthOf("vestige")), 0]}>
             <Seal position={[0, 0, 0]} />
           </group>
-          <group position={berthPos(berthOf("acubot"))} rotation={[0, berthAngle(berthOf("acubot")), 0]}>
-            <BronzeFigure position={[0, 0, 0]} />
-          </group>
+        {/* B6-SWAP: 帛 (Cloth) takes the closing berth — commit 2 */}
           <PointerTargets beginTransition={beginTransition} />
         </group>
         <GlintArc />

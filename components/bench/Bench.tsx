@@ -12,7 +12,7 @@ import {
   berthOf,
 } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
-import BronzeFigure from "./BronzeFigure";
+import BronzeFigure from "./_archive/BronzeFigure";
 import Cocoon from "./Cocoon";
 import FilmRoll from "./FilmRoll";
 import Movement from "./Movement";
@@ -262,7 +262,7 @@ export default function Bench() {
       <FilmRoll position={[berthOf("latent") * BERTH_SPACING, 0, 0]} />
       <Movement position={[berthOf("teardown") * BERTH_SPACING, 0, 0]} />
       <Seal position={[berthOf("vestige") * BERTH_SPACING, 0, 0]} />
-      <BronzeFigure position={[berthOf("acubot") * BERTH_SPACING, 0, 0]} />
+      <BronzeFigure position={[berthOf("material-memory") * BERTH_SPACING, 0, 0]} />
       <BerthNames />
       <Rig />
     </Canvas>

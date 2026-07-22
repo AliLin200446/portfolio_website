@@ -1,3 +1,4 @@
+// RETURNING: pending App Store — ACUBOT 铜人归档(B6-SWAP),路由外保留。
 "use client";
 
 import { useFrame, useThree } from "@react-three/fiber";

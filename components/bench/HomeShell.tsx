@@ -118,14 +118,22 @@ function TeardownNameplate() {
   );
 }
 
-function AcubotNameplate() {
+function MaterialMemoryNameplate() {
   const berth = useBenchStore((s) => s.berth);
-  if (berth !== berthOf("acubot")) return null;
+  if (berth !== berthOf("material-memory")) return null;
   return (
     <div className={plateBase}>
       <p>
-        <span className="text-ink">ACUBOT</span> — a lineage, structured ·{" "}
-        <span className="text-wood">136 points · 4,138 cases</span>
+        <span className="text-ink">MATERIAL MEMORY</span> — hand-written cloth
+        physics · Verlet integration ·{" "}
+        <a
+          href="https://material-memory.alilinlab.com"
+          target="_blank"
+          rel="noreferrer"
+          className="transition-colors hover:text-bronze"
+        >
+          live → material-memory.alilinlab.com
+        </a>
       </p>
     </div>
   );
@@ -250,7 +258,7 @@ export default function HomeShell() {
           <SilkNameplate />
           <TeardownNameplate />
           <VestigeNameplate />
-          <AcubotNameplate />
+          <MaterialMemoryNameplate />
         </>
       )}
 

@@ -220,22 +220,26 @@ export const casePages: Record<string, CasePageData> = {
     what: "A digital product passport for luxury goods, built for brands facing the EU's ESPR disclosure rules. An NFC tag on the object anchors a smart contract record; ZK-SNARK proofs verify claims without exposing the underlying data. Two provisional patents cover the mechanism; the design was validated with PwC, JPMorgan, and Tapestry.",
     mech: { placeholder: "机制图〔回填: 溯源系统架构〕" },
     role: "〔回填:角色〕",
-    next: { label: "ACUBOT", href: "/work/acubot" },
+    next: { label: "LATENT", href: "/work/latent" }, // acubot archived: loop closes here
   },
-  acubot: {
-    slug: "acubot",
-    type: "specimen",
-    name: "ACUBOT",
-    metaLine:
-      "ACUBOT — Dong-style acupuncture reference · Expo / React Native · iOS · 〔回填:status〕",
-    claim: "A lineage, structured.",
-    hero: { kind: "gate", priority: "app 实机录屏" },
-    heroCaption: "136 points · 4,138 cases · bilingual dataset · Expo/RN",
-    what: "A mobile app that structures my father's Tung acupuncture archive, for students who now learn it from scattered notes. The archive becomes a bilingual dataset of 136 points and 4,138 cases, organized as group, then region, then case. Every entry is transcribed from his first-hand records and ships only after he reviews it.",
-    mech: { nodes: ["群组", "区域", "案例"] },
-    role: "〔回填:角色〕",
-    next: { label: "LATENT", href: "/work/latent" },
-  },
+/* ARCHIVED (B6-SWAP) · RETURNING: pending App Store — ACUBOT 陈列签
+ * 双闸占位原样封存;App Store 上架后解封回位。
+  //   acubot: {
+  //     slug: "acubot",
+  //     type: "specimen",
+  //     name: "ACUBOT",
+  //     metaLine:
+  //       "ACUBOT — Dong-style acupuncture reference · Expo / React Native · iOS · 〔回填:status〕",
+  //     claim: "A lineage, structured.",
+  //     hero: { kind: "gate", priority: "app 实机录屏" },
+  //     heroCaption: "136 points · 4,138 cases · bilingual dataset · Expo/RN",
+  //     what: "A mobile app that structures my father's Tung acupuncture archive, for students who now learn it from scattered notes. The archive becomes a bilingual dataset of 136 points and 4,138 cases, organized as group, then region, then case. Every entry is transcribed from his first-hand records and ships only after he reviews it.",
+  //     mech: { nodes: ["群组", "区域", "案例"] },
+  //     role: "〔回填:角色〕",
+  //     next: { label: "LATENT", href: "/work/latent" },
+  //   },
+ */
+
 };
 
 for (const k of Object.keys(casePages)) defineCase(casePages[k]);
