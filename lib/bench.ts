@@ -37,8 +37,7 @@ export const STATIONS: Station[] = [
   {
     id: "teardown",
     label: "TEARDOWN",
-    href: "https://teardown.alilinlab.com",
-    external: true,
+    href: "/work/teardown", // LINK-WIRE: enter → case page; 外站唯一入口在 case HERO open live ↗
     hover: "TEARDOWN №1 · an API, instrumented · live · fal/flux E4 · teardown.alilinlab.com",
   },
   {

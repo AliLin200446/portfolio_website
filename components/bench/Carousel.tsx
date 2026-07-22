@@ -105,6 +105,8 @@ const DIVES: Record<string, DivePose> = {
   "skeletal-silk": { y: 0.56, z: RADIUS + 0.95, pitch: -2 },
   teardown: { y: 0.85, z: RADIUS + 0.7, pitch: -38 },
   vestige: { y: 0.5, z: RADIUS + 1.0, pitch: -18 },
+  // TRANSITION: 揭帛 pending,另轮实装 — 现走通用覆面 crossfade,无答礼拍
+  "material-memory": { y: 0.55, z: RADIUS + 1.1, pitch: -8 },
 };
 
 /** The surface each cut hands to the case page. Colors match
@@ -115,6 +117,7 @@ const CUT_SURFACE: Record<string, { bg: string; label?: string }> = {
   "skeletal-silk": { bg: "#FBF5E8" },
   teardown: { bg: "#241C15", label: "LOG #—" },
   vestige: { bg: "#F5F2EC" },
+  "material-memory": { bg: "#F5F2EC" }, // 揭帛 pending: paper crossfade
 };
 
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
