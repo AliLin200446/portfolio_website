@@ -292,7 +292,7 @@ export const casePages: Record<string, CasePageData> = {
     type: "specimen",
     name: "MATERIAL MEMORY",
     metaLine:
-      "MATERIAL MEMORY — hand-written cloth physics · Verlet integration · live · material-memory.alilinlab.com · 〔回填:年〕 · 〔回填:status〕",
+      "MATERIAL MEMORY — hand-written cloth physics · Verlet integration · live · material-memory.alilinlab.com · 2026 · 〔回填:status〕",
     claim: "〔回填:定位句未定〕",
     hero: {
       kind: "facade",
@@ -301,16 +301,25 @@ export const casePages: Record<string, CasePageData> = {
       posterNote: "待接素材:布面录屏(poster 位;live 按钮已可用)",
     },
     heroCaption: "〔回填:内容 · 条件 · 日期〕",
-    // LABEL 落位 what。润色稿上屏(LIVE-FACADE+COPY §2);作者原文未随
-    // prompt 附上,润色处后半句(drape/pull/read a textile)属
-    // 〔润色补写,待作者确认〕,不合意直接回滚本段。
+    // MM-FILL:Problem+Solution+统计句(归因待回填)。润色稿上屏,原文逐字:
+    // AUTHOR VERBATIM (Problem): "Luxury e-commerce has high return rate
+    //   since it only shows you what fabric looks like, never what it
+    //   feels like."
+    // AUTHOR VERBATIM (Stack): "Three.js + GLSL shaders / Verlet cloth
+    //   physics / WebGL"
+    // Solution 原文与 "By closing the tactile gap…" 全句未随 prompt 附上
+    //   ——到手即补封此处。
     // NAMING: pending author decision (Material Memory vs Material
-    // Simulator)——裁定前铭牌/hover/case 三处统一站 title。
-    // SPECS 当前 schema 无槽(不发明区块):〔回填:仅可验证硬项;
-    // patent 仅 filed 才可写〕
-    what: "E-commerce returns run high because shoppers cannot feel fabric before buying. Material Memory closes that gap: hand-written cloth physics that lets a browser drape, pull, and read a textile.",
+    //   Simulator)——裁定前铭牌/hover/case 三处统一站 title。
+    // SPECS 无 schema 槽(不发明区块),规范化后封存待位:
+    //   Three.js · GLSL · Verlet cloth physics · WebGL
+    //   (WebGL 按站内探测保留:bundle 含 "webgl" 无 "webgl2",
+    //    2026-07-22;〔待确认:WebGL2?〕)
+    // patent 仍不写(filed 未确认)。claim 草案供作者选(不上屏):
+    //   Feel before you buy. / Fabric, felt. / The tactile gap, closed.
+    what: "Luxury e-commerce shows you what a fabric looks like — never what it feels like. The return rate follows. Material Memory is a WebGL engine that simulates fabric behavior in real time — drape, weight, sheen, friction — so a buyer can feel a garment before they buy it. Industry studies report that 3D material previews cut return rates by 20–36% and lift conversion by up to 40%. 〔source:回填——研究名/机构/年份〕",
     mech: { placeholder: "机制图〔回填〕" },
-    role: "〔回填:角色〕",
+    role: "Design Engineer",
     next: { label: "LATENT", href: "/work/latent" }, // closing berth → loop
   },
 /* ARCHIVED (B6-SWAP) · RETURNING: pending App Store — ACUBOT 陈列签

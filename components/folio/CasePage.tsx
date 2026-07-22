@@ -136,7 +136,18 @@ export default function CasePage({ data }: { data: CasePageData }) {
         className="grid scroll-mt-8 gap-10 border-t border-line py-14 sm:grid-cols-2"
       >
         <p className="max-w-[60ch] font-serif text-lg leading-relaxed">
-          {data.what}
+          {/* 雷1: an unattributed statistic never walks alone — the
+              〔source〕 tag renders visibly until the citation lands */}
+          {data.what.includes("〔source") ? (
+            <>
+              {data.what.slice(0, data.what.indexOf("〔source"))}
+              <span className="font-mono text-[11px] tracking-wide text-bronze">
+                {data.what.slice(data.what.indexOf("〔source"))}
+              </span>
+            </>
+          ) : (
+            data.what
+          )}
         </p>
         <MechDiagram mech={data.mech} />
       </section>
