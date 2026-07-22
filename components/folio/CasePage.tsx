@@ -1,4 +1,5 @@
 import BenchArrival from "@/components/bench/BenchArrival";
+import CaseIndex from "./CaseIndex";
 import { berthOf } from "@/lib/bench";
 import type { CasePageData } from "@/content/case/casepages";
 import ExhibitFlow from "./ExhibitFlow";
@@ -26,7 +27,10 @@ function Caption({ text }: { text: string }) {
 function Hero({ data }: { data: CasePageData }) {
   const h = data.hero;
   return (
-    <section className="py-10">
+    <section
+      id={data.type === "folio" ? "hero" : "piece"}
+      className="scroll-mt-8 py-10"
+    >
       {h.kind === "latent-comparator" && <HalationHero />}
       {h.kind === "gate" && (
         <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-[#EDE9E0]">
@@ -78,10 +82,23 @@ function MechDiagram({ mech }: { mech: CasePageData["mech"] }) {
 
 export default function CasePage({ data }: { data: CasePageData }) {
   const berth = berthOf(data.slug);
+  // CASE-NAV §2: the index mirrors what THIS page actually renders —
+  // empty sections never appear (data-driven, no hardcoding)
+  const folio = data.type === "folio";
+  const items = [
+    { id: "claim", label: "CLAIM" },
+    { id: folio ? "hero" : "piece", label: folio ? "HERO" : "PIECE" },
+    { id: folio ? "what" : "label", label: folio ? "WHAT" : "LABEL" },
+    ...(folio && (data.exhibitFlow || data.process)
+      ? [{ id: "exhibits", label: "EXHIBITS" }]
+      : []),
+    ...(folio && data.findings ? [{ id: "findings", label: "FINDINGS" }] : []),
+  ];
   return (
     <main className="mx-auto max-w-5xl px-6">
       <BenchArrival slug={data.slug} />
       <FolioBar backHref={berth >= 0 ? `/?berth=${berth}` : "/"} />
+      <CaseIndex items={items} />
 
       {/* ① colophon head: serif name + one mono metadata line */}
       <section className="pt-14">
@@ -94,7 +111,7 @@ export default function CasePage({ data }: { data: CasePageData }) {
       </section>
 
       {/* ② CLAIM: one italic sentence, half a screen of air */}
-      <section className="flex min-h-[45svh] items-center">
+      <section id="claim" className="flex min-h-[45svh] scroll-mt-8 items-center">
         <p className="max-w-[24ch] font-serif text-4xl italic leading-tight sm:text-5xl">
           {data.claim}
         </p>
@@ -104,7 +121,10 @@ export default function CasePage({ data }: { data: CasePageData }) {
       <Hero data={data} />
 
       {/* ④ WHAT: verbatim sentences + half-width mechanism diagram */}
-      <section className="grid gap-10 border-t border-line py-14 sm:grid-cols-2">
+      <section
+        id={folio ? "what" : "label"}
+        className="grid scroll-mt-8 gap-10 border-t border-line py-14 sm:grid-cols-2"
+      >
         <p className="max-w-[60ch] font-serif text-lg leading-relaxed">
           {data.what}
         </p>
@@ -116,7 +136,7 @@ export default function CasePage({ data }: { data: CasePageData }) {
           js-scrolly enhancement layer, single-column degradation with zero
           content loss). Without it: the v2 static grid. */}
       {data.type === "folio" && data.exhibitFlow && (
-        <section className="border-t border-line py-8">
+        <section id="exhibits" className="scroll-mt-8 border-t border-line py-8">
           <p className="font-mono text-xs uppercase tracking-widest text-bronze">
             PROCESS
           </p>
@@ -124,7 +144,7 @@ export default function CasePage({ data }: { data: CasePageData }) {
         </section>
       )}
       {data.type === "folio" && !data.exhibitFlow && data.process && (
-        <section className="border-t border-line py-14">
+        <section id="exhibits" className="scroll-mt-8 border-t border-line py-14">
           <p className="font-mono text-xs uppercase tracking-widest text-bronze">
             PROCESS
           </p>
@@ -150,7 +170,7 @@ export default function CasePage({ data }: { data: CasePageData }) {
 
       {/* ⑥ FINDINGS — 手记 only, number-led, one size up */}
       {data.type === "folio" && data.findings && (
-        <section className="border-t border-line py-14">
+        <section id="findings" className="scroll-mt-8 border-t border-line py-14">
           <p className="font-mono text-xs uppercase tracking-widest text-bronze">
             FINDINGS
           </p>
