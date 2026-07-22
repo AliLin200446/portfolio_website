@@ -30,6 +30,15 @@ export default function BenchLoader() {
   const { active, progress, item } = useProgress();
 
   const [phase, setPhase] = useState<"boot" | "fade" | "gone">("boot");
+
+  // CASE-NAV §3: within a session that already reached the reading
+  // pose, ANY return to the home page skips the boot theater — the
+  // runtime is cached, honesty means not replaying a load that isn't
+  // happening. First visits keep the full honest readout.
+  useEffect(() => {
+    if (sessionStorage.getItem("bench-carousel-arrived") === "1")
+      setPhase("gone");
+  }, []);
   const shown = useRef(0);
   const numRef = useRef<HTMLSpanElement>(null);
   const barRef = useRef<HTMLDivElement>(null);

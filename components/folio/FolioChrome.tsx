@@ -21,7 +21,10 @@ export function FolioBar({ backHref }: { backHref: string }) {
       <Link href={backHref} className="transition-colors hover:text-bronze">
         ← Index
       </Link>
-      <span>Ali Lin</span>
+      {/* CASE-NAV §3: the signature is also a way home, berth-aware */}
+      <Link href={backHref} className="transition-colors hover:text-bronze">
+        Ali Lin
+      </Link>
     </header>
   );
 }
