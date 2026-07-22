@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { BERTH_ORDER, STATIONS, berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
+import Cloth, { clothDrag } from "./Cloth";
 import Cocoon from "./Cocoon";
 import FilmRoll from "./FilmRoll";
 import Movement from "./Movement";
@@ -296,7 +297,7 @@ function Rig({
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      if (transiting()) return;
+      if (transiting() || clothDrag.active) return;
       engage();
       target.current -= (e.deltaY + e.deltaX) * 0.0016;
       scheduleSnap();
@@ -307,14 +308,14 @@ function Rig({
     let startX = 0;
     let startTarget = 0;
     const onDown = (e: PointerEvent) => {
-      if (transiting()) return;
+      if (transiting() || clothDrag.active) return;
       dragging = true;
       startX = e.clientX;
       startTarget = target.current;
       engage();
     };
     const onMove = (e: PointerEvent) => {
-      if (!dragging) return;
+      if (!dragging || clothDrag.active) return;
       target.current = startTarget + (e.clientX - startX) * 0.005;
       invalidate();
     };
@@ -501,7 +502,8 @@ function PointerTargets({
   const setHovered = useBenchStore((s) => s.setHovered);
   return (
     <>
-      {BERTH_ORDER.map((id, i) => (
+      {BERTH_ORDER.map((id, i) =>
+        id === "material-memory" && i === berth ? null : (
         <group
           key={id}
           position={berthPos(i)}
@@ -727,7 +729,9 @@ export default function Carousel() {
           <group position={berthPos(berthOf("vestige"))} rotation={[0, berthAngle(berthOf("vestige")), 0]}>
             <Seal position={[0, 0, 0]} />
           </group>
-        {/* B6-SWAP: 帛 (Cloth) takes the closing berth — commit 2 */}
+        <group position={berthPos(berthOf("material-memory"))} rotation={[0, berthAngle(berthOf("material-memory")), 0]}>
+          <Cloth position={[0, 0, 0]} />
+        </group>
           <PointerTargets beginTransition={beginTransition} />
         </group>
         <GlintArc />
