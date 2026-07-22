@@ -95,3 +95,14 @@ body {
     transform: translateY(0);
   }
 }
+
+/* CLICK-SPLIT 演后邀请: enter → copper glint, once, 0.6s */
+@keyframes np-glint {
+  0% { color: #6b6459; }
+  35% { color: #8C6A3F; }
+  100% { color: #6b6459; }
+}
+.np-glint { animation: np-glint 0.6s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .np-glint { animation: none; }
+}

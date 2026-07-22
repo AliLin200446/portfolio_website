@@ -492,6 +492,20 @@ function GlintArc() {
  * shadowed by design — mechanisms fire through the nameplate buttons
  * and as transition answer beats, never from a stray hover (§1).
  */
+/** CLICK-SPLIT: the first click belongs to the instrument, not to
+ *  navigation. Front single click plays the mechanism through the
+ *  existing store bridges (repeatable); double click (250ms window)
+ *  enters via the existing transition; side click still rotates.
+ *  teardown has no click bridge for the hard-stop — reported, not
+ *  invented; enter → lives on its nameplate. */
+function playMechanism(id: string) {
+  const s = useBenchStore.getState();
+  if (id === "latent") s.b1Feed();
+  if (id === "resonance") s.b2Strike();
+  if (id === "skeletal-silk") s.b3Pull();
+  if (id === "vestige") s.b5Stamp();
+}
+
 function PointerTargets({
   beginTransition,
 }: {
@@ -500,6 +514,7 @@ function PointerTargets({
   const berth = useBenchStore((s) => s.berth);
   const setBerth = useBenchStore((s) => s.setBerth);
   const setHovered = useBenchStore((s) => s.setHovered);
+  const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
   return (
     <>
       {BERTH_ORDER.map((id, i) =>
@@ -515,8 +530,20 @@ function PointerTargets({
             onClick={(e) => {
               e.stopPropagation();
               if (useBenchStore.getState().transitionId) return;
-              if (i === berth) beginTransition(id);
-              else setBerth(i);
+              if (i !== berth) {
+                setBerth(i);
+                return;
+              }
+              if (pending.current) {
+                clearTimeout(pending.current);
+                pending.current = null;
+                beginTransition(id); // double click = enter
+              } else {
+                pending.current = setTimeout(() => {
+                  pending.current = null;
+                  playMechanism(id); // single click = play, no nav
+                }, 250);
+              }
             }}
             onPointerOver={(e) => {
               e.stopPropagation();
@@ -579,12 +606,20 @@ function HoverCard() {
         border: "0.5px solid #E3DED4",
         padding: "6px 12px",
         whiteSpace: "nowrap",
-        pointerEvents: "none",
+        pointerEvents: hovered ? "auto" : "none",
         opacity: hovered ? 1 : 0,
         transition: "opacity 0.2s ease",
       }}
     >
       {station.hover}
+      {station.href && !station.external && (
+        <a
+          href={station.href}
+          className="ml-3 border-b border-bronze pb-px transition-colors hover:text-bronze"
+        >
+          enter →
+        </a>
+      )}
     </div>
   );
 }

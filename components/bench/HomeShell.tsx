@@ -1,12 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { STATIONS, berthOf, HOME_BERTH } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
 import LogoMark from "@/components/LogoMark";
+
+/** CLICK-SPLIT: the explicit way in. Re-arms a copper glint each time
+ *  the instrument's mechanism settles (nonce change) — the echo of the
+ *  user's own click, never idle. */
+function EnterLink({ slug, nonce }: { slug: string; nonce?: number }) {
+  const [flash, setFlash] = useState(0);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    if (nonce !== undefined) setFlash((f) => f + 1);
+  }, [nonce]);
+  return (
+    <Link
+      key={flash}
+      href={`/work/${slug}`}
+      className={`ml-3 border-b border-bronze pb-px transition-colors hover:text-bronze ${flash ? "np-glint" : ""}`}
+    >
+      enter →
+    </Link>
+  );
+}
 
 const plateBase =
   "plate-in fixed bottom-16 left-6 z-10 font-mono text-xs text-muted";
@@ -51,6 +72,7 @@ function LumaSparkline() {
 function ResonanceNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const strike = useBenchStore((s) => s.b2Strike);
+  const strikeNonce = useBenchStore((s) => s.b2StrikeNonce);
   if (berth !== berthOf("resonance")) return null;
   return (
     <div className={plateBase}>
@@ -68,6 +90,7 @@ function ResonanceNameplate() {
       <button type="button" onClick={strike} className={plateBtn}>
         敲击 · ENTER
       </button>
+      <EnterLink slug="resonance" nonce={strikeNonce} />
       <LumaSparkline />
     </div>
   );
@@ -76,6 +99,7 @@ function ResonanceNameplate() {
 function SilkNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const pull = useBenchStore((s) => s.b3Pull);
+  const pullNonce = useBenchStore((s) => s.b3PullNonce);
   if (berth !== berthOf("skeletal-silk")) return null;
   return (
     <div className={plateBase}>
@@ -94,6 +118,7 @@ function SilkNameplate() {
       <button type="button" onClick={pull} className={plateBtn}>
         轻推 · ENTER
       </button>
+      <EnterLink slug="skeletal-silk" nonce={pullNonce} />
     </div>
   );
 }
@@ -113,6 +138,7 @@ function TeardownNameplate() {
         >
           teardown.alilinlab.com
         </a>
+        <EnterLink slug="teardown" />
       </p>
     </div>
   );
@@ -134,6 +160,7 @@ function MaterialMemoryNameplate() {
         >
           live → material-memory.alilinlab.com
         </a>
+        <EnterLink slug="material-memory" />
       </p>
     </div>
   );
@@ -143,6 +170,7 @@ function MaterialMemoryNameplate() {
 function LatentNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const feed = useBenchStore((s) => s.b1Feed);
+  const feedNonce = useBenchStore((s) => s.b1FeedNonce);
   if (berth !== berthOf("latent")) return null;
 
   return (
@@ -162,6 +190,7 @@ function LatentNameplate() {
       <button type="button" onClick={feed} className={plateBtn}>
         喂片 · ENTER
       </button>
+      <EnterLink slug="latent" nonce={feedNonce} />
     </div>
   );
 }
@@ -169,6 +198,7 @@ function LatentNameplate() {
 function VestigeNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const stamp = useBenchStore((s) => s.b5Stamp);
+  const stampNonce = useBenchStore((s) => s.b5StampNonce);
   if (berth !== berthOf("vestige")) return null;
 
   return (
@@ -184,6 +214,7 @@ function VestigeNameplate() {
       >
         落印 · ENTER
       </button>
+      <EnterLink slug="vestige" nonce={stampNonce} />
     </div>
   );
 }
