@@ -4,6 +4,12 @@
  * spec; 〔TODO〕/〔回填〕 fields render as visible placeholders, never
  * fabricated. Mechanism diagrams draw ONLY node labels the spec
  * specifies; unspecified diagrams render a labeled placeholder.
+ *
+ * 声部七条(改字前过一遍 · from CASE COPY FRAMEWORK):
+ * 1 claim=立场,现在时 ≤6词,可被反驳  2 数据无形容词,数字自己扛
+ * 3 图注写条件不写好看  4 动词测量系(instrument/calibrate/measure/
+ * trace/verify/gate)  5 第一人称最小化  6 短句·无堆叠形容词·中文仅落款
+ * 7 状态词全站小写:shipped · in progress · filed · submitted · live
  */
 
 /* iframe kind REMOVED (CASE-v2-MERGE §1): embedding the live site
@@ -58,7 +64,7 @@ export const casePages: Record<string, CasePageData> = {
     type: "folio",
     name: "LATENT",
     metaLine:
-      "LATENT — film physics engine · WebGL2/GLSL · 2026 · shipped · latentfilm.com",
+      "LATENT — film physics engine · WebGL2 / GLSL · shipped July 2026 · latentfilm.com",
     claim: "“Filmic” can be measured.",
     hero: { kind: "latent-comparator" },
     heroCaption:
@@ -126,8 +132,38 @@ export const casePages: Record<string, CasePageData> = {
     hero: { kind: "gate", priority: "仪表带全开录屏(到手后:录屏 + open live ↗ 外链,不用 iframe)" },
     heroCaption:
       "19.52ms/step · R²=0.9978 · seed → byte-identical · 48h sprint",
-    what: "A live measurement bench for a hosted image-generation API, for engineers deciding whether to build on it. Seeded runs replay against the live endpoint; step time regresses linearly at 19.52 ms per step, R² 0.9978. Fourteen documented behaviors did not match measurement, while identical seeds returned byte-identical outputs.",
+    what: "A live measurement bench for a hosted image-generation API, for engineers deciding whether to build on it. Seeded runs replay against the live endpoint; step time regresses linearly at 19.52 ms per step, R² 0.9978. Fourteen documented behaviors did not match measurement, while identical seeds returned byte-identical outputs. FIDELITY-LOCK — an evidence framework locating the AI-to-human boundary for fashion/beauty production imaging. 〔回填:benchmark 范围表述,发布前完成 NDA 自查〕",
     mech: { placeholder: "机制图〔回填: S8|S28 对比 或 架构简图〕" },
+    // NDA: 素材涉 Vision On 工作流(SKIMS/e.l.f.),匿名化或换自有素材
+    // 后方可接 src。headings 确知(COPY FRAMEWORK 候选A/B/C),条件全回填。
+    exhibitFlow: [
+      {
+        no: "01",
+        heading: "cumulative degradation",
+        paras: [],
+        caption: "〔回填:工具、轮数、判据、日期〕",
+        visual: "placeholder",
+        placeholderLabel: "[EVIDENCE: EXHIBIT 01 · cumulative degradation]",
+      },
+      {
+        no: "02",
+        heading: "same-hue mask failure",
+        paras: [],
+        caption: "〔回填〕",
+        visual: "placeholder",
+        placeholderLabel: "[EVIDENCE: EXHIBIT 02 · same-hue mask failure]",
+      },
+      {
+        no: "03",
+        heading: "AI/PS division",
+        paras: [],
+        caption: "〔回填〕",
+        visual: "placeholder",
+        placeholderLabel: "[EVIDENCE: EXHIBIT 03 · AI/PS division]",
+      },
+    ],
+    // v2 static exhibit list kept below (superseded visually by
+    // exhibitFlow, preserved verbatim — 铁律2)
     process: [
       { n: "01", title: "S8|S28 对比", caption: "〔回填:条件〕", observation: "〔TODO〕" },
       { n: "02", title: "瀑布图", caption: "〔回填:条件〕", observation: "〔TODO〕" },
@@ -146,7 +182,7 @@ export const casePages: Record<string, CasePageData> = {
     type: "specimen",
     name: "RESONANCE",
     metaLine:
-      "RESONANCE — real-time AI video physics · Three.js/R3F · 〔回填:年〕 · 〔回填:状态〕",
+      "RESONANCE — real-time AI video physics · Three.js / R3F · 〔回填:年〕 · 〔回填:状态〕",
     claim: "AI video, given physical consequences.",
     hero: { kind: "gate", priority: "交互录屏" },
     heroCaption:
@@ -161,7 +197,7 @@ export const casePages: Record<string, CasePageData> = {
     type: "specimen",
     name: "SKELETAL SILK",
     metaLine:
-      "SKELETAL SILK — Vision-to-shader pipeline · Claude Vision/GLSL · 〔回填:年〕 · 〔回填:状态〕",
+      "SKELETAL SILK — vision-to-shader pipeline · Claude Vision → GLSL · 〔回填:年〕 · 〔回填:状态〕",
     claim: "The model outputs a coordinate, not an image.",
     hero: { kind: "gate", priority: "swatch 点击 → JSON → 起骨 的 20s 录屏" },
     heroCaption:
@@ -176,7 +212,7 @@ export const casePages: Record<string, CasePageData> = {
     type: "specimen",
     name: "VESTIGE",
     metaLine:
-      "VESTIGE — digital product passport · ZK-SNARKs/NFC/smart contracts · 〔回填:年〕 · 〔回填:状态〕",
+      "VESTIGE — digital product passport · ZK-SNARKs / NFC / smart contracts · provisional patent filed · 〔回填:年〕 · 〔回填:状态〕",
     claim: "Provenance is a verb.",
     hero: { kind: "gate", priority: "系统图 或 NFC 交互实拍" },
     heroCaption:
@@ -191,7 +227,7 @@ export const casePages: Record<string, CasePageData> = {
     type: "specimen",
     name: "ACUBOT",
     metaLine:
-      "ACUBOT — structured acupuncture lineage · Expo/React Native · 〔回填:年〕 · 〔回填:状态〕",
+      "ACUBOT — Dong-style acupuncture reference · Expo / React Native · iOS · 〔回填:status〕",
     claim: "A lineage, structured.",
     hero: { kind: "gate", priority: "app 实机录屏" },
     heroCaption: "136 points · 4,138 cases · bilingual dataset · Expo/RN",
