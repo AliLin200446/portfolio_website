@@ -220,7 +220,23 @@ export const casePages: Record<string, CasePageData> = {
     what: "A digital product passport for luxury goods, built for brands facing the EU's ESPR disclosure rules. An NFC tag on the object anchors a smart contract record; ZK-SNARK proofs verify claims without exposing the underlying data. Two provisional patents cover the mechanism; the design was validated with PwC, JPMorgan, and Tapestry.",
     mech: { placeholder: "机制图〔回填: 溯源系统架构〕" },
     role: "〔回填:角色〕",
-    next: { label: "LATENT", href: "/work/latent" }, // acubot archived: loop closes here
+    next: { label: "MATERIAL MEMORY", href: "/work/material-memory" },
+  },
+  "material-memory": {
+    slug: "material-memory",
+    type: "specimen",
+    name: "MATERIAL MEMORY",
+    metaLine:
+      "MATERIAL MEMORY — hand-written cloth physics · Verlet integration · live · material-memory.alilinlab.com · 〔回填:年〕 · 〔回填:status〕",
+    claim: "〔回填:定位句未定〕",
+    hero: { kind: "gate", priority: "布面录屏(到手后:录屏 + open live ↗ 外链)" },
+    heroCaption: "〔回填:内容 · 条件 · 日期〕",
+    // LABEL 落位 what;SPECS 当前 schema 无槽(不发明区块,回填时议):
+    // 〔回填:仅可验证硬项;patent 仅 filed 才可写〕
+    what: "〔回填:≤120词签文〕",
+    mech: { placeholder: "机制图〔回填〕" },
+    role: "〔回填:角色〕",
+    next: { label: "LATENT", href: "/work/latent" }, // closing berth → loop
   },
 /* ARCHIVED (B6-SWAP) · RETURNING: pending App Store — ACUBOT 陈列签
  * 双闸占位原样封存;App Store 上架后解封回位。
