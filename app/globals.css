@@ -111,3 +111,14 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hovercard { transition: none !important; transform: translateX(-50%) !important; }
 }
+
+/* enter → press feedback: 1px sink on press, no overshoot on release */
+.enter-press {
+  display: inline-block;
+}
+.enter-press:active {
+  transform: translateY(1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .enter-press:active { transform: none; }
+}

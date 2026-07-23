@@ -627,7 +627,7 @@ function HoverCard() {
       {station.href && !station.external && (
         <a
           href={station.href}
-          className="ml-3 border-b border-bronze pb-px transition-colors hover:text-bronze"
+          className="enter-press ml-3 border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
         >
           enter →
         </a>

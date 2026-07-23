@@ -22,7 +22,7 @@ function EnterLink({ slug, nonce }: { slug: string; nonce?: number }) {
     <Link
       key={flash}
       href={`/work/${slug}`}
-      className={`ml-3 border-b border-bronze pb-px transition-colors hover:text-bronze ${flash ? "np-glint" : ""}`}
+      className={`enter-press ml-3 border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B] ${flash ? "np-glint" : ""}`}
     >
       enter →
     </Link>
