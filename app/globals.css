@@ -106,3 +106,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .np-glint { animation: none; }
 }
+
+/* hover card: reduced-motion shows/hides instantly */
+@media (prefers-reduced-motion: reduce) {
+  .hovercard { transition: none !important; transform: translateX(-50%) !important; }
+}

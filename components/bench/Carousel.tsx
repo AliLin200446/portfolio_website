@@ -594,14 +594,18 @@ function HoverCard() {
   }, [hovered, router]);
 
   if (!station?.hover) return null;
+  // FISH-POLISH §3 取证: exit was a bare 0.2s opacity fade, no motion.
+  // Now: in = 0.2s fade + 4px rise; out = 0.15s fade + 4px sink. One
+  // card instance keyed on the last hovered id — a fast sweep across
+  // instruments REPLACES the card content, never stacks ghosts.
+  // reduced-motion: .hovercard transitions killed in globals.css.
   return (
     <div
       aria-hidden
-      className="fixed z-10 font-mono"
+      className="hovercard fixed z-10 font-mono"
       style={{
         left: "50%",
         bottom: 148,
-        transform: "translateX(-50%)",
         fontSize: 11,
         letterSpacing: "0.08em",
         color: "#1a1714",
@@ -611,7 +615,12 @@ function HoverCard() {
         whiteSpace: "nowrap",
         pointerEvents: hovered ? "auto" : "none",
         opacity: hovered ? 1 : 0,
-        transition: "opacity 0.2s ease",
+        transform: hovered
+          ? "translateX(-50%) translateY(0)"
+          : "translateX(-50%) translateY(4px)",
+        transition: hovered
+          ? "opacity 0.2s ease, transform 0.2s ease"
+          : "opacity 0.15s ease, transform 0.15s ease",
       }}
     >
       {station.hover}
