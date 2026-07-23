@@ -122,3 +122,10 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .enter-press:active { transform: none; }
 }
+
+/* UNVEIL: the weave shows for a breath at the cut, then dissolves */
+@keyframes bench-weave {
+  0% { opacity: 0; }
+  30% { opacity: 0.22; }
+  100% { opacity: 0; }
+}

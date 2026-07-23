@@ -298,7 +298,8 @@ export const casePages: Record<string, CasePageData> = {
       kind: "facade",
       liveUrl: "https://material-memory.alilinlab.com",
       embeddable: true,
-      posterNote: "待接素材:布面录屏(poster 位;live 按钮已可用)",
+      // MATCH-CUT: poster 应为布面特写(揭帛 cut 从经纬间显现才真正落地)
+      posterNote: "待接素材:布面特写/录屏(poster 位;live 按钮已可用)",
     },
     heroCaption: "〔回填:内容 · 条件 · 日期〕",
     // MM-FILL:Problem+Solution+统计句(归因待回填)。润色稿上屏,原文逐字:

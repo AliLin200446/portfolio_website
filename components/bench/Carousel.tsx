@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { BERTH_ORDER, STATIONS, berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
-import Cloth, { clothDrag } from "./Cloth";
+import Cloth, { clothDrag, getWeaveURL } from "./Cloth";
 import Cocoon from "./Cocoon";
 import FilmRoll from "./FilmRoll";
 import Movement from "./Movement";
@@ -676,6 +676,19 @@ function CutOverlay({
           }}
         />
       )}
+      {/* UNVEIL 拍③: the page develops out of the warp/weft — the
+          cloth's own weave canvas as a fading CSS layer, zero new RT */}
+      {transitionId === "material-memory" && getWeaveURL() && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${getWeaveURL()})`,
+            backgroundSize: "160px",
+            animation: "bench-weave 0.3s ease-out 0.72s both",
+          }}
+        />
+      )}
       {surface?.label && (
         <span
           className="font-mono"
@@ -711,6 +724,14 @@ export default function Carousel() {
     if (!station?.href || !DIVES[id]) return; // ACUBOT: no entry yet
     const s = useBenchStore.getState();
     if (s.transitionId) return;
+    if (id === "material-memory" && clothDrag.active) {
+      // 拖拽中触发 enter: let go, settle a beat, then unveil
+      setTimeout(() => {
+        if (!useBenchStore.getState().transitionId)
+          useBenchStore.getState().startTransition(id);
+      }, 200);
+      return;
+    }
     if (id === "latent") s.b1Feed();
     if (id === "resonance") s.b2Strike();
     if (id === "vestige") s.b5Stamp();

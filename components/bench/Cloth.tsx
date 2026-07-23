@@ -42,6 +42,13 @@ import { useBenchStore } from "@/lib/benchStore";
 
 export const clothDrag = { active: false }; // Rig reads this: cloth hand > ring drag
 
+/** weave texture as data-URL for the cut overlay (§3 拍③: the page
+ *  develops out of the warp/weft) — same canvas asset, zero new RT */
+let weaveURL: string | null = null;
+export function getWeaveURL() {
+  return weaveURL;
+}
+
 const COLS = 32;
 const ROWS = 40;
 const CLOTH_W = 0.4;
@@ -89,6 +96,7 @@ function makeWeaveTexture() {
   g.fillRect(134, 110, 3, 36); g.fillRect(126, 120, 19, 3);
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  weaveURL = c.toDataURL();
   return t;
 }
 
@@ -138,6 +146,44 @@ export default function Cloth({ position }: { position: [number, number, number]
   const reduced = useRef(false);
   const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /* UNVEIL 「揭帛见章」: the answer beat is the EXISTING gust flipped
+   * bottom→up, the lift is REAL Verlet force on every particle — no
+   * kinematic fake. Pins release at 0.2s (the cloth leaves the rod).
+   * Verlet can't run backwards, so reverse is honest differently: a
+   * snapshot of all particles is taken at transition start, and Esc/
+   * walk-back damps every particle back to the snapshot (no bounce),
+   * pins restored on arrival, then sleep. */
+  const transitionId = useBenchStore((s) => s.transitionId);
+  const transDir = useBenchStore((s) => s.transitionDir);
+  const unveilT0 = useRef(0);
+  const snap = useRef<Float32Array | null>(null);
+  const pinsFree = useRef(false);
+
+  useEffect(() => {
+    const s0 = sim.current;
+    if (!s0) return;
+    if (transitionId === "material-memory") {
+      if (transDir === 1 && !snap.current) {
+        snap.current = s0.pos.slice();
+        unveilT0.current = performance.now();
+      }
+      s0.sleeping = false;
+      s0.calm = 0;
+      invalidate();
+    } else if (snap.current) {
+      // transition over (reverse finished or aborted): hard-restore the
+      // resting state — pins back, still frame, zero computation
+      s0.pos.set(snap.current);
+      s0.prev.set(snap.current);
+      snap.current = null;
+      pinsFree.current = false;
+      s0.sleeping = false;
+      s0.calm = 20;
+      invalidate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transitionId, transDir]);
+
   const geometry = useMemo(() => {
     const geo = new THREE.PlaneGeometry(CLOTH_W, CLOTH_H, COLS - 1, ROWS - 1);
     geo.translate(0, ROD_Y - 0.012 - CLOTH_H / 2, 0.015);
@@ -178,7 +224,31 @@ export default function Cloth({ position }: { position: [number, number, number]
     const s = sim.current!;
     if (reduced.current) return; // static frame forever (§5)
     const dragging = s.dragIdx >= 0;
-    if (s.sleeping && !dragging && s.gustT < 0) return; // dormant: ZERO work
+    const unveiling = transitionId === "material-memory";
+    if (s.sleeping && !dragging && s.gustT < 0 && !unveiling) return; // dormant: ZERO work
+
+    // ---- UNVEIL reverse: damp every particle back to the snapshot ----
+    if (unveiling && transDir === -1 && snap.current) {
+      const sn = snap.current;
+      let maxd = 0;
+      for (let i = 0; i < s.pos.length; i++) {
+        const d = sn[i] - s.pos[i];
+        s.pos[i] += d * 0.16;
+        s.prev[i] = s.pos[i]; // kill velocity: converge, never bounce
+        if (Math.abs(d) > maxd) maxd = Math.abs(d);
+      }
+      if (maxd < 0.002) {
+        s.pos.set(sn);
+        s.prev.set(sn);
+        pinsFree.current = false; // the cloth is back on the rod
+      }
+      const attr0 = meshRef.current!.geometry.attributes.position;
+      (attr0.array as Float32Array).set(s.pos);
+      attr0.needsUpdate = true;
+      meshRef.current!.geometry.computeVertexNormals();
+      invalidate();
+      return;
+    }
 
     const { pos, prev } = s;
     const damp = fabric.damping;
@@ -192,16 +262,31 @@ export default function Cloth({ position }: { position: [number, number, number]
       else gustA = Math.sin((s.gustT / 0.6) * Math.PI) * 0.9 * DT * DT;
     }
 
-    // integrate (top row pinned)
-    for (let i = COLS; i < COLS * ROWS; i++) {
+    // ---- UNVEIL forward forces (拍①风起 0–0.25 / 拍②掀飞 0.25–0.8) ----
+    let liftY = 0;
+    let liftZ = 0;
+    if (unveiling && transDir === 1) {
+      const ut = (performance.now() - unveilT0.current) / 1000;
+      if (ut > 0.2) pinsFree.current = true; // 布离杆
+      if (ut < 0.25) {
+        // the existing gust force, flipped bottom→up: the answer beat
+        liftY = Math.sin((ut / 0.25) * Math.PI) * 1.4 * DT * DT;
+      } else {
+        liftY = 2.6 * DT * DT; // sustained real lift
+        liftZ = 3.2 * DT * DT; // toward the camera (+z faces the arc)
+      }
+    }
+
+    // integrate (top row pinned until the unveil frees it)
+    for (let i = pinsFree.current ? 0 : COLS; i < COLS * ROWS; i++) {
       const ix = i * 3;
       const x = pos[ix], y = pos[ix + 1], z = pos[ix + 2];
       const col = i % COLS;
       const phase = s.gustT >= 0 ? (s.gustT / 0.6) * Math.PI - col * 0.12 : 0;
       const wind = gustA * Math.max(0, Math.sin(phase));
       pos[ix] += (x - prev[ix]) * damp + wind;
-      pos[ix + 1] += (y - prev[ix + 1]) * damp + g;
-      pos[ix + 2] += (z - prev[ix + 2]) * damp + wind * 0.35;
+      pos[ix + 1] += (y - prev[ix + 1]) * damp + g + liftY;
+      pos[ix + 2] += (z - prev[ix + 2]) * damp + wind * 0.35 + liftZ;
       prev[ix] = x; prev[ix + 1] = y; prev[ix + 2] = z;
     }
 
@@ -224,10 +309,10 @@ export default function Cloth({ position }: { position: [number, number, number]
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
           const i = r * COLS + c;
-          if (c + 1 < COLS) relax(pos, i, i + 1, rx, k, r === 0);
+          if (c + 1 < COLS) relax(pos, i, i + 1, rx, k, r === 0 && !pinsFree.current);
           if (r + 1 < ROWS) {
             const rest = ry * (r > ROWS - 9 ? 1 + 0.04 * (1 - c / (COLS - 1)) : 1);
-            relax(pos, i, i + COLS, rest, k, r === 0);
+            relax(pos, i, i + COLS, rest, k, r === 0 && !pinsFree.current);
           }
         }
       }
@@ -239,7 +324,7 @@ export default function Cloth({ position }: { position: [number, number, number]
       const d = Math.abs(pos[i] - prev[i]) + Math.abs(pos[i + 1] - prev[i + 1]);
       if (d > maxMove) maxMove = d;
     }
-    if (maxMove < 0.0005 && !dragging && s.gustT < 0) {
+    if (maxMove < 0.0005 && !dragging && s.gustT < 0 && !unveiling) {
       if (++s.calm > 24) { s.sleeping = true; }
     } else s.calm = 0;
 
