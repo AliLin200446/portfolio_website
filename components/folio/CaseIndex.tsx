@@ -35,14 +35,36 @@ export default function CaseIndex({ items }: { items: IndexItem[] }) {
     return () => io.disconnect();
   }, [items]);
 
+  // FISH-POLISH §2: controlled ease-out scroll (~600ms) instead of the
+  // browser's smooth default; the reader's wheel/touch takes over
+  // instantly (no lock). reduced-motion: instant jump, zero animation.
   const jump = (e: React.MouseEvent, id: string) => {
     const el = document.getElementById(id);
     if (!el) return; // no-JS falls through to the plain anchor
     e.preventDefault();
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    el.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+    const target = el.getBoundingClientRect().top + window.scrollY - 32;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.scrollTo(0, target);
+      return;
+    }
+    const start = window.scrollY;
+    const t0 = performance.now();
+    let raf = 0;
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("wheel", stop);
+      window.removeEventListener("touchstart", stop);
+    };
+    window.addEventListener("wheel", stop, { passive: true });
+    window.addEventListener("touchstart", stop, { passive: true });
+    const step = (now: number) => {
+      const p = Math.min(1, (now - t0) / 600);
+      const ease = 1 - Math.pow(1 - p, 3);
+      window.scrollTo(0, start + (target - start) * ease);
+      if (p < 1) raf = requestAnimationFrame(step);
+      else stop();
+    };
+    raf = requestAnimationFrame(step);
   };
 
   return (
