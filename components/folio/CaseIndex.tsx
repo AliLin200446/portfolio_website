@@ -48,7 +48,9 @@ export default function CaseIndex({ items }: { items: IndexItem[] }) {
   return (
     <nav
       aria-label="page sections"
-      className="flex flex-wrap gap-x-4 gap-y-1 py-2 lg:fixed lg:right-2 lg:top-1/2 lg:z-10 lg:-translate-y-1/2 lg:flex-col lg:gap-2 lg:py-0"
+      // FISH-POLISH §1: left edge (folio 右侧让位给分屏右栏与旁注);
+      // 竖排阈值 1280px —— 以下收起为顶部横排(既有降级,仅改触发)
+      className="flex flex-wrap gap-x-4 gap-y-1 py-2 xl:fixed xl:left-2 xl:top-1/2 xl:z-10 xl:-translate-y-1/2 xl:flex-col xl:gap-2 xl:py-0"
     >
       {items.map((it) => (
         <a
