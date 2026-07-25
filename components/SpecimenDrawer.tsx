@@ -1,105 +1,162 @@
 "use client";
 
 import { Html } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { experiments, type Tag } from "@/content/experiments";
 
 /*
- * SPECIMEN-DRAWER — the /experiments 3D enhancement layer, built ahead
- * of its own preconditions (site not live, index at three entries) at
- * the author's explicit instruction — noted. Stance: the main hall's
- * six instruments each carry a REAL mechanism; the study's specimens
- * are SAME-SPEC samples — the form itself declares the hierarchy.
- * One flat slide geometry, ONE InstancedMesh for every entry (a new
- * entry is a data row, zero new geometry); differences ride the mono
- * number + tag abbreviation labels (DOM, zero draws) and a two-level
- * tone (featured slightly deeper/front) — NO per-tag palette (six
- * distinguishable warm hues don't exist inside 禁蓝纸墨铜土).
- * Budget: instanced 1 + tray 1 + hover glint 1 = 3 draw calls.
- * Interaction: hover lifts 2-3px + #FFB46B glint + info card; click
- * opens href in a new tab — no transition, no case page, no answer
- * beat (a specimen has no real mechanism, so it performs none).
- * Filter shares the SAME ?tag= state as the text layer: misses dim
- * and step back, hits hold the front. frameloop=demand with instant
- * state writes — idle is structurally still, zero rAF.
- * Gate: ≥1024px + fine pointer + no-reduced-motion + JS; the text
- * index below is always the complete base layer. Lazy-mounted, so
- * LCP belongs to the text.
+ * APOTHECARY 百子柜 — the /experiments 3D layer (supersedes the
+ * retired SPECIMEN-DRAWER). One cabinet, one drawer per experiment:
+ * the most disciplined junk drawer there is — one remedy per drawer,
+ * labeled, kept ready. 4×3 = 12 drawers; entries fill from the top
+ * (featured first), the rest stay EMPTY (bare wood, no label) — room
+ * to grow, not unfinished space.
+ * 纸签纪律 (决策A): labels are ENGLISH name + mono number ("01 CYBER I
+ * CHING") — zero decorative hanzi; Chinese belongs only where the
+ * author speaks. Labels ride DOM (Html, data-generated, zero draws,
+ * zero image assets) — the canvas-texture variant was traded for this
+ * cheaper equal-discipline path, noted.
+ * 决策C: drawers hold nothing — bare wood interior. No herbs, no
+ * color (red berries brush against the one-cinnabar rule; a colored
+ * cabinet overturns the paper order). featured = deeper label tone +
+ * copper hairline, never cinnabar.
+ * Cost core (决策B): closed faces = ONE InstancedMesh (face+handle
+ * merged); the OPEN drawer is a single 5-wall model that MOVES to the
+ * hovered slot and slides ~60% out (0.3s ease-out, none of it idle —
+ * demand loop, rAF only while sliding). Only one drawer can be open,
+ * so only one open-drawer geometry exists. Draw calls: cabinet 1 +
+ * faces 1 + open drawer 1 + glint 1 = 4, CONSTANT in entry count
+ * (instanced) — a new entry is a data row.
+ * Click = href in a new tab. No transition, no answer beat: a drawer
+ * has no real mechanism, so it performs none. Filter shares ?tag=
+ * with the text layer: miss labels dim, faces darken — the cabinet
+ * lights only the remedies you asked for. Gate ≥1024 + fine pointer +
+ * no-reduced + JS; the text index below stays the complete base.
  */
 
-const COLS = 5;
-const SLIDE: [number, number, number] = [0.5, 0.03, 0.32];
-const TONE_BASE = new THREE.Color("#E2DACB");
-const TONE_FEATURED = new THREE.Color("#C6B89D");
-const DIM = 0.45;
+const COLS = 4;
+const ROWS = 3;
+const FACE: [number, number, number] = [0.6, 0.34, 0.04];
+const GAP_X = 0.66;
+const GAP_Y = 0.4;
+const SLIDE = 0.34; // ~60% of drawer depth
+
+const slotPos = (i: number): [number, number] => [
+  ((i % COLS) - (COLS - 1) / 2) * GAP_X,
+  ((ROWS - 1) / 2 - Math.floor(i / COLS)) * GAP_Y,
+];
+
+function faceGeometry() {
+  const face = new THREE.BoxGeometry(...FACE);
+  const ring = new THREE.TorusGeometry(0.035, 0.008, 8, 18);
+  ring.translate(0, -0.02, FACE[2] / 2 + 0.01);
+  return mergeGeometries([face.toNonIndexed(), ring.toNonIndexed()], false)!;
+}
+
+function openDrawerGeometry() {
+  const w = 0.56, h = 0.3, d = 0.55, t = 0.02;
+  const parts = [
+    new THREE.BoxGeometry(w, t, d).translate(0, -h / 2, 0), // floor
+    new THREE.BoxGeometry(w, h, t).translate(0, 0, -d / 2), // back
+    new THREE.BoxGeometry(t, h, d).translate(-w / 2, 0, 0),
+    new THREE.BoxGeometry(t, h, d).translate(w / 2, 0, 0),
+    new THREE.BoxGeometry(w, h, t).translate(0, 0, d / 2), // front
+  ];
+  return mergeGeometries(parts.map((p) => p.toNonIndexed()), false)!;
+}
 
 function Scene({ active }: { active: Tag | null }) {
   const { invalidate } = useThree();
   const inst = useRef<THREE.InstancedMesh>(null);
+  const open = useRef<THREE.Group>(null);
   const glint = useRef<THREE.Mesh>(null);
   const [hover, setHover] = useState<number | null>(null);
+  const slideT = useRef(0); // 0 closed → 1 out
+  const slideAt = useRef<number | null>(null); // which slot the open model owns
 
   const items = useMemo(() => {
     const v = experiments.filter((e) => e.href || e.repo);
     return [...v.filter((e) => e.featured), ...v.filter((e) => !e.featured)];
   }, []);
-  const posOf = (i: number): [number, number, number] => [
-    ((i % COLS) - (Math.min(items.length, COLS) - 1) / 2) * 0.62,
-    0.06,
-    Math.floor(i / COLS) * 0.44 - 0.1,
-  ];
+  const faceGeom = useMemo(faceGeometry, []);
+  const openGeom = useMemo(openDrawerGeometry, []);
+  const N = COLS * ROWS;
 
-  // one pass writes matrices + two-level tone + filter dim; called on
-  // every state change, then the frame goes still (demand loop)
+  const hit = (i: number) =>
+    i < items.length && (!active || items[i].tags.includes(active));
+
   useEffect(() => {
     const m = inst.current;
     if (!m) return;
     const d = new THREE.Object3D();
-    items.forEach((e, i) => {
-      const hit = !active || e.tags.includes(active);
-      const [x, y, z] = posOf(i);
-      d.position.set(x, y + (hover === i && hit ? 0.028 : 0), z + (hit ? 0 : -0.12));
+    const base = new THREE.Color("#A9834F");
+    const dim = new THREE.Color("#7A6644");
+    for (let i = 0; i < N; i++) {
+      const [x, y] = slotPos(i);
+      d.position.set(x, y, 0.28);
+      // the hovered slot's closed face hides while the open model owns it
+      d.scale.setScalar(hover === i && hit(i) ? 0.0001 : 1);
       d.updateMatrix();
       m.setMatrixAt(i, d.matrix);
-      const c = (e.featured ? TONE_FEATURED : TONE_BASE).clone();
-      if (!hit) c.multiplyScalar(DIM);
-      m.setColorAt(i, c);
-    });
+      m.setColorAt(i, i < items.length && !hit(i) ? dim : base);
+    }
     m.instanceMatrix.needsUpdate = true;
     if (m.instanceColor) m.instanceColor.needsUpdate = true;
-    if (glint.current) {
-      const on = hover !== null && (!active || items[hover].tags.includes(active));
-      glint.current.visible = on;
-      if (on) {
-        const [x, , z] = posOf(hover!);
-        glint.current.position.set(x, 0.085, z);
-      }
-    }
+    if (hover !== null && hit(hover)) slideAt.current = hover;
     invalidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, hover, items, invalidate]);
+  }, [hover, active, items]);
 
-  const e = hover !== null ? items[hover] : null;
+  // the single open drawer slides toward/away — rAF only while moving
+  useFrame((_, delta) => {
+    const want = hover !== null && hit(hover) ? 1 : 0;
+    const diff = want - slideT.current;
+    if (Math.abs(diff) < 0.005 && slideT.current !== want) slideT.current = want;
+    else if (diff !== 0)
+      slideT.current += diff * Math.min(1, delta / (want ? 0.11 : 0.09));
+    const g = open.current;
+    if (g && slideAt.current !== null) {
+      const [x, y] = slotPos(slideAt.current);
+      g.visible = slideT.current > 0.01;
+      g.position.set(x, y, 0.28 + slideT.current * SLIDE);
+    }
+    if (glint.current) {
+      glint.current.visible = hover !== null && hit(hover);
+      if (hover !== null) {
+        const [x, y] = slotPos(hover);
+        glint.current.position.set(x, y + 0.09, 0.31 + slideT.current * SLIDE);
+      }
+    }
+    if (Math.abs(want - slideT.current) > 0.004) invalidate(); // else: still
+  });
+
+  const e = hover !== null && hover < items.length ? items[hover] : null;
+
   return (
     <>
-      <directionalLight position={[-2, 4, 3]} intensity={1.3} color="#fff6e8" />
-      <ambientLight intensity={0.8} />
-      {/* the tray: plainly humbler than the hall's table */}
-      <mesh position={[0, 0, 0.1]}>
-        <boxGeometry args={[3.6, 0.06, 1.6]} />
-        <meshStandardMaterial color="#DDD5C4" roughness={1} />
+      <directionalLight position={[-2, 3, 4]} intensity={1.25} color="#fff6e8" />
+      <ambientLight intensity={0.75} />
+      {/* the cabinet: plain warm wood, no carving */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[COLS * GAP_X + 0.2, ROWS * GAP_Y + 0.2, 0.6]} />
+        <meshStandardMaterial color="#8B6B42" roughness={0.85} />
       </mesh>
+      {/* closed drawer faces + handles: one InstancedMesh */}
       <instancedMesh
         ref={inst}
-        args={[undefined, undefined, items.length]}
+        args={[faceGeom, undefined, N]}
         onPointerMove={(ev) => {
           ev.stopPropagation();
           if (ev.instanceId !== undefined && ev.instanceId !== hover)
             setHover(ev.instanceId);
-          document.body.style.cursor = "pointer";
+          document.body.style.cursor =
+            ev.instanceId !== undefined && ev.instanceId < items.length
+              ? "pointer"
+              : "";
         }}
         onPointerOut={() => {
           setHover(null);
@@ -111,30 +168,52 @@ function Scene({ active }: { active: Tag | null }) {
           if (it) window.open(it.href ?? it.repo, "_blank", "noreferrer");
         }}
       >
-        <boxGeometry args={SLIDE} />
-        <meshStandardMaterial roughness={0.9} />
+        <meshStandardMaterial roughness={0.8} />
       </instancedMesh>
-      {/* hover glint: the focus color, one hairline frame */}
-      <mesh ref={glint} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
-        <ringGeometry args={[0.3, 0.312, 4, 1, Math.PI / 4]} />
+      {/* THE open drawer — the only one in the house, empty bare wood */}
+      <group ref={open} visible={false}>
+        <mesh
+          geometry={openGeom}
+          onClick={(ev) => {
+            ev.stopPropagation();
+            const it = slideAt.current !== null && items[slideAt.current];
+            if (it) window.open(it.href ?? it.repo, "_blank", "noreferrer");
+          }}
+        >
+          <meshStandardMaterial color="#B08B58" roughness={0.9} />
+        </mesh>
+      </group>
+      {/* label-edge glint: the focus color, one hairline */}
+      <mesh ref={glint} visible={false}>
+        <planeGeometry args={[0.44, 0.012]} />
         <meshBasicMaterial color="#FFB46B" transparent opacity={0.9} />
       </mesh>
-      {/* mono number + tag abbreviation: DOM labels, zero draw calls */}
-      {items.map((it, i) => (
-        <Html
-          key={it.name}
-          position={posOf(i)}
-          center
-          style={{ pointerEvents: "none", whiteSpace: "nowrap" }}
-        >
-          <span style={{ fontFamily: "var(--font-geist-mono), monospace", fontSize: 9, letterSpacing: "0.15em", color: "#1a1714", opacity: !active || it.tags.includes(active) ? 0.8 : 0.25 }}>
-            {String(i + 1).padStart(2, "0")} · {it.tags.map((t) => t.slice(0, 3).toUpperCase()).join("/")}
-          </span>
-        </Html>
-      ))}
-      {/* hover card: the hall's card grammar, specimen contents */}
+      {/* 纸签: DOM, English name + mono number; empty drawers bare */}
+      {items.slice(0, N).map((it, i) => {
+        const [x, y] = slotPos(i);
+        const on = hit(i);
+        return (
+          <Html key={it.name} position={[x, y + 0.07, 0.31]} center style={{ pointerEvents: "none", whiteSpace: "nowrap" }}>
+            <span
+              style={{
+                fontFamily: "var(--font-geist-mono), monospace",
+                fontSize: 8.5,
+                letterSpacing: "0.12em",
+                background: "#F5F2EC",
+                color: it.featured ? "#3d3428" : "#5a5044",
+                borderBottom: it.featured ? "1px solid #8C6A3F" : undefined,
+                padding: "1.5px 4px",
+                opacity: on ? 1 : 0.3,
+              }}
+            >
+              {String(i + 1).padStart(2, "0")} {it.name.toUpperCase()}
+            </span>
+          </Html>
+        );
+      })}
+      {/* hover card: the hall's card grammar */}
       {e && (
-        <Html position={[0, 0.5, 0.6]} center style={{ pointerEvents: "none", whiteSpace: "nowrap" }}>
+        <Html position={[0, -(ROWS * GAP_Y) / 2 - 0.22, 0.4]} center style={{ pointerEvents: "none", whiteSpace: "nowrap" }}>
           <span style={{ fontFamily: "var(--font-geist-mono), monospace", fontSize: 11, letterSpacing: "0.08em", color: "#1a1714", background: "rgba(245,242,236,0.92)", border: "0.5px solid #E3DED4", padding: "5px 10px" }}>
             {e.name} · {e.line} · {e.year} · {e.tags.join("/")}
             {e.credit ? ` · ${e.credit}` : ""}
@@ -147,11 +226,11 @@ function Scene({ active }: { active: Tag | null }) {
 
 function Drawer({ active }: { active: Tag | null }) {
   return (
-    <div className="h-[300px]" aria-hidden>
+    <div className="h-[340px]" aria-hidden>
       <Canvas
         frameloop="demand"
         dpr={[1, 1.5]}
-        camera={{ fov: 35, position: [0, 1.5, 2.2], rotation: [-0.55, 0, 0] }}
+        camera={{ fov: 32, position: [0, 0.15, 2.9] }}
         gl={{ antialias: true, powerPreference: "low-power" }}
         onCreated={({ gl }) => gl.setClearColor("#F5F2EC")}
       >
@@ -161,7 +240,7 @@ function Drawer({ active }: { active: Tag | null }) {
   );
 }
 
-const LazyDrawer = dynamic(() => Promise.resolve(Drawer), { ssr: false });
+const Lazy = dynamic(() => Promise.resolve(Drawer), { ssr: false });
 
 export default function SpecimenDrawer({ active }: { active: Tag | null }) {
   const [ok, setOk] = useState(false);
@@ -173,5 +252,5 @@ export default function SpecimenDrawer({ active }: { active: Tag | null }) {
     );
   }, []);
   if (!ok) return null;
-  return <LazyDrawer active={active} />;
+  return <Lazy active={active} />;
 }
