@@ -22,6 +22,23 @@ export type Experiment = {
 export const TAGS: Tag[] = ["web3", "3d", "web", "ios", "generative"];
 
 export const experiments: Experiment[] = [
+  {
+    name: "Cyber I Ching",
+    line: "Ethereum block hash → I Ching hexagram",
+    year: "2025", // DRAFT: 年份待你核
+    tags: ["web3", "generative"],
+    href: "https://iching.alilinlab.com/",
+    featured: true,
+    credit: "featured by Three.js", // DRAFT: 确证是本项目才留
+  },
+  {
+    name: "Aura API",
+    line: "DRAFT: generative visual API", // ← 猜测非事实,上线前必须换
+    year: "2025", // DRAFT
+    tags: ["web", "generative"], // DRAFT
+    // 子域拼写实测:arua-api 200 在线,aura-api 无 DNS —— 保留 arua
+    href: "https://arua-api.alilinlab.com/",
+  },
   // 填字模板(照抄,一条一分钟):
   // { name: 'Cyber I Ching', line: 'Ethereum block hash → I Ching hexagram', year: '2025',
   //   tags: ['web3','generative'], href: '〔live URL〕', featured: true,
