@@ -67,10 +67,11 @@ export default function TopNav() {
             PROJECTS
           </button>
         ) : (
-          // no-JS degradation: the bench itself is the project catalogue
-          <a href="/" className={navLink}>
+          // no-JS degradation: Link still emits a plain SSR anchor —
+          // the bench itself is the project catalogue
+          <Link href="/" className={navLink}>
             PROJECTS
-          </a>
+          </Link>
         )}
         {open && (
           <div
