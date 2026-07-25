@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import SpecimenDrawer from "@/components/SpecimenDrawer";
 import { TAGS, experiments, type Tag } from "@/content/experiments";
 
 /*
@@ -64,6 +65,8 @@ export default function ExperimentsIndex() {
 
   return (
     <>
+      {/* 3D 标本屉: enhancement layer, same ?tag= state as the text */}
+      <SpecimenDrawer active={active} />
       {/* tag 筛选行: counts are the only ornament */}
       <div className="flex flex-wrap gap-x-5 gap-y-1 border-t border-line py-4 font-mono text-xs" style={{ borderTopWidth: "0.5px" }}>
         <button
