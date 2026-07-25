@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import ExperimentsIndex from "@/components/ExperimentsIndex";
 import { FolioBar } from "@/components/folio/FolioChrome";
 
 export const metadata: Metadata = { title: "Experiments" };
@@ -19,15 +21,13 @@ export default function ExperimentsPage() {
           EXPERIMENTS
         </h1>
         <p className="mt-4 font-mono text-xs tracking-wide text-muted">
-          〔回填:一句定位〕
+          〔回填:一句定位——建议给 Experiments 自己的编辑立场,如"短周期的技术试探",不要写成"其余作品"〕
         </p>
       </section>
-      {/* 清单骨架: 名称 · 一句话 · 年份 · 链接 (陈列签的薄) */}
-      <section className="border-t border-line py-14">
-        <p className="font-mono text-sm text-muted">
-          〔回填:experiments 清单 — 条目格式:名称 · 一句话 · 年份 · 链接〕
-        </p>
-      </section>
+      {/* 可筛选文字索引 — 数据在 content/experiments.ts,作者填字即增删 */}
+      <Suspense>
+        <ExperimentsIndex />
+      </Suspense>
       <div className="pb-24" />
     </main>
   );

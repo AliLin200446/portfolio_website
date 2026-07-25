@@ -1,0 +1,31 @@
+/*
+ * EXPERIMENTS 索引数据 — 作者只填这个文件,组件零改动。
+ * 声部三条:一句话写做了什么 · 无形容词 · 年份必填。
+ * 纪律闸:①href/repo 皆空的条目不上屏 ②credit 仅确证者可填
+ * ③ACUBOT 及任何未公开/涉 NDA 作品不得出现在此文件。
+ * 3D 标本屉(SPECIMEN-DRAWER)为后续增强层,前置:站上线+索引填满。
+ */
+
+export type Tag = "web3" | "3d" | "web" | "ios" | "generative";
+
+export type Experiment = {
+  name: string; // 作品名
+  line: string; // 一句话——写做了什么,不写形容词
+  year: string; // '2025'
+  tags: Tag[];
+  href?: string; // live demo 优先;无则 repo;两者皆无不上屏
+  repo?: string;
+  featured?: boolean; // 置顶区
+  credit?: string; // 可验证背书 — 仅确证者可填
+};
+
+export const TAGS: Tag[] = ["web3", "3d", "web", "ios", "generative"];
+
+export const experiments: Experiment[] = [
+  // 填字模板(照抄,一条一分钟):
+  // { name: 'Cyber I Ching', line: 'Ethereum block hash → I Ching hexagram', year: '2025',
+  //   tags: ['web3','generative'], href: '〔live URL〕', featured: true,
+  //   credit: 'featured by Three.js' },
+  // { name: '〔名称〕', line: '〔做了什么〕', year: '〔年份〕', tags: ['web'], href: '〔URL〕' },
+  // { name: '〔名称〕', line: '〔做了什么〕', year: '〔年份〕', tags: ['3d'], repo: '〔repo URL〕' },
+];
