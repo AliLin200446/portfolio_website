@@ -6,7 +6,7 @@
  * 3D 标本屉(SPECIMEN-DRAWER)为后续增强层,前置:站上线+索引填满。
  */
 
-export type Tag = "web3" | "3d" | "web" | "ios" | "generative";
+export type Tag = "web3" | "3d" | "web" | "ios" | "generative" | "emotion";
 
 export type Experiment = {
   name: string; // 作品名
@@ -19,7 +19,7 @@ export type Experiment = {
   credit?: string; // 可验证背书 — 仅确证者可填
 };
 
-export const TAGS: Tag[] = ["web3", "3d", "web", "ios", "generative"];
+export const TAGS: Tag[] = ["web3", "3d", "web", "ios", "generative", "emotion"];
 
 export const experiments: Experiment[] = [
   {
@@ -38,6 +38,13 @@ export const experiments: Experiment[] = [
     tags: ["web", "generative"], // DRAFT
     // 子域拼写实测:arua-api 200 在线,aura-api 无 DNS —— 保留 arua
     href: "https://arua-api.alilinlab.com/",
+  },
+  {
+    name: "Project Lethe",
+    line: "two ritual paths — water or fire — for letting a memory go",
+    year: "2025", // DRAFT
+    tags: ["web3", "emotion"],
+    href: "https://lethe-river.alilinlab.com/",
   },
   // 填字模板(照抄,一条一分钟):
   // { name: 'Cyber I Ching', line: 'Ethereum block hash → I Ching hexagram', year: '2025',
