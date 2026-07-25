@@ -81,7 +81,7 @@ export default function PhotoSheet() {
                 }}
                 className="group relative block outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
               >
-                <Image src={f.src} alt={alt(r, f)} width={360} height={360} sizes="(max-width: 768px) 45vw, 200px" className="aspect-square w-full object-cover" loading="lazy" />
+                <Image src={f.thumb ?? f.src} alt={alt(r, f)} width={360} height={360} sizes="(max-width: 768px) 45vw, 200px" className="aspect-square w-full object-cover" loading="lazy" />
                 <span className="absolute bottom-1 right-1 font-mono text-[10px] text-paper" style={{ textShadow: "0 0 3px rgba(0,0,0,0.5)" }}>
                   {f.n}
                 </span>

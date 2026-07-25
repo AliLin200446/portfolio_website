@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# PHOTO-QUICKHANG: 原图源目录不进仓库/不上线;public/photography 由
+# scripts/derive-photos.mjs 派生(WebP,零 EXIF)
+/photography/

@@ -8,7 +8,7 @@
  * ③ 图注写条件不写好看 — note 是条件,不是形容。
  */
 
-export type Format = "135" | "120" | "digital";
+export type Format = "135" | "120" | "digital" | "instant";
 
 export type Roll = {
   id: string; // 'venice-2026-portra'
@@ -17,12 +17,99 @@ export type Roll = {
   format: Format;
   place: string;
   year: string;
-  frames: { n: string; src: string; note?: string }[];
+  /** src = loupe 尺寸(≤2000px), thumb = 小样(≤400px);两档均由
+   *  scripts/derive-photos.mjs 于构建期从 photography/ 原图派生(WebP,
+   *  零 EXIF/GPS)。原图不进 public。 */
+  frames: { n: string; src: string; thumb?: string; note?: string }[];
 };
 
-export const FORMATS: Format[] = ["135", "120", "digital"];
+export const FORMATS: Format[] = ["135", "120", "digital", "instant"];
 
+/* PHOTO-QUICKHANG:先挂上看效果。分卷取自作者自己的文件夹归类(画幅/
+ * 介质是真信息);机身/片种/地点/年份未给 → 一律 `DRAFT:` 前缀直接上屏,
+ * 一眼看得见哪些是假的。清扫:grep -rn "DRAFT" content/ */
 export const rolls: Roll[] = [
+  {
+    id: "120film",
+    camera: "DRAFT: 机身",
+    stock: "DRAFT: 片种",
+    format: "120",
+    place: "DRAFT: 地点",
+    year: "DRAFT",
+    frames: [
+      { n: "01", thumb: "/photography/120film/01-t.webp", src: "/photography/120film/01-f.webp" },
+      { n: "02", thumb: "/photography/120film/02-t.webp", src: "/photography/120film/02-f.webp" },
+      { n: "03", thumb: "/photography/120film/03-t.webp", src: "/photography/120film/03-f.webp" },
+      { n: "04", thumb: "/photography/120film/04-t.webp", src: "/photography/120film/04-f.webp" },
+      { n: "05", thumb: "/photography/120film/05-t.webp", src: "/photography/120film/05-f.webp" },
+      { n: "06", thumb: "/photography/120film/06-t.webp", src: "/photography/120film/06-f.webp" },
+    ],
+  },
+  {
+    id: "135film",
+    camera: "DRAFT: 机身",
+    stock: "DRAFT: 片种",
+    format: "135",
+    place: "DRAFT: 地点",
+    year: "DRAFT",
+    frames: [
+      { n: "01", thumb: "/photography/135film/01-t.webp", src: "/photography/135film/01-f.webp" },
+      { n: "02", thumb: "/photography/135film/02-t.webp", src: "/photography/135film/02-f.webp" },
+      { n: "03", thumb: "/photography/135film/03-t.webp", src: "/photography/135film/03-f.webp" },
+      { n: "04", thumb: "/photography/135film/04-t.webp", src: "/photography/135film/04-f.webp" },
+      { n: "05", thumb: "/photography/135film/05-t.webp", src: "/photography/135film/05-f.webp" },
+      { n: "06", thumb: "/photography/135film/06-t.webp", src: "/photography/135film/06-f.webp" },
+      { n: "07", thumb: "/photography/135film/07-t.webp", src: "/photography/135film/07-f.webp" },
+      { n: "08", thumb: "/photography/135film/08-t.webp", src: "/photography/135film/08-f.webp" },
+    ],
+  },
+  {
+    id: "digital",
+    camera: "DRAFT: 机身",
+    stock: "DRAFT: 片种",
+    format: "digital",
+    place: "DRAFT: 地点",
+    year: "DRAFT",
+    frames: [
+      { n: "01", thumb: "/photography/digital/01-t.webp", src: "/photography/digital/01-f.webp" },
+      { n: "02", thumb: "/photography/digital/02-t.webp", src: "/photography/digital/02-f.webp" },
+      { n: "03", thumb: "/photography/digital/03-t.webp", src: "/photography/digital/03-f.webp" },
+      { n: "04", thumb: "/photography/digital/04-t.webp", src: "/photography/digital/04-f.webp" },
+    ],
+  },
+  {
+    id: "medium-format-digital",
+    camera: "DRAFT: 机身",
+    stock: "DRAFT: 片种",
+    format: "digital",
+    place: "DRAFT: 地点",
+    year: "DRAFT",
+    frames: [
+      { n: "01", thumb: "/photography/medium-format-digital/01-t.webp", src: "/photography/medium-format-digital/01-f.webp" },
+      { n: "02", thumb: "/photography/medium-format-digital/02-t.webp", src: "/photography/medium-format-digital/02-f.webp" },
+      { n: "03", thumb: "/photography/medium-format-digital/03-t.webp", src: "/photography/medium-format-digital/03-f.webp" },
+      { n: "04", thumb: "/photography/medium-format-digital/04-t.webp", src: "/photography/medium-format-digital/04-f.webp" },
+    ],
+  },
+  {
+    id: "polaroid",
+    camera: "DRAFT: 机身",
+    stock: "DRAFT: 片种",
+    format: "instant",
+    place: "DRAFT: 地点",
+    year: "DRAFT",
+    frames: [
+      { n: "01", thumb: "/photography/polaroid/01-t.webp", src: "/photography/polaroid/01-f.webp" },
+      { n: "02", thumb: "/photography/polaroid/02-t.webp", src: "/photography/polaroid/02-f.webp" },
+      { n: "03", thumb: "/photography/polaroid/03-t.webp", src: "/photography/polaroid/03-f.webp" },
+      { n: "04", thumb: "/photography/polaroid/04-t.webp", src: "/photography/polaroid/04-f.webp" },
+      { n: "05", thumb: "/photography/polaroid/05-t.webp", src: "/photography/polaroid/05-f.webp" },
+      { n: "06", thumb: "/photography/polaroid/06-t.webp", src: "/photography/polaroid/06-f.webp" },
+      { n: "07", thumb: "/photography/polaroid/07-t.webp", src: "/photography/polaroid/07-f.webp" },
+      { n: "08", thumb: "/photography/polaroid/08-t.webp", src: "/photography/polaroid/08-f.webp" },
+      { n: "09", thumb: "/photography/polaroid/09-t.webp", src: "/photography/polaroid/09-f.webp" },
+    ],
+  },
   // 模板(照抄):
   // {
   //   id: "venice-2026-portra",
