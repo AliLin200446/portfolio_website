@@ -7,6 +7,7 @@ import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
 import LogoMark from "@/components/LogoMark";
+import TopNav from "@/components/TopNav";
 
 /** CLICK-SPLIT: the explicit way in. Re-arms a copper glint each time
  *  the instrument's mechanism settles (nonce change) — the echo of the
@@ -302,32 +303,7 @@ export default function HomeShell() {
             {" — design engineer · I instrument what AI fakes"}
           </span>
         </p>
-        <nav
-          aria-label="Projects"
-          className="flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs"
-        >
-          {STATIONS.map((s) =>
-            bench3d ? (
-              // 3D mode: nav is a jump menu — spring the rail to the berth.
-              // Nav keeps the narrative order; space keeps its own.
-              <NavJump key={s.id} station={s} />
-            ) : (
-              <StationLink
-                key={s.id}
-                station={s}
-                className="text-muted transition-colors hover:text-bronze"
-              >
-                {s.label}
-              </StationLink>
-            )
-          )}
-          <Link
-            href="/about"
-            className="text-muted transition-colors hover:text-bronze"
-          >
-            ABOUT
-          </Link>
-        </nav>
+        <TopNav />
       </header>
 
       {/* DOM list: SSR fallback and the whole story on mobile/coarse/
