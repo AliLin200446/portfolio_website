@@ -18,6 +18,10 @@ export type Exhibit = {
   /** placeholder = labeled empty frame; instrument = the live halation
    *  comparator (SVG, §6-safe) */
   visual: "placeholder" | "instrument";
+  /** cross-evidence link rendered under the caption (e.g. latent
+   *  EXHIBIT 01 ⇄ /photography — the negatives live there) */
+  crossHref?: string;
+  crossLabel?: string;
   /** evidence image once the author supplies it; absent = placeholder */
   src?: string;
   placeholderLabel?: string;

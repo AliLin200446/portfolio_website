@@ -106,6 +106,8 @@ export const casePages: Record<string, CasePageData> = {
           "shot at night on CineStill 800T · developed · scanned · numbers pulled off the negatives · 观察:〔TODO〕",
         visual: "placeholder",
         placeholderLabel: "[EVIDENCE: EXHIBIT 01 · 四轮校准对比]",
+        crossHref: "/photography",
+        crossLabel: "the negatives → photography",
       },
       {
         no: "02",

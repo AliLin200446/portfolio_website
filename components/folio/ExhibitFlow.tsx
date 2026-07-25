@@ -96,6 +96,14 @@ function Visual({ ex, idSuffix }: { ex: Exhibit; idSuffix: string }) {
       )}
       <figcaption className="mt-3 font-mono text-[10px] leading-relaxed tracking-wide text-muted">
         EXHIBIT {ex.no} · {ex.caption}
+        {ex.crossHref && (
+          <>
+            {" · "}
+            <a href={ex.crossHref} className="border-b border-bronze pb-px transition-colors hover:text-bronze">
+              {ex.crossLabel}
+            </a>
+          </>
+        )}
       </figcaption>
     </figure>
   );
