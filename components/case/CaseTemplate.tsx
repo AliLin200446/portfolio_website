@@ -52,7 +52,11 @@ function Fig({ figure }: { figure: Figure }) {
             liveUrl={figure.url}
             embeddable
             poster={figure.poster}
-            posterNote="high-res still pending — the live engine runs on click"
+            posterNote={
+              figure.poster
+                ? undefined
+                : "high-res still pending — the live engine runs on click"
+            }
           />
         );
       case "instrument":

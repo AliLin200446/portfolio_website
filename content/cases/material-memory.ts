@@ -24,6 +24,7 @@ const materialMemory: CaseData = {
   hero: {
     kind: "live",
     url: "https://material-memory.alilinlab.com",
+    poster: "/case-assets/material-memory/hero-poster.webp",
     caption:
       "the shipping simulator · push, drop and drag the cloth · click to run it live",
   },

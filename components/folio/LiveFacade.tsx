@@ -77,7 +77,13 @@ export default function LiveFacade({
             <HalationHero />
           ) : poster ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={poster} alt="" className="w-full border border-line" />
+            <img
+              src={poster}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="w-full border border-line"
+            />
           ) : (
             <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-[#EDE9E0]">
               <span className="font-mono text-xs text-oxblood">
