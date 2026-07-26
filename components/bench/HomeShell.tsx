@@ -206,7 +206,7 @@ function VestigeNameplate() {
     <div className={plateBase}>
       <p>
         <span className="text-ink">VESTIGE</span> — provenance for physical
-        goods · <span className="text-wood">2 provisional patents</span>
+        goods · <span className="text-wood">a filed provisional</span>
       </p>
       <button
         type="button"
