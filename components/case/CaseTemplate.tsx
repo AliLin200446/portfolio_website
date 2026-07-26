@@ -3,6 +3,7 @@ import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
 import CaseIndex from "@/components/folio/CaseIndex";
 import HalationHero from "@/components/folio/HalationHero";
+import { LatencyAnatomy, StepDelta } from "./TeardownFigures";
 import LiveFacade from "@/components/folio/LiveFacade";
 import { berthOf } from "@/lib/bench";
 import type { CaseData, Figure } from "@/content/cases/_schema";
@@ -62,6 +63,8 @@ function Fig({ figure }: { figure: Figure }) {
           />
         );
       case "instrument":
+        if (figure.component === "latency") return <LatencyAnatomy />;
+        if (figure.component === "stepdelta") return <StepDelta />;
         return <HalationHero />;
       case "video":
         return (
@@ -127,8 +130,8 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
   const items = [
     { id: "claim", label: "CLAIM" },
     { id: "what", label: "WHAT" },
-    { id: "build", label: "BUILD" },
-    { id: "proof", label: "PROOF" },
+    { id: "build", label: data.buildLabel ?? "BUILD" },
+    { id: "proof", label: data.proofLabel ?? "PROOF" },
     { id: "more", label: "MORE" },
   ];
 
@@ -212,7 +215,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
 
       {/* ⑤ HOW I BUILT IT — one decision per subsection */}
       <section id="build" className="scroll-mt-8 border-t border-line py-14">
-        <p className={LABEL}>BUILD</p>
+        <p className={LABEL}>{data.buildLabel ?? "BUILD"}</p>
         <div className="mt-8 space-y-14">
           {data.build.map((d) => (
             <div key={d.heading}>
@@ -242,13 +245,23 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
       {/* ⑥ WHY IT HOLDS — evidence, then limits */}
       <section id="proof" className="scroll-mt-8 border-t border-line py-14">
         <p className={LABEL}>{data.proofLabel ?? "PROOF"}</p>
-        <ul className="mt-8 max-w-[68ch]">
+        <ul className={data.proofSplit ? "mt-8" : "mt-8 max-w-[68ch]"}>
           {data.proof.items.map((p) => (
             <li
               key={p.claim}
-              className="border-b border-line py-4"
+              className={`border-b border-line py-6 ${
+                data.proofSplit && p.figure
+                  ? "grid gap-8 lg:grid-cols-[60fr_40fr] lg:items-start"
+                  : ""
+              }`}
               style={{ borderBottomWidth: "0.5px" }}
             >
+              <div className="max-w-[68ch]">
+              {p.label && (
+                <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-ink">
+                  {p.label}
+                </p>
+              )}
               <p className="font-serif text-[17px] leading-relaxed">{p.claim}</p>
               {p.source && (
                 <p className="mt-2 font-mono text-[11px] tracking-wide text-bronze-text">
@@ -256,7 +269,12 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
                 </p>
               )}
               {p.pending && <Pending what={p.pending} ip />}
-              {p.figure && <Fig figure={p.figure} />}
+              </div>
+              {p.figure && (
+                <div className={data.proofSplit ? "lg:mt-0" : ""}>
+                  <Fig figure={p.figure} />
+                </div>
+              )}
             </li>
           ))}
         </ul>
@@ -279,7 +297,11 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
       {/* ⑦ CONTEXT */}
       <section id="more" className="scroll-mt-8 border-t border-line py-14">
         <p className={LABEL}>MORE</p>
-        <p className={`${PROSE} mt-8`}>{data.context}</p>
+        {(data.contextParas ?? [data.context]).map((para, i) => (
+          <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
+            {para}
+          </p>
+        ))}
         {/* the ending is an action, not a conclusion: on a page whose
             subject is a working tool, the last thing the reader meets is
             the door to it — larger than the byline, ahead of the nav */}

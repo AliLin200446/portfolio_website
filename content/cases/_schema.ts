@@ -43,7 +43,11 @@ export type Figure = Pending &
         attribution?: string;
       }
     | { kind: "code"; lang?: string; code: string; caption: string }
-    | { kind: "instrument"; component: "halation"; caption: string }
+    | {
+        kind: "instrument";
+        component: "halation" | "latency" | "stepdelta";
+        caption: string;
+      }
     | { kind: "pending"; note: string; caption: string }
   );
 
@@ -69,6 +73,9 @@ export type Decision = {
 
 /** ⑥ PROOF: evidence a skeptic would demand. */
 export type Proof = Pending & {
+  /** short caps label; the sentence that follows stays in normal case.
+   *  A whole sentence set in caps stops reading as a sentence. */
+  label?: string;
   /** the claim, stated plainly */
   claim: string;
   /** where the number comes from: file, method, sample size */
@@ -93,6 +100,10 @@ export type CaseData = {
   build: Decision[];
   /** ⑥ evidence + limits; the section label may be renamed per page */
   proofLabel?: string;
+  buildLabel?: string;
+  /** findings sit beside their figure instead of above it */
+  proofSplit?: boolean;
+  contextParas?: string[];
   proof: { items: Proof[]; limits: string[] };
   /** ⑦ one paragraph of placement */
   context: string;

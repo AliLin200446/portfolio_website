@@ -6,13 +6,14 @@ import CaseTemplate from "@/components/case/CaseTemplate";
 import latent from "@/content/cases/latent";
 import materialMemory from "@/content/cases/material-memory";
 import vestige from "@/content/cases/vestige";
+import teardown from "@/content/cases/teardown";
 import skeletalSilk from "@/content/cases/skeletal-silk";
 import type { CaseData } from "@/content/cases/_schema";
 
 /* CASE-TEMPLATE: one template, six content files. Slugs present here
  * render the new template; the rest keep the previous body until their
  * copy is ported. */
-const cases: Record<string, CaseData> = { latent, "material-memory": materialMemory, vestige, "skeletal-silk": skeletalSilk };
+const cases: Record<string, CaseData> = { latent, "material-memory": materialMemory, vestige, "skeletal-silk": skeletalSilk, teardown };
 
 /*
  * CASE-v2-MERGE Step 5: the single dispatch. content/case/casepages.ts
