@@ -28,7 +28,7 @@ const materialMemory: CaseData = {
       "the shipping simulator · push, drop and drag the cloth · click to run it live",
   },
   what: [
-    "Luxury returns run high because a product page shows a still image — drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph. Over half of returns cite fit and material mismatch. Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought.",
+    "Luxury returns run high because a product page shows a still image — drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph. About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025–26). Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought.",
     "One engine, two readings. For the shopper it ends the guessing. For the brand it ends the returning — the same simulation that answers “how does this move” is the thing that keeps it from coming back.",
   ],
   build: [
@@ -48,13 +48,18 @@ const materialMemory: CaseData = {
     items: [
       {
         claim:
-          "TACTILE PREVIEW IS A PROVEN LEVER — FOR THE CATEGORY. Industry studies of 3D product previews report 20–36% lower return rates and up to 40% higher conversion. Material Memory is an implementation of that lever for fabric, not a measured result of its own — the number belongs to the category, and the engine is built to capture it.",
-        pending: "study, publisher and year for the 20–36% / 40% figures",
+          "TACTILE PREVIEW IS A PROVEN LEVER — FOR THE CATEGORY. Apparel leads e-commerce returns at roughly 25%, and fit and material drive about half of them (NRF / Statista, 2025–26). Products with 3D/AR previews see up to 40% fewer returns and markedly higher conversion (Shopify platform data). Material Memory is an implementation of that lever for fabric — the numbers belong to the category, and the engine is built to capture them, not a measured result of its own.",
+        source:
+          "apparel return ~25%: NRF/Statista 2025–26 · fit/material ~50% of apparel returns · 3D/AR up to −40% returns: Shopify platform data",
       },
       {
         claim:
-          "BUILT AROUND THE DOMINANT SHOPPER. Maya, 27 — one of the 24–40% who return, one of the 53% citing fit and material, one of the 70% of luxury spend from her generation. Material Memory isn't a feature for some shoppers; it's infrastructure for the default one.",
-        pending: "sources for the 24–40% / 53% / 70% figures",
+          "THE GAP IS SPECIFICALLY TACTILE. Over half of all e-commerce returns come from clothing, and the recurring reason a product page can't fix is that a still image shows what fabric looks like, never how it moves. That is the exact gap Material Memory closes.",
+        source: "clothing = 56%+ of e-commerce returns (industry benchmarks)",
+      },
+      {
+        claim:
+          "BUILT AROUND THE DOMINANT SHOPPER. Maya, 27 — she's the shopper a product page can't reach — she can't feel the fabric, so she guesses, and the guess is wrong often enough to drive the category's return rate. Material Memory isn't a feature for some shoppers; it's infrastructure for the default one.",
       },
     ],
     limits: [],
