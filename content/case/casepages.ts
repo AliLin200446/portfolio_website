@@ -1,7 +1,7 @@
 /*
  * CASE PAGES v2 — data transcribed VERBATIM from
  * ~/Downloads/PROJECT_PAGES_filled_v2.md. Rules: copy only from the
- * spec; 〔TODO〕/〔回填〕 fields render as visible placeholders, never
+ * spec; PENDING/PENDING fields render as visible placeholders, never
  * fabricated. Mechanism diagrams draw ONLY node labels the spec
  * specifies; unspecified diagrams render a labeled placeholder.
  *
@@ -43,7 +43,7 @@ export type CasePageData = {
   slug: string;
   type: "folio" | "specimen"; // 手记 | 陈列签 — toggles ⑤⑥
   name: string;
-  metaLine: string; // ① monospace, not a sentence; 〔回填〕 kept visible
+  metaLine: string; // ① monospace, not a sentence; PENDING kept visible
   /** ① optional second colophon line (TEARDOWN: 年份 · 状态 · 域名) */
   metaLine2?: string;
   /** ① optional run-in subtitle beside the name */
@@ -78,7 +78,7 @@ export type CasePageData = {
   problem?: Passage[];
   approach?: Passage[];
   value?: Passage[];
-  role: string; // ⑦ 〔回填:角色〕 until supplied
+  role: string; // ⑦ PENDING — role until supplied
   next: { label: string; href: string };
   zh?: string; // optional single Chinese line (absent = not rendered)
 };
@@ -115,9 +115,9 @@ export const casePages: Record<string, CasePageData> = {
       liveUrl: "https://teardown.alilinlab.com",
       embeddable: true,
       posterNote:
-        "〔回填:30s 录屏或 poster——拖 steps 滑杆 → GENERATE → console 新行〕",
+        "30s recording or poster — drag the steps slider, hit GENERATE, watch the console",
     },
-    // 〔待确认〕图注中的 "N" 是否应为具体数值(正文用 N=20 / N=1 per
+    // PENDING图注中的 "N" 是否应为具体数值(正文用 N=20 / N=1 per
     // rung)——原文照录,待作者核对
     heroCaption:
       "live calls to fal-ai/flux/dev · every parameter change is a\nside-by-side experiment · N visible in the log",
@@ -189,7 +189,7 @@ export const casePages: Record<string, CasePageData> = {
       },
     ],
     role: "design engineer",
-    next: { label: "〔回填:按泊位序〕", href: "/work/vestige" },
+    next: { label: "VESTIGE", href: "/work/vestige" },
   },
   resonance: {
     slug: "resonance",
@@ -197,7 +197,7 @@ export const casePages: Record<string, CasePageData> = {
     name: "RESONANCE",
     // 定位定稿(全站统一,替换旧二选一);stack/role/type 作者逐字
     metaLine:
-      "RESONANCE — a physical feedback interface for world model outputs · Three.js · GLSL · Claude API · Fal.ai · React · Vercel · 〔回填:年〕 · 〔回填:状态〕",
+      "RESONANCE — a physical feedback interface for world model outputs · Three.js · GLSL · Claude API · Fal.ai · React · Vercel · PENDING — year · PENDING — status",
     claim: "AI video, given physical consequences.",
     hero: {
       kind: "facade",
@@ -208,7 +208,7 @@ export const casePages: Record<string, CasePageData> = {
     heroCaption:
       "video-luminance-driven sim · 60fps · fal pipeline, strength verified in payload",
     what: "An interface that turns AI-generated video into a live physical simulation, for creators who judge output by feel, not by frame. A VideoTexture streams each frame to the GPU, where shaders read it as input fields for the simulation. Luminance maps to vertex displacement: pixels above a set threshold push the mesh outward, scaled by amplitude; pixels below it exert nothing.",
-    mech: { nodes: ["亮度", "模拟参数"] },
+    mech: { nodes: ["luminance", "sim parameters"] },
     // type: Solo project(schema 无 type 槽,记此);Problem/Solution
     // 段原文未随 prompt 附上——到手后入 WHAT/label,现 WHAT 保持 v2 逐字
     role: "Sole Designer & Engineer",
@@ -219,7 +219,7 @@ export const casePages: Record<string, CasePageData> = {
     type: "specimen",
     name: "SKELETAL SILK",
     metaLine:
-      "SKELETAL SILK — vision-to-shader pipeline · Claude Vision → GLSL · 〔回填:年〕 · 〔回填:状态〕",
+      "SKELETAL SILK — vision-to-shader pipeline · Claude Vision → GLSL · PENDING — year · PENDING — status",
     // claim 上屏取自作者原句("…every shader parameter is inferred,
     // not chosen");v2 旧 claim 逐字封存:"The model outputs a
     // coordinate, not an image."
@@ -228,7 +228,7 @@ export const casePages: Record<string, CasePageData> = {
       kind: "facade",
       liveUrl: "https://skeletal-silk.alilinlab.com",
       embeddable: true,
-      posterNote: "待接素材:swatch 点击 → JSON → 起骨 的 20s 录屏",
+      posterNote: "20s recording — swatch click to JSON to shader",
     },
     heroCaption:
       "Claude Vision → 4 params → GLSL uniforms · temp 0 · schema/clamp/fallback",
@@ -241,7 +241,7 @@ export const casePages: Record<string, CasePageData> = {
     //  out-of-range values clamp, and a failed parse falls back to
     //  defaults."
     what: "Skeletal Silk asks whether AI can read a material and translate it into physics — a closed-loop pipeline from a photo of cloth, through Claude Vision, to GLSL, where every shader parameter is inferred, not chosen.",
-    mech: { nodes: ["Vision", "4参数", "uniforms"] },
+    mech: { nodes: ["Vision", "4 params", "uniforms"] },
     role: "design engineer",
     next: { label: "VESTIGE", href: "/work/vestige" },
   },
@@ -251,13 +251,13 @@ export const casePages: Record<string, CasePageData> = {
     name: "VESTIGE",
     // 一句话定位为作者原文(微调大小写);年/role 作者供稿
     metaLine:
-      "VESTIGE — turning EU Digital Product Passport compliance into luxury brand value · ZK-SNARKs / NFC / smart contracts · provisional patent filed · 2026 · 〔回填:状态〕",
+      "VESTIGE — turning EU Digital Product Passport compliance into luxury brand value · ZK-SNARKs / NFC / smart contracts · provisional patent filed · 2026 · PENDING — status",
     claim: "Provenance is a verb.",
     hero: {
       kind: "facade",
       liveUrl: "https://vestige.alilinlab.com",
       embeddable: true,
-      posterNote: "待接素材:系统图 或 NFC 交互实拍",
+      posterNote: "system diagram or NFC interaction capture",
     },
     heroCaption:
       "ZK-SNARKs · NFC · smart contracts · EU DPP · PwC/JPM/Tapestry validated",
@@ -272,9 +272,9 @@ export const casePages: Record<string, CasePageData> = {
     //   ZK-SNARKs — privacy-preserving provenance
     //   NFC (NTAG 424 DNA) — tamper-resistant physical authentication
     //   smart-contract royalty protocols — perpetual secondary-market participation
-    // Problem 位:〔回填:真正的问题陈述——EU DPP 合规压力方向〕
+    // Problem 位:PENDING
     what: "Vestige is a Digital Product Passport infrastructure that gives every item a verifiable, traceable identity while routing smart-contract royalties back to the brand on every resale.",
-    mech: { placeholder: "机制图〔回填: 溯源系统架构〕" },
+    mech: { placeholder: "PENDING — provenance system diagram" },
     role: "Design Engineer",
     next: { label: "MATERIAL MEMORY", href: "/work/material-memory" },
   },
@@ -283,16 +283,16 @@ export const casePages: Record<string, CasePageData> = {
     type: "specimen",
     name: "MATERIAL MEMORY",
     metaLine:
-      "MATERIAL MEMORY — hand-written cloth physics · Verlet integration · live · material-memory.alilinlab.com · 2026 · 〔回填:status〕",
-    claim: "〔回填:定位句未定〕",
+      "MATERIAL MEMORY — hand-written cloth physics · Verlet integration · live · material-memory.alilinlab.com · 2026 · PENDING — status",
+    claim: "PENDING — claim not yet chosen",
     hero: {
       kind: "facade",
       liveUrl: "https://material-memory.alilinlab.com",
       embeddable: true,
       // MATCH-CUT: poster 应为布面特写(揭帛 cut 从经纬间显现才真正落地)
-      posterNote: "待接素材:布面特写/录屏(poster 位;live 按钮已可用)",
+      posterNote: "cloth close-up or recording (poster slot; the live button already works)",
     },
-    heroCaption: "〔回填:内容 · 条件 · 日期〕",
+    heroCaption: "PENDING — content · condition · date",
     // MM-FILL:Problem+Solution+统计句(归因待回填)。润色稿上屏,原文逐字:
     // AUTHOR VERBATIM (Problem): "Luxury e-commerce has high return rate
     //   since it only shows you what fabric looks like, never what it
@@ -306,11 +306,11 @@ export const casePages: Record<string, CasePageData> = {
     // SPECS 无 schema 槽(不发明区块),规范化后封存待位:
     //   Three.js · GLSL · Verlet cloth physics · WebGL
     //   (WebGL 按站内探测保留:bundle 含 "webgl" 无 "webgl2",
-    //    2026-07-22;〔待确认:WebGL2?〕)
+    //    2026-07-22;PENDING)
     // patent 仍不写(filed 未确认)。claim 草案供作者选(不上屏):
     //   Feel before you buy. / Fabric, felt. / The tactile gap, closed.
-    what: "Luxury e-commerce shows you what a fabric looks like — never what it feels like. The return rate follows. Material Memory is a WebGL engine that simulates fabric behavior in real time — drape, weight, sheen, friction — so a buyer can feel a garment before they buy it. Industry studies report that 3D material previews cut return rates by 20–36% and lift conversion by up to 40%. 〔source:回填——研究名/机构/年份〕",
-    mech: { placeholder: "机制图〔回填〕" },
+    what: "Luxury e-commerce shows you what a fabric looks like — never what it feels like. The return rate follows. Material Memory is a WebGL engine that simulates fabric behavior in real time — drape, weight, sheen, friction — so a buyer can feel a garment before they buy it. Industry studies report that 3D material previews cut return rates by 20–36% and lift conversion by up to 40%. PENDING — source: study, publisher, year",
+    mech: { placeholder: "PENDING — mechanism diagram" },
     role: "Design Engineer",
     next: { label: "LATENT", href: "/work/latent" }, // closing berth → loop
   },
@@ -321,7 +321,7 @@ export const casePages: Record<string, CasePageData> = {
   //     type: "specimen",
   //     name: "ACUBOT",
   //     metaLine:
-  //       "ACUBOT — Dong-style acupuncture reference · Expo / React Native · iOS · 〔回填:status〕",
+  //       "ACUBOT — Dong-style acupuncture reference · Expo / React Native · iOS · PENDING — status",
   //     claim: "A lineage, structured.",
   //     hero: { kind: "gate", priority: "app 实机录屏" },
   //     heroCaption: "136 points · 4,138 cases · bilingual dataset · Expo/RN",

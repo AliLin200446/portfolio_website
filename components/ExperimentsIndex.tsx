@@ -58,8 +58,8 @@ export default function ExperimentsIndex() {
   if (visible.length === 0)
     return (
       <p className="border-t border-line py-14 font-mono text-sm text-muted">
-        〔回填:experiments 清单 — content/experiments.ts,条目格式:名称 ·
-        一句话 · 年份 · tags · 链接〕
+        PENDING — experiments list: content/experiments.ts (name · one
+        line · year · tags · link)
       </p>
     );
 

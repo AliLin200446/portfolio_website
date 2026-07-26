@@ -83,10 +83,10 @@ function Hero({ data }: { data: CasePageData }) {
       {h.kind === "gate" && (
         <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-[#EDE9E0]">
           <span className="font-mono text-xs text-oxblood">
-            HERO〔gate〕· 素材缺 · 本页不可上线
+            click to run live — still image pending
           </span>
           <span className="font-mono text-[11px] text-muted">
-            待接素材:{h.priority}
+            {h.priority}
           </span>
         </div>
       )}
@@ -245,10 +245,10 @@ export default function CasePage({ data }: { data: CasePageData }) {
                   </span>
                 </div>
                 <figcaption className="mt-3 font-mono text-[10px] leading-relaxed text-muted">
-                  EXHIBIT {ex.n} · {ex.title} · 图注{ex.caption}
+                  EXHIBIT {ex.n} · {ex.title} · {ex.caption}
                 </figcaption>
                 <p className="mt-2 font-serif text-sm text-muted">
-                  观察:{ex.observation}
+                  observation: {ex.observation}
                 </p>
               </figure>
             ))}

@@ -44,8 +44,8 @@ export default function PhotoSheet() {
   if (rolls.length === 0)
     return (
       <p className="border-t border-line py-14 font-mono text-sm text-muted">
-        〔回填:content/photography.ts — 一卷一组:camera · stock · format ·
-        place · year + frames(片号 · src)〕
+        PENDING — content/photography.ts: one roll per group (camera ·
+        stock · format · place · year + numbered frames)
       </p>
     );
 

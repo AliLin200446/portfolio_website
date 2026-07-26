@@ -81,7 +81,7 @@ export default function LiveFacade({
           ) : (
             <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-[#EDE9E0]">
               <span className="font-mono text-xs text-oxblood">
-                HERO〔gate〕· 素材缺 · 本页不可上线
+                loads on click — the real engine
               </span>
               {posterNote && (
                 <span className="font-mono text-[11px] text-muted">

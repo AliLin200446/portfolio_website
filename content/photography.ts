@@ -31,10 +31,10 @@ export const FORMATS: Format[] = ["135", "120", "digital", "instant"];
 export const rolls: Roll[] = [
   {
     id: "120film",
-    camera: "DRAFT: 机身",
-    stock: "DRAFT: 片种",
+    camera: "DRAFT: camera",
+    stock: "DRAFT: stock",
     format: "120",
-    place: "DRAFT: 地点",
+    place: "DRAFT: place",
     year: "DRAFT",
     frames: [
       { n: "01", thumb: "/photography/120film/01-t.webp", src: "/photography/120film/01-f.webp" },
@@ -47,10 +47,10 @@ export const rolls: Roll[] = [
   },
   {
     id: "135film",
-    camera: "DRAFT: 机身",
-    stock: "DRAFT: 片种",
+    camera: "DRAFT: camera",
+    stock: "DRAFT: stock",
     format: "135",
-    place: "DRAFT: 地点",
+    place: "DRAFT: place",
     year: "DRAFT",
     frames: [
       { n: "01", thumb: "/photography/135film/01-t.webp", src: "/photography/135film/01-f.webp" },
@@ -65,10 +65,10 @@ export const rolls: Roll[] = [
   },
   {
     id: "digital",
-    camera: "DRAFT: 机身",
-    stock: "DRAFT: 片种",
+    camera: "DRAFT: camera",
+    stock: "DRAFT: stock",
     format: "digital",
-    place: "DRAFT: 地点",
+    place: "DRAFT: place",
     year: "DRAFT",
     frames: [
       { n: "01", thumb: "/photography/digital/01-t.webp", src: "/photography/digital/01-f.webp" },
@@ -79,10 +79,10 @@ export const rolls: Roll[] = [
   },
   {
     id: "medium-format-digital",
-    camera: "DRAFT: 机身",
-    stock: "DRAFT: 片种",
+    camera: "DRAFT: camera",
+    stock: "DRAFT: stock",
     format: "digital",
-    place: "DRAFT: 地点",
+    place: "DRAFT: place",
     year: "DRAFT",
     frames: [
       { n: "01", thumb: "/photography/medium-format-digital/01-t.webp", src: "/photography/medium-format-digital/01-f.webp" },
@@ -93,10 +93,10 @@ export const rolls: Roll[] = [
   },
   {
     id: "polaroid",
-    camera: "DRAFT: 机身",
-    stock: "DRAFT: 片种",
+    camera: "DRAFT: camera",
+    stock: "DRAFT: stock",
     format: "instant",
-    place: "DRAFT: 地点",
+    place: "DRAFT: place",
     year: "DRAFT",
     frames: [
       { n: "01", thumb: "/photography/polaroid/01-t.webp", src: "/photography/polaroid/01-f.webp" },

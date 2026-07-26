@@ -21,7 +21,7 @@ export default function ExperimentsPage() {
           EXPERIMENTS
         </h1>
         <p className="mt-4 font-mono text-xs tracking-wide text-muted">
-          〔回填:一句定位——建议给 Experiments 自己的编辑立场,如「短周期的技术试探」,不要写成「其余作品」〕
+          PENDING — one line of positioning
         </p>
       </section>
       {/* 可筛选文字索引 — 数据在 content/experiments.ts,作者填字即增删 */}

@@ -15,7 +15,7 @@ export default function PhotographyPage() {
       <section className="pt-16 pb-8">
         <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">PHOTOGRAPHY</h1>
         <p className="mt-2 font-serif text-lg">Lin Chenan Photography</p>
-        <p className="mt-3 font-mono text-xs tracking-wide text-muted">〔回填:一句定位〕</p>
+        <p className="mt-3 font-mono text-xs tracking-wide text-muted">PENDING — one line of positioning</p>
       </section>
       <Suspense>
         <PhotoSheet />
