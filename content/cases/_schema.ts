@@ -18,7 +18,7 @@ type Pending = { pending?: string };
 
 export type Figure = Pending &
   (
-    | { kind: "live"; url: string; caption: string }
+    | { kind: "live"; url: string; caption: string; poster?: string }
     | { kind: "video"; src: string; poster?: string; caption: string }
     | {
         kind: "image";

@@ -37,10 +37,15 @@ const materialMemory: CaseData = {
       body: "The fabric runs on Verlet cloth physics — a mass-spring mesh under distance constraints, integrated per frame in Three.js and GLSL, so the cloth holds together while it drapes, swings, and settles. Real-time, driven by the user's push and drag, not a pre-baked animation.",
       body2:
         "The material feel — drape, weight, sheen, how light rolls across a fold — I tuned by hand, iterating against how real cloth falls. Not measured off a reference; judged by eye, the way you judge whether a fabric hangs right. Latent measures; this one is felt.",
+      /* A recording was ruled out: the demo is high-motion cloth, which
+       * compresses badly — a soft 480p loop undersells the material it
+       * exists to show. The figure runs the real engine instead, mounted
+       * only on click, with a still poster once one is exported. */
       figure: {
-        kind: "pending",
-        note: "live demo recording — push, drop, drag",
-        caption: "the cloth under a user's hand · real-time Verlet simulation",
+        kind: "live",
+        url: "https://material-memory.alilinlab.com",
+        caption:
+          "the cloth under a user's hand · real-time Verlet simulation · click to run the real thing",
       },
     },
   ],

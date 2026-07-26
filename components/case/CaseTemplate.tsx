@@ -47,7 +47,14 @@ function Fig({ figure }: { figure: Figure }) {
   const body = () => {
     switch (figure.kind) {
       case "live":
-        return <LiveFacade liveUrl={figure.url} embeddable />;
+        return (
+          <LiveFacade
+            liveUrl={figure.url}
+            embeddable
+            poster={figure.poster}
+            posterNote="high-res still pending — the live engine runs on click"
+          />
+        );
       case "instrument":
         return <HalationHero />;
       case "video":
