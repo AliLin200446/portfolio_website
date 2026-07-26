@@ -17,9 +17,46 @@ import LiveFacade from "./LiveFacade";
  * CLAIM · mono for ALL metadata and captions · no cards/shadows/radius.
  */
 
+/** TEARDOWN-FILL §1: a passage section — mono section label, then
+ *  passages whose optional run-in heading sits in mono caps ahead of
+ *  its own paragraph. Narrow measure, 0.5px rule, nothing else. */
+function Passages({
+  id,
+  label,
+  passages,
+}: {
+  id: string;
+  label: string;
+  passages: NonNullable<CasePageData["brief"]>;
+}) {
+  return (
+    <section id={id} className="scroll-mt-8 border-t border-line py-14">
+      <p className="font-mono text-xs uppercase tracking-widest text-bronze">
+        {label}
+      </p>
+      <div className="mt-8 max-w-[68ch]">
+        {passages.map((p, i) => (
+          <div key={i} className={i > 0 ? "mt-6" : undefined}>
+            {p.paras.map((para, k) => (
+              <p key={k} className="mb-4 font-serif text-[17px] leading-relaxed">
+                {k === 0 && p.heading && (
+                  <span className="font-mono text-xs uppercase tracking-widest text-ink">
+                    {p.heading}{" "}
+                  </span>
+                )}
+                {para}
+              </p>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Caption({ text }: { text: string }) {
   return (
-    <p className="mt-3 font-mono text-[11px] tracking-wide text-muted">
+    <p className="mt-3 whitespace-pre-line font-mono text-[11px] tracking-wide text-muted">
       {text}
     </p>
   );
@@ -98,11 +135,17 @@ export default function CasePage({ data }: { data: CasePageData }) {
   const items = [
     { id: "claim", label: "CLAIM" },
     { id: folio ? "hero" : "piece", label: folio ? "HERO" : "PIECE" },
-    { id: folio ? "what" : "label", label: folio ? "WHAT" : "LABEL" },
+    ...(data.what
+      ? [{ id: folio ? "what" : "label", label: folio ? "WHAT" : "LABEL" }]
+      : []),
+    ...(data.brief ? [{ id: "brief", label: "BRIEF" }] : []),
+    ...(data.problem ? [{ id: "problem", label: "PROBLEM" }] : []),
+    ...(data.approach ? [{ id: "approach", label: "APPROACH" }] : []),
     ...(folio && (data.exhibitFlow || data.process)
       ? [{ id: "exhibits", label: "EXHIBITS" }]
       : []),
     ...(folio && data.findings ? [{ id: "findings", label: "FINDINGS" }] : []),
+    ...(data.value ? [{ id: "value", label: "VALUE" }] : []),
   ];
   return (
     <main className="mx-auto max-w-5xl px-6">
@@ -115,14 +158,24 @@ export default function CasePage({ data }: { data: CasePageData }) {
         <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
           {data.name}
         </h1>
+        {data.subtitle && (
+          <p className="mt-3 font-serif text-xl italic text-muted">
+            {data.subtitle}
+          </p>
+        )}
         <p className="mt-4 font-mono text-xs tracking-wide text-muted">
           {data.metaLine}
         </p>
+        {data.metaLine2 && (
+          <p className="mt-1 font-mono text-xs tracking-wide text-muted">
+            {data.metaLine2}
+          </p>
+        )}
       </section>
 
       {/* ② CLAIM: one italic sentence, half a screen of air */}
       <section id="claim" className="flex min-h-[45svh] scroll-mt-8 items-center">
-        <p className="max-w-[24ch] font-serif text-4xl italic leading-tight sm:text-5xl">
+        <p className="max-w-[34ch] whitespace-pre-line font-serif text-4xl italic leading-tight sm:text-5xl">
           {data.claim}
         </p>
       </section>
@@ -130,7 +183,9 @@ export default function CasePage({ data }: { data: CasePageData }) {
       {/* ③ HERO: the single largest asset, full width */}
       <Hero data={data} />
 
-      {/* ④ WHAT: verbatim sentences + half-width mechanism diagram */}
+      {/* ④ WHAT: verbatim sentences + half-width mechanism diagram.
+          Absent on pages whose copy has no WHAT (TEARDOWN). */}
+      {data.what && (
       <section
         id={folio ? "what" : "label"}
         className="grid scroll-mt-8 gap-10 border-t border-line py-14 sm:grid-cols-2"
@@ -151,6 +206,16 @@ export default function CasePage({ data }: { data: CasePageData }) {
         </p>
         <MechDiagram mech={data.mech} />
       </section>
+      )}
+
+      {/* BRIEF · PROBLEM · APPROACH — author copy, verbatim */}
+      {data.brief && <Passages id="brief" label="BRIEF" passages={data.brief} />}
+      {data.problem && (
+        <Passages id="problem" label="PROBLEM" passages={data.problem} />
+      )}
+      {data.approach && (
+        <Passages id="approach" label="APPROACH" passages={data.approach} />
+      )}
 
       {/* ⑤ PROCESS — 手记 only. With exhibitFlow: the split-screen
           scrollytelling movement returns (ExhibitFlow — IntersectionObserver,
@@ -207,8 +272,16 @@ export default function CasePage({ data }: { data: CasePageData }) {
               </li>
             ))}
           </ol>
+          {data.findingsNote && (
+            <p className="mt-10 max-w-[68ch] font-serif text-[17px] leading-relaxed text-muted">
+              {data.findingsNote}
+            </p>
+          )}
         </section>
       )}
+
+      {/* VALUE — author copy, verbatim */}
+      {data.value && <Passages id="value" label="VALUE" passages={data.value} />}
 
       {/* ⑦ colophon foot */}
       <footer className="mt-10 border-t border-line py-10">

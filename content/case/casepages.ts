@@ -36,12 +36,19 @@ export type CaseHero =
 
 import type { Exhibit } from "@/lib/labfolio";
 
+/** A passage: optional run-in heading (mono caps) + its paragraphs. */
+export type Passage = { heading?: string; paras: string[] };
+
 export type CasePageData = {
   slug: string;
   type: "folio" | "specimen"; // 手记 | 陈列签 — toggles ⑤⑥
   name: string;
   metaLine: string; // ① monospace, not a sentence; 〔回填〕 kept visible
-  claim: string; // ② one italic sentence
+  /** ① optional second colophon line (TEARDOWN: 年份 · 状态 · 域名) */
+  metaLine2?: string;
+  /** ① optional run-in subtitle beside the name */
+  subtitle?: string;
+  claim: string; // ② one italic sentence (\n renders as a line break)
   hero: CaseHero;
   heroCaption: string; // ③ mono: content · condition · date
   what: string; // ④ verbatim 2-3 sentences
@@ -53,6 +60,21 @@ export type CasePageData = {
   exhibitFlow?: Exhibit[];
   process?: { n: string; title: string; caption: string; observation: string }[];
   findings?: string[];
+  /** trailing note under FINDINGS (TEARDOWN build-note line) */
+  findingsNote?: string;
+  /* TEARDOWN-FILL §1 决策 (a): three sections of the author's copy have
+   * no home in the v2 shape — BRIEF, PROBLEM→APPROACH, VALUE. They get
+   * their own optional fields rather than being folded into WHAT: the
+   * in-page index is generated from what a page actually renders, and
+   * only distinct fields keep it data-driven (folding them into WHAT
+   * would make CLAIM/HERO/BRIEF/PROBLEM/APPROACH/FINDINGS/VALUE
+   * indistinguishable). A Passage carries an optional run-in heading
+   * plus its paragraphs; PROBLEM and VALUE use headings, BRIEF and
+   * APPROACH do not. */
+  brief?: Passage[];
+  problem?: Passage[];
+  approach?: Passage[];
+  value?: Passage[];
   role: string; // ⑦ 〔回填:角色〕 until supplied
   next: { label: string; href: string };
   zh?: string; // optional single Chinese line (absent = not rendered)
@@ -145,62 +167,92 @@ export const casePages: Record<string, CasePageData> = {
   teardown: {
     slug: "teardown",
     type: "folio",
-    name: "TEARDOWN №1",
+    name: "TEARDOWN № 1",
+    subtitle: "an instrumented teardown of a generative image API",
     metaLine:
-      "TEARDOWN №1 — 〔回填:类型〕 · 〔回填:技术栈〕 · 2026 · live · teardown.alilinlab.com",
-    claim: "Docs describe. Instruments verify.",
+      "measurement harness + interactive report · TypeScript / React / fal API",
+    metaLine2: "2026 · shipped · teardown.alilinlab.com",
+    claim:
+      "An API's documentation tells you what it returns.\nOnly measurement tells you what it withholds.",
     hero: {
       kind: "facade",
       liveUrl: "https://teardown.alilinlab.com",
       embeddable: true,
-      posterNote: "待接素材:仪表带全开录屏(poster 位;live 按钮已可用)",
+      posterNote:
+        "〔回填:30s 录屏或 poster——拖 steps 滑杆 → GENERATE → console 新行〕",
     },
+    // 〔待确认〕图注中的 "N" 是否应为具体数值(正文用 N=20 / N=1 per
+    // rung)——原文照录,待作者核对
     heroCaption:
-      "19.52ms/step · R²=0.9978 · seed → byte-identical · 48h sprint",
-    what: "A live measurement bench for a hosted image-generation API, for engineers deciding whether to build on it. Seeded runs replay against the live endpoint; step time regresses linearly at 19.52 ms per step, R² 0.9978. Fourteen documented behaviors did not match measurement, while identical seeds returned byte-identical outputs. FIDELITY-LOCK — an evidence framework locating the AI-to-human boundary for fashion/beauty production imaging. 〔回填:benchmark 范围表述,发布前完成 NDA 自查〕",
-    mech: { placeholder: "机制图〔回填: S8|S28 对比 或 架构简图〕" },
-    // NDA: 素材涉 Vision On 工作流(SKIMS/e.l.f.),匿名化或换自有素材
-    // 后方可接 src。headings 确知(COPY FRAMEWORK 候选A/B/C),条件全回填。
-    exhibitFlow: [
+      "live calls to fal-ai/flux/dev · every parameter change is a\nside-by-side experiment · N visible in the log",
+    // WHAT 不在本稿结构中(①②③BRIEF PROBLEM APPROACH FINDINGS VALUE);
+    // 空串 → 该节不渲染、不入 index。
+    what: "",
+    mech: { placeholder: "" },
+    brief: [
       {
-        no: "01",
-        heading: "cumulative degradation",
-        paras: [],
-        caption: "〔回填:工具、轮数、判据、日期〕",
-        visual: "placeholder",
-        placeholderLabel: "[EVIDENCE: EXHIBIT 01 · cumulative degradation]",
-      },
-      {
-        no: "02",
-        heading: "same-hue mask failure",
-        paras: [],
-        caption: "〔回填〕",
-        visual: "placeholder",
-        placeholderLabel: "[EVIDENCE: EXHIBIT 02 · same-hue mask failure]",
-      },
-      {
-        no: "03",
-        heading: "AI/PS division",
-        paras: [],
-        caption: "〔回填〕",
-        visual: "placeholder",
-        placeholderLabel: "[EVIDENCE: EXHIBIT 03 · AI/PS division]",
+        paras: [
+          "AI image APIs ship faster than anyone measures them. Latency claims are marketing, parameter documentation is partial, and the numbers that matter to a production integrator — where the milliseconds live, what a knob actually buys, whether the same call returns the same bytes — are published nowhere.",
+          "I spent 48 hours instrumenting one model, fal-ai/flux/dev, through its synchronous endpoint: 47 structured calls across five experiments, every measurement logged to disk, every claim traceable to a source file and line. The result is not a benchmark. Benchmarks answer \"which is better.\" A teardown answers \"what is actually happening inside\" — and what the API knows but does not send.",
+        ],
       },
     ],
-    // v2 static exhibit list kept below (superseded visually by
-    // exhibitFlow, preserved verbatim — 铁律2)
-    process: [
-      { n: "01", title: "S8|S28 对比", caption: "〔回填:条件〕", observation: "〔TODO〕" },
-      { n: "02", title: "瀑布图", caption: "〔回填:条件〕", observation: "〔TODO〕" },
-      { n: "03", title: "骷髅图(卡02字面插图)", caption: "〔回填:条件〕", observation: "〔TODO〕" },
+    problem: [
+      { paras: ["Three questions an integrator cannot answer from the docs:"] },
+      {
+        heading: "WHERE DOES THE TIME GO.",
+        paras: [
+          "The response body returns one timing field, inference. Queue time — the segment between sending a request and the model starting work — is not returned and must be derived client-side.",
+        ],
+      },
+      {
+        heading: "WHAT DOES A PARAMETER BUY.",
+        paras: [
+          "num_inference_steps documents a default of 28 and no range. Nothing states what an additional step changes, or costs.",
+        ],
+      },
+      {
+        heading: "IS THE SAME CALL THE SAME IMAGE.",
+        paras: [
+          "Determinism is assumed, never stated. Caching and reproduction strategies depend on it.",
+        ],
+      },
     ],
+    approach: [
+      {
+        paras: [
+          "A browser-based harness making live calls through a proxy, timing each with performance.now() split into queue / inference / network, logging every call to a structured record. Image comparison by per-channel pixel diff at two declared thresholds — any Δ, and Δ>32 of 255 — because \"how many pixels changed\" and \"how many changed visibly\" are different questions with different answers.",
+          "Five experiments: a steps sweep (10 rungs, 1→45), a guidance sweep (8 rungs, 1→20), a seed determinism run (3 identical calls, byte comparison), a latency series (N=20 at fixed parameters), and a friction log of every gap between the documentation and the wire.",
+        ],
+      },
+    ],
+    // 五实验可在有实测图后升级为 EXHIBITS(分屏 exhibitFlow)
     findings: [
-      "Fourteen documented behaviors did not match measurement.",
-      "Step time regresses linearly: 19.52 ms/step, R² 0.9978.",
-      "Identical seeds returned byte-identical outputs.",
+      "THE VARIANCE LIVES IN THE SEGMENT THE API DOES NOT RETURN. inference_ms is linear in steps at 19.52 ms/step, R² = 0.9978, with std 9.9 ms across N=20. Queue std is 277.0 ms — and queue is the one segment absent from the response body. A client measuring total time cannot attribute its own spread.",
+      "THREE IDENTICAL CALLS, IDENTICAL BYTES. Same parameters, three runs, three distinct inference times (545 / 547 / 550 ms — real recomputation, not a cache), one sha256. 0 of 262,144 pixels differ. Output is addressable by parameter tuple.",
+      "PAST 28, EIGHT STEPS BUY WHAT ONE STEP ALREADY DELIVERED. S20→S28 and S28→S36 each span 8 steps and 156 ms. The first moves 7.655% of pixels (Δ>32); the second, 1.488%. A single step, S28→S29, already moves 1.291% at the same threshold.",
+      "GUIDANCE HAS NO RESTING POINT. Across G1→G20 no adjacent pair falls below 17.167% changed pixels (Δ>32); the last rung still moves 57.591%. The default of 3.5 is a choice, not a convergence point.",
+      "THE DOCS AND THE WIRE DISAGREE. The timings field is typed as Timings; the type is not defined. The steps ceiling of 50 is discoverable only by sending 999 and reading the error body. Validation and gateway errors arrive in two different shapes.",
     ],
-    role: "〔回填:角色〕",
-    next: { label: "RESONANCE", href: "/work/resonance" },
+    findingsNote:
+      "Each finding closes with a build note on the page — cache on the parameter tuple, budget steps before anything else, size timeouts from the segment you have to time yourself.",
+    value: [
+      {
+        heading: "WHY IT LOOKS THE WAY IT DOES",
+        paras: [
+          "The report is laid out as an engineering desktop: a ruled notebook ground, opaque paper surfaces, and the API itself rendered as a node graph — inputs wired into the model, the model wired into its results. The teardown convention is literal: every part pulled out, labelled, and measured, with the latency anatomy drawn inside the model node where the call actually happens.",
+        ],
+      },
+      {
+        heading: "WHAT THIS DEMONSTRATES",
+        paras: [
+          "Instrument-building over tool-using: the harness, the pixel-diff tooling, and the verification pipeline are all first-party. Claims survive audit: every number on the site carries its source file, line, sample size, and threshold, and the raw files ship with the report. Limits are stated by the author, not discovered by the reader: N=1 per rung, single region, single day, no residual-to-reference series — so no convergence claim is made.",
+          "TEARDOWN № 1 is the first in a series. The method — sweep, diff, time, log, publish with sources — ports to any inference API. The findings do not: they are one model, measured.",
+        ],
+      },
+    ],
+    role: "〔回填〕",
+    next: { label: "〔回填:按泊位序〕", href: "/work/vestige" },
   },
   resonance: {
     slug: "resonance",
