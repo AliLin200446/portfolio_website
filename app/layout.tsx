@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { Newsreader } from "next/font/google";
+import { Spectral } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
+/* CASE-TEMPLATE: the document serif is Spectral, ROMAN ONLY — the
+ * italic axis is not loaded, so no component can reach for it. */
+const spectral = Spectral({
+  variable: "--font-spectral",
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600"],
+  style: ["normal"],
 });
 
 export const metadata: Metadata = {
@@ -42,7 +45,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} ${newsreader.variable}`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${spectral.variable}`}
     >
       <body>
         {children}

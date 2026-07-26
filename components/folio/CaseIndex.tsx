@@ -81,7 +81,7 @@ export default function CaseIndex({ items }: { items: IndexItem[] }) {
           onClick={(e) => jump(e, it.id)}
           aria-current={active === it.id ? "true" : undefined}
           className={`font-mono text-[10px] uppercase tracking-widest transition-colors ${
-            active === it.id ? "text-bronze" : "text-muted hover:text-ink"
+            active === it.id ? "text-bronze-text" : "text-muted hover:text-ink"
           }`}
         >
           {it.label}

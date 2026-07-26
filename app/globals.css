@@ -23,10 +23,17 @@
   --color-muted: var(--muted);
   --color-oxblood: var(--oxblood);
   --color-bronze: var(--bronze);
+  --color-bronze-text: var(--bronze-text);
   --color-wood: var(--wood);
   --color-line: var(--line);
 
-  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-serif: var(--font-spectral), Georgia, serif;
+  /* CASE-TEMPLATE contrast audit: --bronze (#8C6A3F) measures 4.42:1 on
+     paper — under AA for text at normal size. Small mono labels, rails
+     and captions use this darker step (4.87:1); --bronze stays for
+     rules, underlines and 3D materials, where contrast rules do not
+     apply. */
+  --bronze-text: #866339;
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }

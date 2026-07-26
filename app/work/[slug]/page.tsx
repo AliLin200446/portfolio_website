@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CasePage from "@/components/folio/CasePage";
 import { casePages } from "@/content/case/casepages";
+import CaseTemplate from "@/components/case/CaseTemplate";
+import latent from "@/content/cases/latent";
+import type { CaseData } from "@/content/cases/_schema";
+
+/* CASE-TEMPLATE: one template, six content files. Slugs present here
+ * render the new template; the rest keep the previous body until their
+ * copy is ported. */
+const cases: Record<string, CaseData> = { latent };
 
 /*
  * CASE-v2-MERGE Step 5: the single dispatch. content/case/casepages.ts
@@ -31,7 +39,11 @@ export default async function WorkPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const cp = casePages[(await params).slug];
+  const slug = (await params).slug;
+  // CASE-TEMPLATE first; un-ported slugs keep their previous body
+  const ported = cases[slug];
+  if (ported) return <CaseTemplate data={ported} />;
+  const cp = casePages[slug];
   if (!cp) notFound();
   return <CasePage data={cp} />;
 }
