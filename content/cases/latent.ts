@@ -86,7 +86,7 @@ const latent: CaseData = {
       },
       {
         claim:
-          "REAL FILM REFUSES TO BE ONE NUMBER. Across crops of my own hand-scanned 800T, not one lands on the k⁻² line forensics researchers call “natural,” and the readings swing with content and framing. So the engine never chased −2. It moves AI footage from where it sits toward where real film actually lives: a region, not a line.",
+          "REAL FILM REFUSES TO BE ONE NUMBER. Across crops of my own hand-scanned 800T, not one lands on the k⁻² line forensics researchers call “natural,” and the readings swing with content and framing. So the engine never chased −2. It moves AI footage from where it sits toward where real film actually lives: a region, not a line. The AI source frame falls at b₂ −3.49; the same frame through the engine lands at −3.22, between two of the three 800T negatives (−3.19 and −3.25) — while the third sits at −0.95, which is why this is a displacement, not a pass mark.",
         source:
           "36 crops across the same three negatives span b₂ −0.49 … −3.40 (exhibit 02)",
       },

@@ -89,7 +89,7 @@ function ResonanceNameplate() {
         </a>
       </p>
       <button type="button" onClick={strike} className={plateBtn}>
-        敲击 · ENTER
+        tap · ENTER
       </button>
       <EnterLink slug="resonance" nonce={strikeNonce} />
       <LumaSparkline />
@@ -117,7 +117,7 @@ function SilkNameplate() {
         </a>
       </p>
       <button type="button" onClick={pull} className={plateBtn}>
-        轻推 · ENTER
+        nudge · ENTER
       </button>
       <EnterLink slug="skeletal-silk" nonce={pullNonce} />
     </div>
@@ -189,7 +189,7 @@ function LatentNameplate() {
         </a>
       </p>
       <button type="button" onClick={feed} className={plateBtn}>
-        喂片 · ENTER
+        feed · ENTER
       </button>
       <EnterLink slug="latent" nonce={feedNonce} />
     </div>
@@ -213,7 +213,7 @@ function VestigeNameplate() {
         onClick={stamp}
         className="mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
       >
-        落印 · ENTER
+        seal · ENTER
       </button>
       <EnterLink slug="vestige" nonce={stampNonce} />
     </div>

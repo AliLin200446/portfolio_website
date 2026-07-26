@@ -56,13 +56,10 @@ export default function RootLayout({
               {/* Year seal: the footer's single static cinnabar element. */}
               <span
                 aria-hidden
-                className="grid h-6 w-6 select-none grid-cols-2 place-items-center bg-oxblood font-serif text-[9px] leading-none text-paper"
+                className="grid h-6 w-6 select-none place-items-center bg-oxblood font-mono text-[9px] leading-none text-paper"
               >
-                <span>二</span>
-                <span>〇</span>
-                <span>二</span>
-                <span>六</span>
-              </span>
+                2026
+                </span>
             </div>
             <nav className="flex gap-6">
               <Link href="/" className="transition-colors hover:text-bronze">
