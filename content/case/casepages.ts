@@ -97,76 +97,9 @@ function defineCase(c: CasePageData): CasePageData {
 }
 
 export const casePages: Record<string, CasePageData> = {
-  latent: {
-    slug: "latent",
-    type: "folio",
-    name: "LATENT",
-    metaLine:
-      "LATENT — film physics engine · WebGL2 / GLSL · shipped July 2026 · latentfilm.com",
-    claim: "“Filmic” can be measured.",
-    hero: {
-      kind: "facade",
-      liveUrl: "https://latentfilm.com",
-      embeddable: true,
-      base: "comparator", // the SVG拉杆 stays the resting layer
-    },
-    heroCaption:
-      "CineStill 800T emulation · WebGL2 30fps · calibrated vs own scans · Jul 2026",
-    what: "A WebGL2 engine that puts film physics onto AI-generated frames, for creators whose footage never passed through a camera. Each frame runs a GLSL pipeline of spectral response, then halation, then grain, calibrated against my own CineStill 800T scans. Halation radius follows a power law fit to those scans; grain σ is set per luminance zone.",
-    mech: {
-      nodes: ["input", "spectral response", "halation", "grain", "output"],
-    },
-    // 分屏证物流 (migrated verbatim from content/projects/latent.ts);
-    // v2 三条 EXHIBIT(四轮校准/底片并置/SPECTRUM 诊断)的图注条件与
-    // 观察仍〔回填〕— 挂在 caption 尾部,evidence 图到位时填 src
-    exhibitFlow: [
-      {
-        no: "01",
-        heading: "CineStill 800T · calibration(四轮校准对比)",
-        paras: [
-          "Every parameter comes from measurement: I shot CineStill 800T at night, developed it, scanned it, and pulled the numbers off my own negatives.",
-          "Channel bias. Halation radius in pixels. Grain σ per luminance zone.",
-        ],
-        caption:
-          "shot at night on CineStill 800T · developed · scanned · numbers pulled off the negatives · 观察:〔TODO〕",
-        visual: "placeholder",
-        placeholderLabel: "[EVIDENCE: EXHIBIT 01 · 四轮校准对比]",
-        crossHref: "/photography",
-        crossLabel: "the negatives → photography",
-      },
-      {
-        no: "02",
-        heading: "the spectral analyzer(底片 vs 引擎输出并置)",
-        paras: [
-          "A spectral analyzer fits the radial power spectrum of any frame against natural-image statistics — the same math forensics researchers use to detect AI images, turned around and used as a repair target.",
-          "The engine moves a frame's spectral falloff from −3.2 toward the −2 of the natural world. Measured, not vibes.",
-        ],
-        note: "第三轮推翻前两轮,因为探针位置错了。",
-        caption:
-          "radial power spectrum fit against natural-image statistics · repair target −2 · 观察:〔TODO〕",
-        visual: "placeholder",
-        placeholderLabel: "[EVIDENCE: EXHIBIT 02 · 底片 vs 引擎输出并置]",
-      },
-      {
-        no: "03",
-        heading: "the instrument(SPECTRUM 诊断)",
-        paras: [
-          "Halation, grain, highlight roll-off, dye crosstalk — simulated as physics, not filters.",
-          "Drag the radius, or just keep reading — the comparator follows the scroll.",
-        ],
-        caption:
-          "demonstration comparator · procedural test pattern, radius exaggerated for reading — not a measurement · 观察:〔TODO〕",
-        visual: "instrument",
-      },
-    ],
-    findings: [
-      "Halation radius follows a power law; fit at α=〔回填:α值〕 against my own scans.",
-      "Every engine parameter traces to a measured negative — channel bias, halation radius in pixels, grain σ per luminance zone.",
-      "The forensics math that detects AI images works, turned around, as a repair target.",
-    ],
-    role: "〔回填:角色〕",
-    next: { label: "TEARDOWN №1", href: "/work/teardown" },
-  },
+  /* latent has moved to the case template (content/cases/latent.ts);
+   * its legacy entry — and the build notes that had leaked into it —
+   * are removed rather than left to rot beside the live copy. */
   teardown: {
     slug: "teardown",
     type: "folio",
@@ -255,7 +188,7 @@ export const casePages: Record<string, CasePageData> = {
         ],
       },
     ],
-    role: "〔回填〕",
+    role: "design engineer",
     next: { label: "〔回填:按泊位序〕", href: "/work/vestige" },
   },
   resonance: {
@@ -309,7 +242,7 @@ export const casePages: Record<string, CasePageData> = {
     //  defaults."
     what: "Skeletal Silk asks whether AI can read a material and translate it into physics — a closed-loop pipeline from a photo of cloth, through Claude Vision, to GLSL, where every shader parameter is inferred, not chosen.",
     mech: { nodes: ["Vision", "4参数", "uniforms"] },
-    role: "〔回填:角色〕",
+    role: "design engineer",
     next: { label: "VESTIGE", href: "/work/vestige" },
   },
   vestige: {
@@ -394,7 +327,7 @@ export const casePages: Record<string, CasePageData> = {
   //     heroCaption: "136 points · 4,138 cases · bilingual dataset · Expo/RN",
   //     what: "A mobile app that structures my father's Tung acupuncture archive, for students who now learn it from scattered notes. The archive becomes a bilingual dataset of 136 points and 4,138 cases, organized as group, then region, then case. Every entry is transcribed from his first-hand records and ships only after he reviews it.",
   //     mech: { nodes: ["群组", "区域", "案例"] },
-  //     role: "〔回填:角色〕",
+  //     role: "design engineer",
   //     next: { label: "LATENT", href: "/work/latent" },
   //   },
  */

@@ -4,7 +4,7 @@ import type { CaseData } from "./_schema";
  * LATENT — the first page built on the template. Every sentence below
  * is the author's own copy, carried over from lib/projects.ts and the
  * earlier case data; nothing here is invented. Gaps the author has not
- * supplied stay visible as 〔回填〕 rather than being filled in.
+ * supplied stay visible as PENDING chips rather than being filled in.
  */
 const latent: CaseData = {
   slug: "latent",
@@ -22,7 +22,7 @@ const latent: CaseData = {
     kind: "instrument",
     component: "halation",
     caption:
-      "halation radius, interactive · procedural night pattern, radius exaggerated for reading — not a measurement",
+      "halation radius, live · drag to compare",
   },
   what: [
     "AI video has a tell. Blacks that hit zero. Highlights that clip instead of roll. Static frames that sit dead still. Nothing in the image ever passed through a physical medium — and your eye knows, even when you can't say why.",
@@ -34,9 +34,10 @@ const latent: CaseData = {
       body: "A film emulation can be tuned until it looks right, which makes it unfalsifiable. I shot CineStill 800T at night, developed it, scanned it, and pulled the numbers off my own negatives instead: channel bias, halation radius in pixels, grain σ per luminance zone. The cost is that the engine can only claim what the scans support — and the third calibration round threw out the first two, because the probe was in the wrong place.",
       figure: {
         kind: "pending",
-        note: "〔回填:四轮校准对比图 — evidence 包〕",
+        note: "calibration comparison — evidence pack",
         caption:
-          "shot at night on CineStill 800T · developed · scanned · numbers read off the negatives · 〔回填:批次与测量条件〕",
+          "shot at night on CineStill 800T · developed · scanned · numbers read off the negatives",
+        pending: "batch and probe conditions",
       },
     },
     {
@@ -44,9 +45,10 @@ const latent: CaseData = {
       body: "Judging output by eye reintroduces the taste problem, so the engine needs a target it cannot argue with. A spectral analyzer fits the radial power spectrum of a frame against natural-image statistics — the same measure forensics researchers use to detect AI images. Turned around, it becomes a repair target: the engine moves a frame's spectral falloff from −3.2 toward the −2 of the natural world.",
       figure: {
         kind: "pending",
-        note: "〔回填:SPECTRUM 诊断截图〕",
+        note: "SPECTRUM diagnostic capture",
         caption:
-          "radial power spectrum fit against natural-image statistics · repair target −2 · 〔回填:样本与条件〕",
+          "radial power spectrum fit against natural-image statistics · repair target −2",
+        pending: "sample and fit conditions",
       },
     },
     {
@@ -65,7 +67,7 @@ const latent: CaseData = {
       {
         claim:
           "Halation radius follows a power law, fit against my own scans.",
-        source: "〔回填:α 值与拟合条件〕",
+        pending: "halation power-law α — awaiting the fitted value",
       },
       {
         claim:
@@ -78,13 +80,18 @@ const latent: CaseData = {
         source: "radial power spectrum vs natural-image statistics",
       },
       {
+        claim:
+          "Calibration rounds and sample size are recorded and will be stated here.",
+        pending: "rounds and sample size",
+      },
+      {
         claim: "Shipped and running in the browser at latentfilm.com.",
         source: "WebGL2 · verify live",
       },
     ],
     limits: [
       "The hero comparator on this page is a demonstration, not a measurement: a procedural test pattern with the radius exaggerated so the effect reads at this size.",
-      "Calibration covers CineStill 800T; other stocks are not claimed. 〔回填:标定轮数与样本量〕",
+      "Calibration covers CineStill 800T; other stocks are not claimed.",
       "Grain and halation are simulated per frame; no temporal grain correlation is claimed.",
     ],
   },

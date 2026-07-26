@@ -10,13 +10,21 @@
 /** A figure: a live embed, a video, a still, a code block, or a
  *  labelled placeholder while the asset is missing. Caption states
  *  what it shows — condition, not compliment. */
-export type Figure =
-  | { kind: "live"; url: string; caption: string }
-  | { kind: "video"; src: string; poster?: string; caption: string }
-  | { kind: "image"; src: string; caption: string }
-  | { kind: "code"; lang?: string; code: string; caption: string }
-  | { kind: "instrument"; component: "halation"; caption: string }
-  | { kind: "pending"; note: string; caption: string };
+/** Anything still awaiting a real value carries `pending`: the template
+ *  renders it as a loud PENDING chip, never a quiet blank. A missing
+ *  number stays missing and stays visible — it must be impossible to
+ *  ship one by accident. */
+type Pending = { pending?: string };
+
+export type Figure = Pending &
+  (
+    | { kind: "live"; url: string; caption: string }
+    | { kind: "video"; src: string; poster?: string; caption: string }
+    | { kind: "image"; src: string; caption: string }
+    | { kind: "code"; lang?: string; code: string; caption: string }
+    | { kind: "instrument"; component: "halation"; caption: string }
+    | { kind: "pending"; note: string; caption: string }
+  );
 
 /** ⑤ BUILD: one decision per subsection — what I hit, what I chose,
  *  why. Never a feature list. */
@@ -29,7 +37,7 @@ export type Decision = {
 };
 
 /** ⑥ PROOF: evidence a skeptic would demand. */
-export type Proof = {
+export type Proof = Pending & {
   /** the claim, stated plainly */
   claim: string;
   /** where the number comes from: file, method, sample size */

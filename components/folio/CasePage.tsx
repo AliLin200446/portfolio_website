@@ -14,7 +14,7 @@ import LiveFacade from "./LiveFacade";
  * content/case/casepages.ts; 〔TODO〕/〔回填〕 stay visible — they are
  * the author's worklist, never fabricated. HERO gate: a missing asset
  * renders a marked block; such a page must not ship live.
- * Tokens: paper/ink/oxblood/copper · serif display, Newsreader italic
+ * Tokens: paper/ink/oxblood/copper · serif display, Newsreader
  * CLAIM · mono for ALL metadata and captions · no cards/shadows/radius.
  */
 
@@ -161,7 +161,7 @@ export default function CasePage({ data }: { data: CasePageData }) {
           {data.name}
         </h1>
         {data.subtitle && (
-          <p className="mt-3 font-serif text-xl italic text-muted">
+          <p className="mt-3 font-serif text-xl text-muted">
             {data.subtitle}
           </p>
         )}
@@ -175,9 +175,9 @@ export default function CasePage({ data }: { data: CasePageData }) {
         )}
       </section>
 
-      {/* ② CLAIM: one italic sentence, half a screen of air */}
+      {/* ② CLAIM: one sentence, half a screen of air */}
       <section id="claim" className="flex min-h-[45svh] scroll-mt-8 items-center">
-        <p className="max-w-[34ch] whitespace-pre-line font-serif text-4xl italic leading-tight sm:text-5xl">
+        <p className="max-w-[34ch] whitespace-pre-line font-serif text-4xl leading-tight sm:text-5xl">
           {data.claim}
         </p>
       </section>

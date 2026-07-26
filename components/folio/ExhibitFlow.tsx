@@ -232,7 +232,7 @@ export default function ExhibitFlow({ exhibits }: { exhibits: Exhibit[] }) {
                 </div>
                 {/* right-edge margin note: the author's real aside */}
                 {ex.note && (
-                  <aside className="border-l border-line pl-4 font-serif text-sm italic leading-6 text-muted">
+                  <aside className="border-l border-line pl-4 font-serif text-sm leading-6 text-muted">
                     {ex.note}
                   </aside>
                 )}

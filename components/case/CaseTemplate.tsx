@@ -13,7 +13,7 @@ import type { CaseData, Figure } from "@/content/cases/_schema";
  * methodical person; six bespoke layouts read as six.
  *
  * Type is fixed here so no page can drift: Geist Mono for nav, section
- * labels, metadata, captions and data; Spectral (roman, no italic axis
+ * labels, metadata, captions and data; Spectral (roman, no axis
  * loaded) for prose; single column capped at 68ch. Figures alternate
  * with prose — no more than two paragraphs without a visual break —
  * and every figure carries a mono caption.
@@ -28,6 +28,19 @@ const LABEL = "font-mono text-xs uppercase tracking-widest text-bronze-text";
 const PROSE = "max-w-[68ch] font-serif text-[17px] leading-relaxed";
 const CAPTION =
   "mt-3 font-mono text-[11px] leading-relaxed tracking-wide text-muted";
+
+/** A value that has not arrived yet. Loud on purpose: mono, boxed,
+ *  annotation-red — it exists so an unfinished page cannot be mistaken
+ *  for a finished one. These chips are temporary by definition; when
+ *  the real value lands the chip goes with it. */
+function Pending({ what }: { what: string }) {
+  return (
+    <span className="mt-2 inline-flex items-center gap-2 border border-oxblood px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-oxblood">
+      pending
+      <span className="tracking-normal normal-case">{what}</span>
+    </span>
+  );
+}
 
 function Fig({ figure }: { figure: Figure }) {
   const body = () => {
@@ -70,7 +83,15 @@ function Fig({ figure }: { figure: Figure }) {
   return (
     <figure className="mt-6">
       {body()}
-      <figcaption className={CAPTION}>{figure.caption}</figcaption>
+      <figcaption className={CAPTION}>
+        {figure.caption}
+        {figure.pending && (
+          <>
+            <br />
+            <Pending what={figure.pending} />
+          </>
+        )}
+      </figcaption>
     </figure>
   );
 }
@@ -194,6 +215,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
                   {p.source}
                 </p>
               )}
+              {p.pending && <Pending what={p.pending} />}
               {p.figure && <Fig figure={p.figure} />}
             </li>
           ))}

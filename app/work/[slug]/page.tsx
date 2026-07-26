@@ -22,7 +22,9 @@ const cases: Record<string, CaseData> = { latent };
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return Object.keys(casePages).map((slug) => ({ slug }));
+  return [...new Set([...Object.keys(casePages), ...Object.keys(cases)])].map(
+    (slug) => ({ slug })
+  );
 }
 
 export async function generateMetadata({
@@ -30,7 +32,10 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const cp = casePages[(await params).slug];
+  const slug = (await params).slug;
+  const c = cases[slug];
+  if (c) return { title: c.name.toUpperCase(), description: c.claim };
+  const cp = casePages[slug];
   return cp ? { title: cp.name, description: cp.claim } : {};
 }
 
