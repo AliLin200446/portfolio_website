@@ -18,7 +18,17 @@ type Pending = { pending?: string };
 
 export type Figure = Pending &
   (
-    | { kind: "live"; url: string; caption: string; poster?: string }
+    | {
+        kind: "live";
+        url: string;
+        caption: string;
+        poster?: string;
+        /** an animated loop standing in for the resting state. When
+         *  present the hero moves on its own and the live engine is one
+         *  click behind it; `motionStill` is what reduced-motion sees. */
+        motion?: string;
+        motionStill?: string;
+      }
     | { kind: "video"; src: string; poster?: string; caption: string }
     | {
         kind: "image";

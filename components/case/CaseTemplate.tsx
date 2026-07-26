@@ -52,8 +52,10 @@ function Fig({ figure }: { figure: Figure }) {
             liveUrl={figure.url}
             embeddable
             poster={figure.poster}
+            motion={figure.motion}
+            motionStill={figure.motionStill}
             posterNote={
-              figure.poster
+              figure.poster || figure.motion
                 ? undefined
                 : "high-res still pending — the live engine runs on click"
             }

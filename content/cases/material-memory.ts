@@ -24,9 +24,10 @@ const materialMemory: CaseData = {
   hero: {
     kind: "live",
     url: "https://material-memory.alilinlab.com",
-    poster: "/case-assets/material-memory/hero-poster.webp",
+    motion: "/case-assets/material-memory/hero-loop.webp",
+    motionStill: "/case-assets/material-memory/hero-still.webp",
     caption:
-      "the shipping simulator · push, drop and drag the cloth · click to run it live",
+      "the shipping simulator · the FOLD test, looping · push, drop and drag it yourself — click to run live",
   },
   what: [
     "Luxury returns run high because a product page shows a still image — drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph. About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025–26). Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought.",

@@ -21,12 +21,20 @@ export default function LiveFacade({
   embeddable,
   poster,
   posterNote,
+  motion,
+  motionStill,
   base,
 }: {
   liveUrl: string;
   embeddable: boolean;
   poster?: string;
   posterNote?: string;
+  /** looping resting state: the pitch is the movement, so it plays
+   *  unprompted and `▶ run live` still mounts the real engine over it.
+   *  Reduced motion swaps to a single frame at the source, not by
+   *  hiding an animation that already downloaded. */
+  motion?: string;
+  motionStill?: string;
   /** "comparator" = the latent SVG instrument as the resting layer */
   base?: "comparator";
 }) {
@@ -75,6 +83,21 @@ export default function LiveFacade({
         <div className="relative">
           {base === "comparator" ? (
             <HalationHero />
+          ) : motion ? (
+            <picture>
+              <source
+                srcSet={motionStill}
+                media="(prefers-reduced-motion: reduce)"
+                type="image/webp"
+              />
+              <img
+                src={motion}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="w-full border border-line"
+              />
+            </picture>
           ) : poster ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
