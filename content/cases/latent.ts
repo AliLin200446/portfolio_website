@@ -1,102 +1,95 @@
 import type { CaseData } from "./_schema";
 
 /*
- * LATENT — the first page built on the template. Every sentence below
- * is the author's own copy, carried over from lib/projects.ts and the
- * earlier case data; nothing here is invented. Gaps the author has not
- * supplied stay visible as PENDING chips rather than being filled in.
+ * LATENT — copy supplied by the author, verbatim.
+ *
+ * DISCLOSURE BOUNDARY (binding): the halation numbers and the spectral
+ * FINDINGS are cleared for publication. The b₂ FIT DOMAIN and the exact
+ * rmsK2 values are NOT cleared — pending Vestige claim review — so they
+ * render as PENDING-IP chips and appear nowhere in this file. No number
+ * below comes from anywhere but the author's copy.
  */
 const latent: CaseData = {
   slug: "latent",
-  name: "Latent",
-  oneLine: "A film physics engine for images that never passed through a camera.",
+  name: "LATENT",
+  oneLine:
+    "a film-emulation engine that puts measured film physics onto frames that never passed through a camera",
   meta: {
-    type: "Film physics engine",
-    stack: "WebGL2 · GLSL",
+    type: "film physics engine",
+    stack: "WebGL2 / GLSL",
     year: "2026",
     status: "shipped",
     live: "https://latentfilm.com",
   },
-  claim: "Filmic can be measured.",
+  claim: "“Filmic” can be measured.",
   hero: {
     kind: "instrument",
     component: "halation",
     caption:
-      "halation radius, live · drag to compare",
+      "CineStill 800T emulation · WebGL2, 30fps · calibrated against my own scans · halation radius, live — drag to compare",
   },
   what: [
-    "AI video has a tell. Blacks that hit zero. Highlights that clip instead of roll. Static frames that sit dead still. Nothing in the image ever passed through a physical medium — and your eye knows, even when you can't say why.",
-    "Latent puts the medium back. Halation, grain, highlight roll-off, dye crosstalk — simulated as physics, not filters. The hard part is that none of it is a look: every parameter has to come off a real negative, or the engine is just another filter stack with better vocabulary.",
+    "A WebGL2 engine that renders film physics onto AI-generated frames — for footage that was never shot on film, and shows it. Each frame runs a GLSL pipeline: spectral response, then halation, then grain. Every stage is calibrated against CineStill 800T I shot, developed, and scanned myself.",
+    "Film emulation usually means a LUT and a grain overlay — a look, applied. Latent treats the look as physics: light scattering in an emulsion, dye-layer crosstalk, grain that clumps by luminance. The difference is that every parameter traces to a negative I can hold up, not to a preset I liked.",
   ],
+  whatFigure: {
+    kind: "code",
+    code: "input → spectral response → halation → grain → output",
+    caption: "GLSL pipeline · three physical stages · calibrated per stage",
+  },
   build: [
     {
-      heading: "CALIBRATE AGAINST OWN NEGATIVES, NOT AGAINST TASTE",
-      body: "A film emulation can be tuned until it looks right, which makes it unfalsifiable. I shot CineStill 800T at night, developed it, scanned it, and pulled the numbers off my own negatives instead: channel bias, halation radius in pixels, grain σ per luminance zone. The cost is that the engine can only claim what the scans support — and the third calibration round threw out the first two, because the probe was in the wrong place.",
+      heading: "HALATION, READ OFF THE NEGATIVE",
+      body: "Halation is the red-orange bloom around clipped highlights — light scattering back through the emulsion. I didn't tune it by eye. I sampled the bloom along every clipped edge on my own 800T scans, tracking how much slower the red channel falls off than green and blue. The distance where the red-blue difference decays below threshold is the radius.",
+      data: "radius 4.9px ≈ 0.02 normalized · threshold 0.78 · tint (1.0, 0.4, 0.12) · intensity 0.25 — every number pulled off film, none fit to a curve",
       figure: {
         kind: "pending",
-        note: "calibration comparison — evidence pack",
+        note: "EXHIBIT 01 — halation comparator / before-after on a real clipped highlight",
         caption:
-          "shot at night on CineStill 800T · developed · scanned · numbers read off the negatives",
-        pending: "batch and probe conditions",
+          "EXHIBIT 01 · CINESTILL 800T · halation radius measured off negatives",
       },
     },
     {
-      heading: "BORROW THE FORENSICS MATH, RUN IT BACKWARDS",
-      body: "Judging output by eye reintroduces the taste problem, so the engine needs a target it cannot argue with. A spectral analyzer fits the radial power spectrum of a frame against natural-image statistics — the same measure forensics researchers use to detect AI images. Turned around, it becomes a repair target: the engine moves a frame's spectral falloff from −3.2 toward the −2 of the natural world.",
+      heading: "THE DETECTOR, RUN BACKWARDS",
+      body: "Forensics researchers flag AI images by the slope of their radial power spectrum: natural images sit near a k⁻² falloff, generated frames fall steeper. I built the same analyzer — not to detect, but to aim. It reads where a frame's spectrum sits and pushes it toward where real film lives.",
+      body2:
+        "Then measuring my own scans complicated the target, in a way worth keeping. Real 800T doesn't rest on the k⁻² line either — and its reading swings with content and framing. Across crops of the same negative the spectral energy ranges nearly fourfold. Film refuses to be one number. So the engine's target was never “hit −2.” It moves footage from where it sits toward a region real film occupies — a region, not a line.",
+      data: "three hand-scanned 800T frames · spectral slope fit ",
+      // NOT CLEARED: the b₂ fit domain stays a chip — pending Vestige claim review
+      dataPending: "spectral slope fit domain",
+      dataTail: " · reading swings ~4× across crops of one negative",
+      note: "scans delivered as JPEG; DCT quantization thins the mid-frequency tail, so any absolute reading reflects film through this delivery chain, not the emulsion itself",
       figure: {
         kind: "pending",
-        note: "SPECTRUM diagnostic capture",
+        note: "EXHIBIT 02 — the spectral analyzer, real scan vs engine output",
         caption:
-          "radial power spectrum fit against natural-image statistics · repair target −2",
-        pending: "sample and fit conditions",
-      },
-    },
-    {
-      heading: "SIMULATE THE PIPELINE IN ORDER, NOT AS A STACK OF FILTERS",
-      body: "Film effects are not independent layers; halation happens in the emulsion before grain is developed, and applying them in the wrong order gives the right ingredients with the wrong result. Each frame runs a GLSL pipeline in physical order — spectral response, then halation, then grain — so a change to one stage propagates the way it would in the material.",
-      figure: {
-        kind: "code",
-        lang: "text",
-        code: "input → spectral response → halation → grain → output",
-        caption: "pipeline order, as simulated per frame",
+          "EXHIBIT 02 · radial power spectrum · real film vs engine output",
       },
     },
   ],
+  proofLabel: "FINDINGS",
   proof: {
     items: [
       {
         claim:
-          "Halation radius follows a power law, fit against my own scans.",
-        pending: "halation power-law α — awaiting the fitted value",
+          "HALATION RADIUS measured off my own 800T negatives: 4.9px, ≈0.02 normalized to frame width. Threshold and red-bias tuned to match the scans, not fitted to a curve. Spatial physics, read off film.",
       },
       {
         claim:
-          "Every engine parameter traces to a measured negative — channel bias, halation radius in pixels, grain σ per luminance zone.",
-        source: "CineStill 800T, shot / developed / scanned by the author",
+          "REAL FILM REFUSES TO BE ONE NUMBER. Across crops of my own hand-scanned 800T, not one lands on the k⁻² line forensics researchers call “natural,” and the readings swing with content and framing. So the engine never chased −2. It moves AI footage from where it sits toward where real film actually lives: a region, not a line.",
+        // NOT CLEARED: exact rmsK2 values — pending Vestige claim review
+        pending: "rmsK2 values (IP review)",
       },
       {
         claim:
-          "A frame's spectral falloff can be moved from −3.2 toward the −2 of the natural world.",
-        source: "radial power spectrum vs natural-image statistics",
-      },
-      {
-        claim:
-          "Calibration rounds and sample size are recorded and will be stated here.",
-        pending: "rounds and sample size",
-      },
-      {
-        claim: "Shipped and running in the browser at latentfilm.com.",
-        source: "WebGL2 · verify live",
+          "EMULATION AS PHYSICS, NOT PRESET. Halation, grain, dye crosstalk, highlight roll-off — each is simulated from a measured cause, not applied as a filter. The look is the output of the physics, not a layer on top.",
       },
     ],
-    limits: [
-      "The hero comparator on this page is a demonstration, not a measurement: a procedural test pattern with the radius exaggerated so the effect reads at this size.",
-      "Calibration covers CineStill 800T; other stocks are not claimed.",
-      "Grain and halation are simulated per frame; no temporal grain correlation is claimed.",
-    ],
+    limits: [],
   },
   context:
-    "Latent is the first instrument in a line of them: I instrument what AI fakes. Dehancer assumes you've shot something. We assume you haven't — the engine exists for images with no negative behind them, and the negatives it was calibrated against are my own.",
+    "Latent is one instrument in a larger practice: I build tools that measure what generative models actually do, rather than decorate their output. The spectral analyzer here is the same idea as Teardown № 1 — take the math built to detect machines, and turn it into something that measures or repairs. The crop-sensitivity finding above is its own open thread: what I took for film's spectral fingerprint turned out to be my framing's.",
+  byline: "Ali Lin — design engineer",
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },
 };
 export default latent;

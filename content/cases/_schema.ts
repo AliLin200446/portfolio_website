@@ -33,6 +33,16 @@ export type Decision = {
   heading: string;
   /** one serif paragraph: the problem, the choice, the tradeoff */
   body: string;
+  /** a second paragraph where the decision needed one */
+  body2?: string;
+  /** the measured line, Geist Mono */
+  data?: string;
+  /** a value inside the data line that is NOT cleared: rendered as a
+   *  PENDING-IP chip between `data` and `dataTail`, never as text */
+  dataPending?: string;
+  dataTail?: string;
+  /** method caveat, mono, quieter than the data line */
+  note?: string;
   figure?: Figure;
 };
 
@@ -57,12 +67,15 @@ export type CaseData = {
   hero: Figure;
   /** ④ two short paragraphs, followable by a smart non-specialist */
   what: string[];
+  whatFigure?: Figure;
   /** ⑤ 2–4 decisions */
   build: Decision[];
-  /** ⑥ evidence + limits */
+  /** ⑥ evidence + limits; the section label may be renamed per page */
+  proofLabel?: string;
   proof: { items: Proof[]; limits: string[] };
   /** ⑦ one paragraph of placement */
   context: string;
+  byline?: string;
   prev?: { label: string; href: string };
   next?: { label: string; href: string };
 };

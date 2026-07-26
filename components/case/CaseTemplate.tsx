@@ -33,10 +33,10 @@ const CAPTION =
  *  annotation-red — it exists so an unfinished page cannot be mistaken
  *  for a finished one. These chips are temporary by definition; when
  *  the real value lands the chip goes with it. */
-function Pending({ what }: { what: string }) {
+function Pending({ what, ip }: { what: string; ip?: boolean }) {
   return (
     <span className="mt-2 inline-flex items-center gap-2 border border-oxblood px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-oxblood">
-      pending
+      {ip ? "pending-ip" : "pending"}
       <span className="tracking-normal normal-case">{what}</span>
     </span>
   );
@@ -180,6 +180,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
               {para}
             </p>
           ))}
+          {data.whatFigure && <Fig figure={data.whatFigure} />}
         </div>
       </section>
 
@@ -193,6 +194,19 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
                 {d.heading}
               </h2>
               <p className={`${PROSE} mt-4`}>{d.body}</p>
+              {d.body2 && <p className={`${PROSE} mt-4`}>{d.body2}</p>}
+              {d.data && (
+                <p className="mt-5 max-w-[68ch] font-mono text-[11px] leading-relaxed text-ink">
+                  {d.data}
+                  {d.dataPending && <Pending what={d.dataPending} ip />}
+                  {d.dataTail}
+                </p>
+              )}
+              {d.note && (
+                <p className="mt-3 max-w-[68ch] font-mono text-[10px] leading-relaxed text-muted">
+                  {d.note}
+                </p>
+              )}
               {d.figure && <Fig figure={d.figure} />}
             </div>
           ))}
@@ -201,7 +215,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
 
       {/* ⑥ WHY IT HOLDS — evidence, then limits */}
       <section id="proof" className="scroll-mt-8 border-t border-line py-14">
-        <p className={LABEL}>PROOF</p>
+        <p className={LABEL}>{data.proofLabel ?? "PROOF"}</p>
         <ul className="mt-8 max-w-[68ch]">
           {data.proof.items.map((p) => (
             <li
@@ -215,7 +229,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
                   {p.source}
                 </p>
               )}
-              {p.pending && <Pending what={p.pending} />}
+              {p.pending && <Pending what={p.pending} ip />}
               {p.figure && <Fig figure={p.figure} />}
             </li>
           ))}
@@ -240,6 +254,9 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
       <section id="more" className="scroll-mt-8 border-t border-line py-14">
         <p className={LABEL}>MORE</p>
         <p className={`${PROSE} mt-8`}>{data.context}</p>
+        {data.byline && (
+          <p className="mt-8 font-mono text-xs text-muted">{data.byline}</p>
+        )}
         <nav className="mt-10 flex flex-wrap justify-between gap-4 font-mono text-xs text-muted">
           {data.prev ? (
             <Link href={data.prev.href} className="transition-colors hover:text-bronze-text">
