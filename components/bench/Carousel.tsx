@@ -11,7 +11,6 @@ import Cocoon from "./Cocoon";
 import FilmRoll from "./FilmRoll";
 import Movement from "./Movement";
 import Seal from "./Seal";
-import TuningFork from "./TuningFork";
 
 /*
  * CAROUSEL — experimental outward-facing round-table alternative to the
@@ -101,7 +100,6 @@ type DivePose = { y: number; z: number; pitch: number };
  *  shell / bridge slit / stamp face. */
 const DIVES: Record<string, DivePose> = {
   latent: { y: 0.5, z: RADIUS + 1.0, pitch: -6 },
-  resonance: { y: 0.62, z: RADIUS + 1.05, pitch: -4 },
   "skeletal-silk": { y: 0.56, z: RADIUS + 0.95, pitch: -2 },
   teardown: { y: 0.85, z: RADIUS + 0.7, pitch: -38 },
   vestige: { y: 0.5, z: RADIUS + 1.0, pitch: -18 },
@@ -113,7 +111,6 @@ const DIVES: Record<string, DivePose> = {
  *  BenchArrival's CUT_BG so the route change is invisible. */
 const CUT_SURFACE: Record<string, { bg: string; label?: string }> = {
   latent: { bg: "#14100d" },
-  resonance: { bg: "#F5F2EC" },
   "skeletal-silk": { bg: "#FBF5E8" },
   teardown: { bg: "#241C15", label: "LOG #—" },
   vestige: { bg: "#F5F2EC" },
@@ -504,7 +501,6 @@ function GlintArc() {
 function playMechanism(id: string) {
   const s = useBenchStore.getState();
   if (id === "latent") s.b1Feed();
-  if (id === "resonance") s.b2Strike();
   if (id === "skeletal-silk") s.b3Pull();
   if (id === "vestige") s.b5Stamp();
 }
@@ -733,8 +729,7 @@ export default function Carousel() {
       return;
     }
     if (id === "latent") s.b1Feed();
-    if (id === "resonance") s.b2Strike();
-    if (id === "vestige") s.b5Stamp();
+      if (id === "vestige") s.b5Stamp();
     s.startTransition(id);
   };
 
@@ -782,9 +777,6 @@ export default function Carousel() {
         <group ref={ring}>
           {/* outward-facing: each berth rotated to its tangent normal so
               the face always addresses the viewing arc */}
-          <group position={berthPos(berthOf("resonance"))} rotation={[0, berthAngle(berthOf("resonance")), 0]}>
-            <TuningFork position={[0, 0, 0]} />
-          </group>
           <group position={berthPos(berthOf("skeletal-silk"))} rotation={[0, berthAngle(berthOf("skeletal-silk")), 0]}>
             <Cocoon position={[0, 0, 0]} />
           </group>

@@ -16,7 +16,6 @@ import { useEffect, useRef, useState } from "react";
 const PROJECTS: { label: string; slug: string }[] = [
   { label: "LATENT", slug: "latent" },
   { label: "MATERIAL MEMORY", slug: "material-memory" },
-  { label: "RESONANCE", slug: "resonance" },
   { label: "SKELETAL SILK", slug: "skeletal-silk" },
   { label: "TEARDOWN", slug: "teardown" },
   { label: "VESTIGE", slug: "vestige" },

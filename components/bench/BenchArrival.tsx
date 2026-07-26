@@ -16,7 +16,6 @@ import { useEffect, useState } from "react";
 
 const CUT_BG: Record<string, string> = {
   latent: "#14100d",
-  resonance: "#F5F2EC",
   "skeletal-silk": "#FBF5E8",
   vestige: "#F5F2EC",
   teardown: "#241C15", // LOG surface carries into the folio page
@@ -36,11 +35,6 @@ export default function BenchArrival({ slug }: { slug: string }) {
     if (sessionStorage.getItem("bench-cut") !== slug || !CUT_BG[slug]) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     setVeil(CUT_BG[slug]);
-    if (slug === "resonance")
-      document.body.animate(
-        [{ transform: "scale(1.015)" }, { transform: "scale(1)" }],
-        { duration: 400, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
-      );
     const id = setTimeout(() => setVeil(null), (VEIL_MS[slug] ?? 350) + 30);
     return () => clearTimeout(id);
   }, [slug]);
