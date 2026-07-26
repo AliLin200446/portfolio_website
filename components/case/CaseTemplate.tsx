@@ -274,6 +274,21 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
       <section id="more" className="scroll-mt-8 border-t border-line py-14">
         <p className={LABEL}>MORE</p>
         <p className={`${PROSE} mt-8`}>{data.context}</p>
+        {/* the ending is an action, not a conclusion: on a page whose
+            subject is a working tool, the last thing the reader meets is
+            the door to it — larger than the byline, ahead of the nav */}
+        {data.cta && (
+          <p className="mt-10">
+            <a
+              href={data.cta.href}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-block border border-ink px-5 py-3 font-mono text-sm transition-colors hover:text-bronze-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
+            >
+              {data.cta.label}
+            </a>
+          </p>
+        )}
         {data.byline && (
           <p className="mt-8 font-mono text-xs text-muted">{data.byline}</p>
         )}

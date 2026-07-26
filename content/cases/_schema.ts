@@ -87,6 +87,9 @@ export type CaseData = {
   /** ⑦ one paragraph of placement */
   context: string;
   byline?: string;
+  /** the page's closing move. Present only when the work itself is the
+   *  argument and the reader should go use it rather than read on. */
+  cta?: { label: string; href: string };
   prev?: { label: string; href: string };
   next?: { label: string; href: string };
 };
