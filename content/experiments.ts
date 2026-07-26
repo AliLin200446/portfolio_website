@@ -46,6 +46,14 @@ export const experiments: Experiment[] = [
     tags: ["web3", "emotion"],
     href: "https://lethe-river.alilinlab.com/",
   },
+  {
+    name: "Consensus Couture",
+    // the mechanism, not the pitch: what actually happens, in order
+    line: "the market votes on a design first — only voted-for units get produced",
+    year: "2026", // DRAFT: 年份待你核
+    tags: ["web3", "3d"],
+    href: "https://consensus-couture.alilinlab.com/",
+  },
   // 填字模板(照抄,一条一分钟):
   // { name: 'Cyber I Ching', line: 'Ethereum block hash → I Ching hexagram', year: '2025',
   //   tags: ['web3','generative'], href: '〔live URL〕', featured: true,
