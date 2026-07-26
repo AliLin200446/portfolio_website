@@ -47,7 +47,9 @@ import Seal from "./Seal";
  * frameloop="demand", settled = zero rAF, DOM above 3D, warm fog only.
  */
 
-const STEP = Math.PI / 3;
+// derived, never hardcoded: five instruments must close the full circle,
+// and the next add or drop must not leave a gap where a berth used to be
+const STEP = (Math.PI * 2) / BERTH_ORDER.length;
 const RADIUS = 2.6;
 const TABLE_R = 3.5;
 const DAMPING = 0.08;
@@ -122,22 +124,63 @@ const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 /** Matte tabletop: same paper-noise recipe as the rail worktop. */
 function useTableTexture() {
   return useMemo(() => {
+    // procedural walnut, zero network: a warm base, long grain lines
+    // that wander rather than run straight, a few plank seams, and
+    // scattered pores. Drawn once at 1024 and never tiled — a repeating
+    // pattern on a round top reads as wallpaper, not as a single board.
+    const S = 1024;
     const c = document.createElement("canvas");
-    c.width = c.height = 256;
+    c.width = c.height = S;
     const g = c.getContext("2d")!;
-    g.fillStyle = "#f0ece2";
-    g.fillRect(0, 0, 256, 256);
-    const img = g.getImageData(0, 0, 256, 256);
-    for (let i = 0; i < img.data.length; i += 4) {
-      const n = (Math.random() - 0.5) * 9;
-      img.data[i] += n;
-      img.data[i + 1] += n;
-      img.data[i + 2] += n;
+
+    g.fillStyle = "#8A6244";
+    g.fillRect(0, 0, S, S);
+
+    // plank bands: subtle tone shifts so the top reads as jointed stock
+    let y = 0;
+    while (y < S) {
+      const h = 150 + Math.random() * 170;
+      g.fillStyle = `rgba(${Math.random() < 0.5 ? "62,42,26" : "160,126,96"},${
+        0.04 + Math.random() * 0.05
+      })`;
+      g.fillRect(0, y, S, h);
+      y += h;
     }
-    g.putImageData(img, 0, 0);
+
+    // grain: long horizontal strokes with a slow sine wander
+    for (let i = 0; i < 460; i++) {
+      const y0 = Math.random() * S;
+      const amp = 4 + Math.random() * 16;
+      const freq = (0.6 + Math.random() * 1.8) / S;
+      const phase = Math.random() * Math.PI * 2;
+      const dark = Math.random() < 0.62;
+      g.strokeStyle = dark
+        ? `rgba(76,52,32,${0.05 + Math.random() * 0.14})`
+        : `rgba(188,156,124,${0.04 + Math.random() * 0.09})`;
+      g.lineWidth = 0.6 + Math.random() * 2.2;
+      g.beginPath();
+      for (let x = 0; x <= S; x += 8) {
+        const yy = y0 + Math.sin(x * freq * Math.PI * 2 + phase) * amp;
+        if (x === 0) g.moveTo(x, yy);
+        else g.lineTo(x, yy);
+      }
+      g.stroke();
+    }
+
+    // pores: the fine dark flecks that stop it looking airbrushed
+    for (let i = 0; i < 2600; i++) {
+      g.fillStyle = `rgba(58,38,20,${0.05 + Math.random() * 0.18})`;
+      g.fillRect(Math.random() * S, Math.random() * S, 1 + Math.random() * 3, 1);
+    }
+
     const tex = new THREE.CanvasTexture(c);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(4, 4);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    // the cap UV is a planar projection, so drawn-horizontal grain runs
+    // front-to-back and perspective folds it into a starburst. Turned a
+    // quarter so the grain crosses the viewer, as on a real board.
+    tex.center.set(0.5, 0.5);
+    tex.rotation = Math.PI / 2;
     return tex;
   }, []);
 }
@@ -566,8 +609,15 @@ function Table() {
   const tex = useTableTexture();
   return (
     <mesh position={[0, -0.07, 0]}>
-      <cylinderGeometry args={[TABLE_R, TABLE_R, 0.14, 64]} />
-      <meshStandardMaterial map={tex} roughness={1} metalness={0} />
+      {/* a bevelled rim, as on the reference: the top radius sits proud
+          of the base so the edge catches a highlight instead of ending
+          in a hard cylinder wall */}
+      <cylinderGeometry args={[TABLE_R, TABLE_R * 0.985, 0.16, 96]} />
+      <meshStandardMaterial
+        map={tex}
+        roughness={0.72}
+        metalness={0}
+      />
     </mesh>
   );
 }
