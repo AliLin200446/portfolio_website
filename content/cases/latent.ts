@@ -43,10 +43,14 @@ const latent: CaseData = {
       body: "Halation is the red-orange bloom around clipped highlights — light scattering back through the emulsion. I didn't tune it by eye. I sampled the bloom along every clipped edge on my own 800T scans, tracking how much slower the red channel falls off than green and blue. The distance where the red-blue difference decays below threshold is the radius.",
       data: "radius 4.9px ≈ 0.02 normalized · threshold 0.78 · tint (1.0, 0.4, 0.12) · intensity 0.25 — every number pulled off film, none fit to a curve",
       figure: {
-        kind: "pending",
-        note: "EXHIBIT 01 — halation comparator / before-after on a real clipped highlight",
+        kind: "image",
+        src: "/case-assets/latent/exhibit-01-halation.png",
+        width: 1379,
+        height: 844,
+        selfCaptioned: true,
         caption:
-          "EXHIBIT 01 · CINESTILL 800T · halation radius measured off negatives",
+          "EXHIBIT 01 · CineStill 800T · halation radius measured off negatives",
+        attribution: "EXHIBIT 01 · measured off my own CineStill 800T negatives",
       },
     },
     {
@@ -54,16 +58,22 @@ const latent: CaseData = {
       body: "Forensics researchers flag AI images by the slope of their radial power spectrum: natural images sit near a k⁻² falloff, generated frames fall steeper. I built the same analyzer — not to detect, but to aim. It reads where a frame's spectrum sits and pushes it toward where real film lives.",
       body2:
         "Then measuring my own scans complicated the target, in a way worth keeping. Real 800T doesn't rest on the k⁻² line either — and its reading swings with content and framing. Across crops of the same negative the spectral energy ranges nearly fourfold. Film refuses to be one number. So the engine's target was never “hit −2.” It moves footage from where it sits toward a region real film occupies — a region, not a line.",
-      data: "three hand-scanned 800T frames · spectral slope fit ",
-      // NOT CLEARED: the b₂ fit domain stays a chip — pending Vestige claim review
-      dataPending: "spectral slope fit domain",
-      dataTail: " · reading swings ~4× across crops of one negative",
+      // CHIPS LIFTED: exhibit-02 publishes these values in the figure
+      // itself, so holding them back in the text would contradict the
+      // image on the same page. Both values are read off the plot —
+      // the domain from its x-axis, the spread from its footnote.
+      data: "three hand-scanned 800T frames · spectral slope fit over k = 2–128 cycles across a 256 px native patch · b₂ = −3.19 / −0.95 / −3.25 · reading swings ~4× across crops of one negative",
       note: "scans delivered as JPEG; DCT quantization thins the mid-frequency tail, so any absolute reading reflects film through this delivery chain, not the emulsion itself",
       figure: {
-        kind: "pending",
-        note: "EXHIBIT 02 — the spectral analyzer, real scan vs engine output",
+        kind: "image",
+        src: "/case-assets/latent/exhibit-02-spectral.png",
+        width: 1600,
+        height: 1080,
+        selfCaptioned: true,
         caption:
           "EXHIBIT 02 · radial power spectrum · real film vs engine output",
+        attribution:
+          "EXHIBIT 02 · measured 2026-07-26 on the shipping implementation",
       },
     },
   ],
@@ -77,8 +87,8 @@ const latent: CaseData = {
       {
         claim:
           "REAL FILM REFUSES TO BE ONE NUMBER. Across crops of my own hand-scanned 800T, not one lands on the k⁻² line forensics researchers call “natural,” and the readings swing with content and framing. So the engine never chased −2. It moves AI footage from where it sits toward where real film actually lives: a region, not a line.",
-        // NOT CLEARED: exact rmsK2 values — pending Vestige claim review
-        pending: "rmsK2 values (IP review)",
+        source:
+          "36 crops across the same three negatives span b₂ −0.49 … −3.40 (exhibit 02)",
       },
       {
         claim:

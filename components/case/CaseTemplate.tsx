@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
 import CaseIndex from "@/components/folio/CaseIndex";
@@ -62,8 +63,20 @@ function Fig({ figure }: { figure: Figure }) {
           />
         );
       case "image":
-        // eslint-disable-next-line @next/next/no-img-element
-        return <img src={figure.src} alt="" className="w-full border border-line" />;
+        // full measure width, hairline border, never scaled past its
+        // native size; lazy by default, and next/image serves a 2x
+        // source at this width so it stays sharp on retina
+        return (
+          <Image
+            src={figure.src}
+            alt={figure.caption}
+            width={figure.width ?? 1600}
+            height={figure.height ?? 1000}
+            sizes="(max-width: 1024px) 100vw, 976px"
+            className="h-auto w-full border border-line"
+            style={{ maxWidth: figure.width ? `${figure.width}px` : undefined }}
+          />
+        );
       case "code":
         return (
           <pre className="overflow-x-auto border border-line bg-[#EDE9E0] p-4 font-mono text-xs leading-relaxed text-ink">
@@ -81,10 +94,10 @@ function Fig({ figure }: { figure: Figure }) {
     }
   };
   return (
-    <figure className="mt-6">
+    <figure className="my-10">
       {body()}
       <figcaption className={CAPTION}>
-        {figure.caption}
+        {figure.kind === "image" && figure.selfCaptioned ? figure.attribution : figure.caption}
         {figure.pending && (
           <>
             <br />

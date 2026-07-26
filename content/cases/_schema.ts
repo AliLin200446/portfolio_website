@@ -20,7 +20,18 @@ export type Figure = Pending &
   (
     | { kind: "live"; url: string; caption: string }
     | { kind: "video"; src: string; poster?: string; caption: string }
-    | { kind: "image"; src: string; caption: string }
+    | {
+        kind: "image";
+        src: string;
+        caption: string;
+        width?: number;
+        height?: number;
+        /** the figure carries its own title and method notes — the
+         *  template then prints only a one-line attribution, so the
+         *  page never says the same thing twice */
+        selfCaptioned?: boolean;
+        attribution?: string;
+      }
     | { kind: "code"; lang?: string; code: string; caption: string }
     | { kind: "instrument"; component: "halation"; caption: string }
     | { kind: "pending"; note: string; caption: string }
