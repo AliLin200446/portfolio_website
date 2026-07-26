@@ -100,6 +100,6 @@ same shader, both times — only the uniforms differ`,
     href: "https://skeletal-silk.alilinlab.com",
   },
   prev: { label: "VESTIGE", href: "/work/vestige" },
-  next: { label: "RESONANCE", href: "/work/resonance" },
+  next: { label: "LATENT", href: "/work/latent" },
 };
 export default skeletalSilk;

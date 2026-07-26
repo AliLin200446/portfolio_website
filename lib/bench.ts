@@ -1,4 +1,6 @@
-/** THE BENCH — five stations along the bench X axis. Order is bench order. */
+/** THE BENCH — five instruments along the bench X axis. Order is bench
+ *  order. RESONANCE left the rail for the experiments cabinet; its
+ *  tuning fork now rests on top of that cabinet instead. */
 export type Station = {
   id: string;
   label: string;
@@ -19,13 +21,6 @@ export const STATIONS: Station[] = [
     href: "/work/latent",
     line: "Dehancer assumes you've shot something. We assume you haven't.",
     hover: "LATENT · film physics engine · shipped Jul 2026 · WebGL/GLSL · latentfilm.com",
-  },
-  {
-    id: "resonance",
-    label: "RESONANCE",
-    href: "/work/resonance",
-    line: "A physical feedback interface for world model outputs.",
-    hover: "RESONANCE · a physical feedback interface for world model outputs · live · resonance.alilinlab.com",
   },
   {
     id: "skeletal-silk",
@@ -61,7 +56,6 @@ export const STATIONS: Station[] = [
  *  Decoupled from STATIONS, which stays the narrative order for nav and
  *  the DOM list. */
 export const BERTH_ORDER = [
-  "resonance",
   "skeletal-silk",
   "latent",
   "teardown",

@@ -47,6 +47,16 @@ export const experiments: Experiment[] = [
     href: "https://lethe-river.alilinlab.com/",
   },
   {
+    name: "Resonance",
+    // the mechanism only. The earlier page claimed a physics engine, a
+    // spectral frequency map and generation health; none of that is
+    // restated here.
+    line: "a physical feedback interface for world model outputs",
+    year: "2026", // DRAFT: 年份待你核
+    tags: ["3d", "web"],
+    href: "https://resonance.alilinlab.com/",
+  },
+  {
     name: "Consensus Couture",
     // the mechanism, not the pitch: what actually happens, in order
     line: "the market votes on a design first — only voted-for units get produced",

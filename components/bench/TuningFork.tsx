@@ -177,7 +177,10 @@ export default function TuningFork({
   const strikeNonce = useBenchStore((s) => s.b2StrikeNonce);
 
   const [hover, setHover] = useState(false);
-  const awake = hover || berth === berthOf("resonance");
+  // off the rail (experiments cabinet) berthOf is -1 and the fork wakes
+  // on hover alone; on the rail it also wakes at its own berth
+  const railBerth = berthOf("resonance");
+  const awake = hover || (railBerth >= 0 && berth === railBerth);
 
   const uniforms = useMemo(
     () => ({

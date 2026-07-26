@@ -2,6 +2,7 @@
 
 import { Html } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import TuningFork from "./bench/TuningFork";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -266,6 +267,17 @@ function Scene({ active }: { active: Tag | null }) {
 
       {/* THE open drawer — bare wood interior, holds nothing; while it
           is out it is also the hover/click target */}
+      {/* the tuning fork left the bench and now stands on the cabinet
+          lid — an instrument set down on the furniture that stores the
+          rest. It wakes on hover; it is not a drawer and never
+          intercepts one (the drawers own their own raycasting). */}
+      <group
+        position={[W * 0.32, (H + 0.07) / 2, -0.18]}
+        scale={0.62}
+      >
+        <TuningFork position={[0, 0, 0]} />
+      </group>
+
       <group ref={open} visible={false}>
         {/* walls only — the front is the instanced face travelling with
             it; raycast disabled so an open drawer never steals a

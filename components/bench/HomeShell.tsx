@@ -35,68 +35,6 @@ const plateBase =
 const plateBtn =
   "mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]";
 
-/** B2 companion piece: the luma sparkline. Display, not a control. */
-function LumaSparkline() {
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const hist = useRef<number[]>([]);
-  const luma = useBenchStore((s) => s.b2Luma);
-
-  useEffect(() => {
-    hist.current.push(luma);
-    if (hist.current.length > 60) hist.current.shift();
-    const c = canvas.current;
-    if (!c) return;
-    const g = c.getContext("2d")!;
-    g.clearRect(0, 0, 60, 12);
-    g.strokeStyle = "#1a1714";
-    g.lineWidth = 1;
-    g.beginPath();
-    hist.current.forEach((v, i) => {
-      const x = i + 0.5;
-      const y = 11 - v * 10;
-      if (i === 0) g.moveTo(x, y);
-      else g.lineTo(x, y);
-    });
-    g.stroke();
-  }, [luma]);
-
-  return (
-    <div className="mt-2 flex items-center gap-2">
-      <canvas ref={canvas} width={60} height={12} aria-hidden />
-      <span style={{ fontSize: 9 }} className="text-muted">
-        driven by video luminance
-      </span>
-    </div>
-  );
-}
-
-function ResonanceNameplate() {
-  const berth = useBenchStore((s) => s.berth);
-  const strike = useBenchStore((s) => s.b2Strike);
-  const strikeNonce = useBenchStore((s) => s.b2StrikeNonce);
-  if (berth !== berthOf("resonance")) return null;
-  return (
-    <div className={plateBase}>
-      <p>
-        <span className="text-ink">RESONANCE</span> — physics for AI video ·{" "}
-        <a
-          href="https://resonance.alilinlab.com"
-          target="_blank"
-          rel="noreferrer"
-          className="transition-colors hover:text-bronze"
-        >
-          live → resonance.alilinlab.com
-        </a>
-      </p>
-      <button type="button" onClick={strike} className={plateBtn}>
-        tap · ENTER
-      </button>
-      <EnterLink slug="resonance" nonce={strikeNonce} />
-      <LumaSparkline />
-    </div>
-  );
-}
-
 function SilkNameplate() {
   const berth = useBenchStore((s) => s.berth);
   const pull = useBenchStore((s) => s.b3Pull);
@@ -286,7 +224,6 @@ export default function HomeShell() {
       {bench3d && (
         <>
           <LatentNameplate />
-          <ResonanceNameplate />
           <SilkNameplate />
           <TeardownNameplate />
           <VestigeNameplate />

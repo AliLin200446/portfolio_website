@@ -96,6 +96,9 @@ function defineCase(c: CasePageData): CasePageData {
   return c;
 }
 
+/* RESONANCE was removed here: it moved from /work to the experiments
+ * cabinet (content/experiments.ts). Its copy is recoverable from git
+ * history rather than kept as dead weight in the registry. */
 export const casePages: Record<string, CasePageData> = {
   /* latent has moved to the case template (content/cases/latent.ts);
    * its legacy entry — and the build notes that had leaked into it —
@@ -188,60 +191,6 @@ export const casePages: Record<string, CasePageData> = {
         ],
       },
     ],
-    role: "design engineer",
-    next: { label: "VESTIGE", href: "/work/vestige" },
-  },
-  resonance: {
-    slug: "resonance",
-    type: "specimen",
-    name: "RESONANCE",
-    // 定位定稿(全站统一,替换旧二选一);stack/role/type 作者逐字
-    metaLine:
-      "RESONANCE — a physical feedback interface for world model outputs · Three.js · GLSL · Claude API · Fal.ai · React · Vercel · PENDING — year · PENDING — status",
-    claim: "AI video, given physical consequences.",
-    hero: {
-      kind: "facade",
-      liveUrl: "https://resonance.alilinlab.com",
-      embeddable: true,
-      poster: "/work/resonance-poster.jpg",
-    },
-    heroCaption:
-      "video-luminance-driven sim · 60fps · fal pipeline, strength verified in payload",
-    what: "An interface that turns AI-generated video into a live physical simulation, for creators who judge output by feel, not by frame. A VideoTexture streams each frame to the GPU, where shaders read it as input fields for the simulation. Luminance maps to vertex displacement: pixels above a set threshold push the mesh outward, scaled by amplitude; pixels below it exert nothing.",
-    mech: { nodes: ["luminance", "sim parameters"] },
-    // type: Solo project(schema 无 type 槽,记此);Problem/Solution
-    // 段原文未随 prompt 附上——到手后入 WHAT/label,现 WHAT 保持 v2 逐字
-    role: "Sole Designer & Engineer",
-    next: { label: "SKELETAL SILK", href: "/work/skeletal-silk" },
-  },
-  "skeletal-silk": {
-    slug: "skeletal-silk",
-    type: "specimen",
-    name: "SKELETAL SILK",
-    metaLine:
-      "SKELETAL SILK — vision-to-shader pipeline · Claude Vision → GLSL · PENDING — year · PENDING — status",
-    // claim 上屏取自作者原句("…every shader parameter is inferred,
-    // not chosen");v2 旧 claim 逐字封存:"The model outputs a
-    // coordinate, not an image."
-    claim: "Inferred, not chosen.",
-    hero: {
-      kind: "facade",
-      liveUrl: "https://skeletal-silk.alilinlab.com",
-      embeddable: true,
-      posterNote: "20s recording — swatch click to JSON to shader",
-    },
-    heroCaption:
-      "Claude Vision → 4 params → GLSL uniforms · temp 0 · schema/clamp/fallback",
-    // label 润色稿上屏;v2 旧 WHAT 逐字封存:
-    // "A pipeline that lets a vision model drive a material shader,
-    //  for interfaces where AI must change rendering, not generate
-    //  pictures. Claude Vision reads a fabric swatch and returns four
-    //  constrained parameters as JSON, which bind directly to GLSL
-    //  uniforms. Calls run at temperature 0 behind a schema;
-    //  out-of-range values clamp, and a failed parse falls back to
-    //  defaults."
-    what: "Skeletal Silk asks whether AI can read a material and translate it into physics — a closed-loop pipeline from a photo of cloth, through Claude Vision, to GLSL, where every shader parameter is inferred, not chosen.",
-    mech: { nodes: ["Vision", "4 params", "uniforms"] },
     role: "design engineer",
     next: { label: "VESTIGE", href: "/work/vestige" },
   },

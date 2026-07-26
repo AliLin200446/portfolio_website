@@ -17,7 +17,6 @@ import Cocoon from "./Cocoon";
 import FilmRoll from "./FilmRoll";
 import Movement from "./Movement";
 import Seal from "./Seal";
-import TuningFork from "./TuningFork";
 
 /*
  * BENCH-LAYOUT: six berths on one horizontal rail, the film canister
@@ -257,7 +256,6 @@ export default function Bench() {
       <Worktop />
       {/* spatial order (BENCH-LAYOUT): fork · cocoon — [film/center] —
           movement · seal · figure */}
-      <TuningFork position={[berthOf("resonance") * BERTH_SPACING, 0, 0]} />
       <Cocoon position={[berthOf("skeletal-silk") * BERTH_SPACING, 0, 0]} />
       <FilmRoll position={[berthOf("latent") * BERTH_SPACING, 0, 0]} />
       <Movement position={[berthOf("teardown") * BERTH_SPACING, 0, 0]} />
