@@ -28,6 +28,26 @@ import { SectionNo } from "./FolioChrome";
  * oxblood instance — one at a time, by construction.
  */
 
+/* ── split-screen primitives, shared (FIELDNOTES-CARDS reuses these
+ * rather than growing a second split system): the enhancement gate and
+ * the two-column shell. Below the gate every consumer falls back to one
+ * linear column with zero content loss. ── */
+export const SPLIT_GRID = "grid grid-cols-2 gap-16";
+
+export function useSplitEnhancement() {
+  const [enhanced, setEnhanced] = useState(false);
+  useEffect(() => {
+    const ok = window.matchMedia(
+      "(min-width: 1024px) and (prefers-reduced-motion: no-preference)"
+    );
+    const update = () => setEnhanced(ok.matches);
+    update();
+    ok.addEventListener("change", update);
+    return () => ok.removeEventListener("change", update);
+  }, []);
+  return enhanced;
+}
+
 function HalationSvg({ id, r }: { id: string; r: number }) {
   // procedural night test pattern: point highlights over film base;
   // halation = gaussian blur of the highlights behind themselves
@@ -112,19 +132,8 @@ function Visual({ ex, idSuffix }: { ex: Exhibit; idSuffix: string }) {
 export default function ExhibitFlow({ exhibits }: { exhibits: Exhibit[] }) {
   const wrap = useRef<HTMLDivElement>(null);
   const blocks = useRef<(HTMLDivElement | null)[]>([]);
-  const [enhanced, setEnhanced] = useState(false);
   const [active, setActive] = useState(0);
-
-  // enhancement gate: wide viewport + motion tolerance + JS present
-  useEffect(() => {
-    const ok = window.matchMedia(
-      "(min-width: 1024px) and (prefers-reduced-motion: no-preference)"
-    );
-    const update = () => setEnhanced(ok.matches);
-    update();
-    ok.addEventListener("change", update);
-    return () => ok.removeEventListener("change", update);
-  }, []);
+  const enhanced = useSplitEnhancement(); // shared gate (see above)
 
   // which EXHIBIT owns the center band owns the sticky panel
   useEffect(() => {
@@ -195,7 +204,7 @@ export default function ExhibitFlow({ exhibits }: { exhibits: Exhibit[] }) {
       className={enhanced ? "js-scrolly" : undefined}
       data-exhibit-flow
     >
-      <div className={enhanced ? "grid grid-cols-2 gap-16" : undefined}>
+      <div className={enhanced ? SPLIT_GRID : undefined}>
         {/* left: the scrolling notebook flow (with margin notes) */}
         <div>
           {exhibits.map((ex, i) => (

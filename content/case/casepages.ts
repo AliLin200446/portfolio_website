@@ -71,6 +71,9 @@ export type CasePageData = {
    * indistinguishable). A Passage carries an optional run-in heading
    * plus its paragraphs; PROBLEM and VALUE use headings, BRIEF and
    * APPROACH do not. */
+  /** FIELDNOTES-CARDS: mount the six-card set (data lives in
+   *  content/case/fieldnotes.ts, transcribed from the author's report) */
+  fieldNotes?: boolean;
   brief?: Passage[];
   problem?: Passage[];
   approach?: Passage[];
@@ -234,6 +237,7 @@ export const casePages: Record<string, CasePageData> = {
       "GUIDANCE HAS NO RESTING POINT. Across G1→G20 no adjacent pair falls below 17.167% changed pixels (Δ>32); the last rung still moves 57.591%. The default of 3.5 is a choice, not a convergence point.",
       "THE DOCS AND THE WIRE DISAGREE. The timings field is typed as Timings; the type is not defined. The steps ceiling of 50 is discoverable only by sending 999 and reading the error body. Validation and gateway errors arrive in two different shapes.",
     ],
+    fieldNotes: true,
     findingsNote:
       "Each finding closes with a build note on the page — cache on the parameter tuple, budget steps before anything else, size timeouts from the segment you have to time yourself.",
     value: [

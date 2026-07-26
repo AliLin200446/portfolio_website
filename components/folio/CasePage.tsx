@@ -3,6 +3,7 @@ import CaseIndex from "./CaseIndex";
 import { berthOf } from "@/lib/bench";
 import type { CasePageData } from "@/content/case/casepages";
 import ExhibitFlow from "./ExhibitFlow";
+import FieldNotes from "./FieldNotes";
 import { FolioBar } from "./FolioChrome";
 import HalationHero from "./HalationHero";
 import LiveFacade from "./LiveFacade";
@@ -145,6 +146,7 @@ export default function CasePage({ data }: { data: CasePageData }) {
       ? [{ id: "exhibits", label: "EXHIBITS" }]
       : []),
     ...(folio && data.findings ? [{ id: "findings", label: "FINDINGS" }] : []),
+    ...(data.fieldNotes ? [{ id: "fieldnotes", label: "FIELD NOTES" }] : []),
     ...(data.value ? [{ id: "value", label: "VALUE" }] : []),
   ];
   return (
@@ -277,6 +279,16 @@ export default function CasePage({ data }: { data: CasePageData }) {
               {data.findingsNote}
             </p>
           )}
+        </section>
+      )}
+
+      {/* FIELD NOTES — the six cards + their evidence (teardown only) */}
+      {data.fieldNotes && (
+        <section id="fieldnotes" className="scroll-mt-8 border-t border-line py-14">
+          <p className="font-mono text-xs uppercase tracking-widest text-bronze">
+            FIELD NOTES
+          </p>
+          <FieldNotes />
         </section>
       )}
 
