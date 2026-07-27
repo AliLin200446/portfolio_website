@@ -72,7 +72,7 @@ export default function ExperimentsIndex() {
         <button
           type="button"
           onClick={() => pick(null)}
-          className={active === null ? "text-bronze" : "text-muted hover:text-ink"}
+          className={active === null ? "text-bronze-text" : "text-muted hover:text-ink"}
         >
           ALL <span className="text-[10px]">{visible.length}</span>
         </button>
@@ -81,7 +81,7 @@ export default function ExperimentsIndex() {
             key={t}
             type="button"
             onClick={() => pick(t)}
-            className={`uppercase ${active === t ? "text-bronze" : "text-muted hover:text-ink"}`}
+            className={`uppercase ${active === t ? "text-bronze-text" : "text-muted hover:text-ink"}`}
           >
             {t} <span className="text-[10px]">{counts[t]}</span>
           </button>
