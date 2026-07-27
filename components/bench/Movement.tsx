@@ -38,6 +38,10 @@ const COPPER = { color: "#8C6A3F", metalness: 0.85, roughness: 0.68 };
 const STEEL = { color: "#C8C6C0", metalness: 1.0, roughness: 0.26 };
 
 type GearDef = { r: number; teeth: number; pos: [number, number, number]; speed: number; dir: 1 | -1; spoked?: boolean };
+/** how far the steel half rises. Small on purpose: a seam, not a
+ *  disassembly — the movement should still read as one object. */
+const LIFT_MAX = 0.055;
+
 const GEARS: GearDef[] = [
   { r: 0.16, teeth: 16, pos: [-0.07, 0.06, 0.0], speed: 0.35, dir: -1, spoked: true },
   { r: 0.095, teeth: 24, pos: [0.15, 0.06, -0.09], speed: 0.59, dir: 1 },
@@ -147,6 +151,9 @@ export default function Movement({
   const group = useRef<THREE.Group>(null);
   const wheelRefs = useRef<(THREE.Group | null)[]>([null, null, null]);
   const balance = useRef<THREE.Mesh>(null);
+  /** the steel half, lifted clear of the copper plate on hover */
+  const lift = useRef<THREE.Group>(null);
+  const liftY = useRef(0);
   const screws = useRef<THREE.InstancedMesh>(null);
 
   const berth = useBenchStore((s) => s.berth);
@@ -198,6 +205,22 @@ export default function Movement({
   const spin = useRef<number | null>(null); // transition inertia budget
 
   useFrame((state, delta) => {
+    // the lift runs before the sleep gate: a stopped movement must
+    // still open. Exponential ease, so it settles rather than snapping,
+    // and closes the same way on leave — no stuck mid-position.
+    if (lift.current) {
+      const want = hover && !reduced.current ? LIFT_MAX : 0;
+      const next = liftY.current + (want - liftY.current) * Math.min(1, delta * 7);
+      if (Math.abs(next - liftY.current) > 0.00002) {
+        liftY.current = next;
+        lift.current.position.y = next;
+        invalidate();
+      } else if (liftY.current !== want) {
+        liftY.current = want;
+        lift.current.position.y = want;
+        invalidate();
+      }
+    }
     // sleep: a still frame, zero work
     if (!awake && runScale.current < 0.01) return;
     if (reduced.current) return; // reduced-motion: the movement never turns
@@ -259,7 +282,10 @@ export default function Movement({
           />
         </mesh>
 
-        {/* steel work: gears, bridge, balance, screws — cold, sharp */}
+        {/* steel work: gears, bridge, balance, screws — cold, sharp.
+            Wrapped so hover can lift the whole steel side off the
+            copper plate: a teardown opens to show the inside. */}
+        <group ref={lift}>
         {GEARS.map((w, i) => (
           <group
             key={i}
@@ -280,6 +306,7 @@ export default function Movement({
           ref={screws}
           args={[screwGeom, steelMat, SCREWS.length]}
         />
+        </group>
 
         {/* grazing side key light: hangs the sharp highlights, throws
             the long mechanical shadows; short throw, neighbours safe */}
