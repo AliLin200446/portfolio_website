@@ -11,10 +11,10 @@ import type { CaseData } from "./_schema";
  *     it can be read as a sentence again
  *   - findings sit beside their figure instead of stacking
  *
- * FIG A and FIG C carry values confirmed against the live evidence
- * table. FIG B and FIG D are PENDING: their backing rows live in
- * evidence files that currently 404, and a plotted guess on a
- * measurement project would be the worst possible error.
+ * All four figures carry values confirmed against the live evidence
+ * files, each of which now resolves at the path the figure prints:
+ * FIG A and FIG B from e4-latency/stats.md, FIG C from
+ * _tools/adjacent-diffs.txt, FIG D from e3-seed/report.txt.
  */
 const teardown: CaseData = {
   slug: "teardown",

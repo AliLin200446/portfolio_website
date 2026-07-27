@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/check-no-cjk.mjs && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:cjk": "node scripts/check-no-cjk.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

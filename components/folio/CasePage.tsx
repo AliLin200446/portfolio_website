@@ -195,11 +195,11 @@ export default function CasePage({ data }: { data: CasePageData }) {
         <p className="max-w-[60ch] font-serif text-lg leading-relaxed">
           {/* 雷1: an unattributed statistic never walks alone — the
               〔source〕 tag renders visibly until the citation lands */}
-          {data.what.includes("〔source") ? (
+          {data.what.includes("[source") ? (
             <>
-              {data.what.slice(0, data.what.indexOf("〔source"))}
+              {data.what.slice(0, data.what.indexOf("[source"))}
               <span className="font-mono text-[11px] tracking-wide text-bronze">
-                {data.what.slice(data.what.indexOf("〔source"))}
+                {data.what.slice(data.what.indexOf("[source"))}
               </span>
             </>
           ) : (

@@ -47,7 +47,7 @@ export const STATIONS: Station[] = [
     label: "MATERIAL MEMORY",
     href: "/work/material-memory", // CASE-NAV: 器物点击/揭帛 hook 有目的地
     line: "hand-written cloth physics",
-    hover: "MATERIAL MEMORY · 〔回填:定位句〕 · live · material-memory.alilinlab.com",
+    hover: "MATERIAL MEMORY · hand-written cloth physics · live · material-memory.alilinlab.com",
   },
 ];
 
