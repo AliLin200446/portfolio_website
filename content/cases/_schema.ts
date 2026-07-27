@@ -45,7 +45,7 @@ export type Figure = Pending &
     | { kind: "code"; lang?: string; code: string; caption: string }
     | {
         kind: "instrument";
-        component: "halation" | "latency" | "stepdelta";
+        component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed";
         caption: string;
       }
     | { kind: "pending"; note: string; caption: string }

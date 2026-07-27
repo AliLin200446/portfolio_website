@@ -225,3 +225,209 @@ export function StepDelta() {
     </svg>
   );
 }
+
+/** FIG B — inference is linear in steps. The fit is published; the ten
+ *  per-rung values are not, so only the two that ARE published are
+ *  plotted and the caption says so. Nothing is interpolated.
+ *  source: e4-latency/stats.md:20-22 (fit) · :26-27 (the two points) */
+export function StepFit() {
+  const RUNGS = [1, 2, 4, 8, 12, 16, 20, 28, 36, 45];
+  const SLOPE = 19.52;
+  const INTERCEPT = -5.0;
+  // the only two per-rung values in the published evidence table
+  const KNOWN = [
+    { steps: 1, ms: 31.9 },
+    { steps: 2, ms: 24.5 },
+  ];
+  const W = 560;
+  const H = 220;
+  const L = 52;
+  const B = 168;
+  const XMAX = 45;
+  const YMAX = 900;
+  const px = (s: number) => L + (s / XMAX) * (W - L - 24);
+  const py = (ms: number) => B - (ms / YMAX) * (B - 22);
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="w-full"
+      role="img"
+      aria-label="Inference time against steps: fitted slope 19.52 milliseconds per step, R squared 0.9978."
+    >
+      {[0, 300, 600, 900].map((v) => (
+        <g key={v}>
+          <line x1={L} y1={py(v)} x2={W - 24} y2={py(v)} stroke={AXIS} strokeWidth="0.5" />
+          <text
+            x={L - 8}
+            y={py(v) + 3}
+            textAnchor="end"
+            fill={MUTED}
+            fontSize="9"
+            fontFamily="var(--font-geist-mono), monospace"
+          >
+            {v}
+          </text>
+        </g>
+      ))}
+
+      {/* the published fit, drawn across the measured range */}
+      <line
+        x1={px(0)}
+        y1={py(INTERCEPT)}
+        x2={px(XMAX)}
+        y2={py(SLOPE * XMAX + INTERCEPT)}
+        stroke={INK}
+        strokeWidth="1.2"
+      />
+
+      {/* rung positions are published even where the y value is not */}
+      {RUNGS.map((s) => (
+        <line
+          key={s}
+          x1={px(s)}
+          y1={B}
+          x2={px(s)}
+          y2={B + 4}
+          stroke={AXIS}
+          strokeWidth="0.5"
+        />
+      ))}
+
+      {KNOWN.map((k) => (
+        <g key={k.steps}>
+          <circle cx={px(k.steps)} cy={py(k.ms)} r="3" fill={INK} />
+          <text
+            x={px(k.steps) + 7}
+            y={py(k.ms) - 5}
+            fill={INK}
+            fontSize="9"
+            fontFamily="var(--font-geist-mono), monospace"
+          >
+            {k.ms}
+          </text>
+        </g>
+      ))}
+
+      <text
+        x={W - 24}
+        y={py(SLOPE * XMAX + INTERCEPT) - 8}
+        textAnchor="end"
+        fill={INK}
+        fontSize="9.5"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        y = 19.52x − 5.0 · R² 0.9978 · N=10
+      </text>
+      <text
+        x={L}
+        y={B + 22}
+        fill={MUTED}
+        fontSize="9"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        steps · ticks mark the ten rungs 1 → 45
+      </text>
+      <text
+        x={L}
+        y={B + 38}
+        fill={BRONZE}
+        fontSize="9"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        two points plotted — the other eight rung values are not in the published evidence
+      </text>
+    </svg>
+  );
+}
+
+/** FIG D — seed determinism. Three real inference times against one
+ *  shared hash and a zero pixel diff. The hash digest itself is not
+ *  published, so the cell states the fact without inventing hex.
+ *  source: raw-calls.json[18..20].fal_timings.inference */
+export function SeedDeterminism() {
+  const runs = [545.1, 546.8, 549.6];
+  const W = 560;
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} 190`}
+      className="w-full"
+      role="img"
+      aria-label="Three runs at 545.1, 546.8 and 549.6 milliseconds share one sha256 and differ by zero of 262144 pixels."
+    >
+      {runs.map((ms, i) => {
+        const x = 24 + i * 174;
+        return (
+          <g key={ms}>
+            <rect x={x} y={20} width={158} height={62} fill="none" stroke={AXIS} strokeWidth="0.5" />
+            <text
+              x={x + 79}
+              y={44}
+              textAnchor="middle"
+              fill={MUTED}
+              fontSize="9"
+              fontFamily="var(--font-geist-mono), monospace"
+            >
+              run {i + 1}
+            </text>
+            <text
+              x={x + 79}
+              y={66}
+              textAnchor="middle"
+              fill={INK}
+              fontSize="13"
+              fontFamily="var(--font-geist-mono), monospace"
+            >
+              {ms} ms
+            </text>
+          </g>
+        );
+      })}
+
+      {/* three different durations converging on one identical output */}
+      {runs.map((ms, i) => (
+        <line
+          key={ms}
+          x1={24 + i * 174 + 79}
+          y1={82}
+          x2={W / 2}
+          y2={112}
+          stroke={AXIS}
+          strokeWidth="0.5"
+        />
+      ))}
+
+      <rect x={W / 2 - 150} y={112} width={300} height={54} fill="none" stroke={INK} strokeWidth="1" />
+      <text
+        x={W / 2}
+        y={134}
+        textAnchor="middle"
+        fill={INK}
+        fontSize="11"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        one sha256, shared by all three
+      </text>
+      <text
+        x={W / 2}
+        y={152}
+        textAnchor="middle"
+        fill={INK}
+        fontSize="11"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        0 / 262,144 pixels differ
+      </text>
+      <text
+        x={24}
+        y={182}
+        fill={MUTED}
+        fontSize="9"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        three distinct durations — real recomputation, not a cache
+      </text>
+    </svg>
+  );
+}

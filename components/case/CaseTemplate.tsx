@@ -3,7 +3,7 @@ import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
 import CaseIndex from "@/components/folio/CaseIndex";
 import HalationHero from "@/components/folio/HalationHero";
-import { LatencyAnatomy, StepDelta } from "./TeardownFigures";
+import { LatencyAnatomy, StepDelta, StepFit, SeedDeterminism } from "./TeardownFigures";
 import LiveFacade from "@/components/folio/LiveFacade";
 import { berthOf } from "@/lib/bench";
 import type { CaseData, Figure } from "@/content/cases/_schema";
@@ -65,6 +65,8 @@ function Fig({ figure }: { figure: Figure }) {
       case "instrument":
         if (figure.component === "latency") return <LatencyAnatomy />;
         if (figure.component === "stepdelta") return <StepDelta />;
+        if (figure.component === "stepfit") return <StepFit />;
+        if (figure.component === "seed") return <SeedDeterminism />;
         return <HalationHero />;
       case "video":
         return (

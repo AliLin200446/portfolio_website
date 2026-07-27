@@ -33,7 +33,7 @@ const teardown: CaseData = {
     kind: "instrument",
     component: "latency",
     caption:
-      "FIG A · latency anatomy · p50 across N=20 at S28 · source: e4-latency/stats.md:11-13 — bar width is proportional to measured milliseconds",
+      "where the milliseconds go · queue, the segment the API doesn't return, holds the variance · FIG A · p50 across N=20 at S28 · source: e4-latency/stats.md:11-13",
   },
   what: [
     "AI image APIs ship faster than anyone measures them. Latency claims are marketing, parameter documentation is partial, and the numbers that matter to a production integrator — where the milliseconds live, what a knob actually buys, whether the same call returns the same bytes — are published nowhere.",
@@ -53,11 +53,11 @@ const teardown: CaseData = {
       heading: "FIVE EXPERIMENTS",
       body: "Five experiments: a steps sweep (10 rungs, 1→45), a guidance sweep (8 rungs, 1→20), a seed determinism run (3 identical calls, byte comparison), a latency series (N=20 at fixed parameters), and a friction log of every gap between the documentation and the wire.",
       figure: {
-        kind: "pending",
-        note: "FIG B · inference vs steps, 19.52 ms/step, R² 0.9978 — the fit is published but the ten per-rung values are not",
+        kind: "instrument",
+        component: "stepfit",
         caption:
-          "FIG B · linear fit, inference against steps · source: e4-latency/stats.md:20-22, 26-35",
-        pending: "eight of ten per-rung values — stats.md returns 404",
+          "FIG B · inference against steps · fit y = 19.52x − 5.0, R² 0.9978, N=10 · source: e4-latency/stats.md:20-22 · the two plotted points from :26-27",
+        pending: "eight of ten per-rung values — stats.md still 404s",
       },
     },
   ],
@@ -83,10 +83,11 @@ const teardown: CaseData = {
           "Three identical calls, identical bytes. Same parameters, three runs, three distinct inference times (545 / 547 / 550 ms — real recomputation, not a cache), one sha256. 0 of 262,144 pixels differ. Output is addressable by parameter tuple.",
         source: "raw-calls.json[18..20].fal_timings.inference",
         figure: {
-          kind: "pending",
-          note: "FIG D · three runs, one hash, zero pixels differing",
-          caption: "FIG D · seed determinism",
-          pending: "the sha256 row and the 0/262,144 row are not in the published evidence table",
+          kind: "instrument",
+          component: "seed",
+          caption:
+            "FIG D · three runs, one sha256, zero pixels differing · run at 512×512; latency and sweeps at 1024, so the pixel count differs by design · source: raw-calls.json[18..20].fal_timings.inference",
+          pending: "the sha256 digest and the pixel-diff row are asserted from the report, not readable from a deployed evidence file",
         },
       },
       {
