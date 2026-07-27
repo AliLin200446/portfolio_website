@@ -77,9 +77,7 @@ export default function HomeShell() {
         <p className="flex items-center gap-3 font-mono text-xs">
           <LogoMark />
           <span className="text-ink">ALI LIN</span>
-          <span className="text-muted">
-            {" — design engineer · I instrument what AI fakes"}
-          </span>
+          <span className="text-muted">{" — design engineer"}</span>
         </p>
         <TopNav />
       </header>
@@ -148,13 +146,6 @@ export default function HomeShell() {
             className="transition-colors hover:text-bronze"
           >
             GitHub
-          </a>
-          {/* TODO: drop resume.pdf into public/ */}
-          <a
-            href="/resume.pdf"
-            className="transition-colors hover:text-bronze"
-          >
-            resume PDF
           </a>
         </nav>
       </footer>

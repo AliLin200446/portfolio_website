@@ -122,71 +122,6 @@ const CUT_SURFACE: Record<string, { bg: string; label?: string }> = {
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 
 /** Matte tabletop: same paper-noise recipe as the rail worktop. */
-function useTableTexture() {
-  return useMemo(() => {
-    // paper-white bench surface: the same procedural grain, but at a
-    // fraction of the contrast so it reads as tooth in paper rather
-    // than as wood. Base is the site's --paper.
-    // that wander rather than run straight, a few plank seams, and
-    // scattered pores. Drawn once at 1024 and never tiled — a repeating
-    // pattern on a round top reads as wallpaper, not as a single board.
-    const S = 1024;
-    const c = document.createElement("canvas");
-    c.width = c.height = S;
-    const g = c.getContext("2d")!;
-
-    g.fillStyle = "#F5F2EC";
-    g.fillRect(0, 0, S, S);
-
-    // plank bands: subtle tone shifts so the top reads as jointed stock
-    let y = 0;
-    while (y < S) {
-      const h = 150 + Math.random() * 170;
-      g.fillStyle = `rgba(${Math.random() < 0.5 ? "120,114,104" : "255,255,255"},${
-        0.02 + Math.random() * 0.03
-      })`;
-      g.fillRect(0, y, S, h);
-      y += h;
-    }
-
-    // grain: long horizontal strokes with a slow sine wander
-    for (let i = 0; i < 460; i++) {
-      const y0 = Math.random() * S;
-      const amp = 4 + Math.random() * 16;
-      const freq = (0.6 + Math.random() * 1.8) / S;
-      const phase = Math.random() * Math.PI * 2;
-      const dark = Math.random() < 0.62;
-      g.strokeStyle = dark
-        ? `rgba(120,114,104,${0.03 + Math.random() * 0.05})`
-        : `rgba(255,255,255,${0.03 + Math.random() * 0.06})`;
-      g.lineWidth = 0.6 + Math.random() * 2.2;
-      g.beginPath();
-      for (let x = 0; x <= S; x += 8) {
-        const yy = y0 + Math.sin(x * freq * Math.PI * 2 + phase) * amp;
-        if (x === 0) g.moveTo(x, yy);
-        else g.lineTo(x, yy);
-      }
-      g.stroke();
-    }
-
-    // pores: the fine dark flecks that stop it looking airbrushed
-    for (let i = 0; i < 2600; i++) {
-      g.fillStyle = `rgba(120,114,104,${0.02 + Math.random() * 0.06})`;
-      g.fillRect(Math.random() * S, Math.random() * S, 1 + Math.random() * 3, 1);
-    }
-
-    const tex = new THREE.CanvasTexture(c);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-    // the cap UV is a planar projection, so drawn-horizontal grain runs
-    // front-to-back and perspective folds it into a starburst. Turned a
-    // quarter so the grain crosses the viewer, as on a real board.
-    tex.center.set(0.5, 0.5);
-    tex.rotation = Math.PI / 2;
-    return tex;
-  }, []);
-}
-
 const berthAngle = (i: number) => i * STEP;
 const berthPos = (i: number): [number, number, number] => [
   Math.sin(berthAngle(i)) * RADIUS,
@@ -617,18 +552,15 @@ function PointerTargets({
 }
 
 function Table() {
-  const tex = useTableTexture();
   return (
     <mesh position={[0, -0.07, 0]}>
       {/* a bevelled rim, as on the reference: the top radius sits proud
           of the base so the edge catches a highlight instead of ending
           in a hard cylinder wall */}
       <cylinderGeometry args={[TABLE_R, TABLE_R * 0.985, 0.16, 96]} />
-      <meshStandardMaterial
-        map={tex}
-        roughness={0.72}
-        metalness={0}
-      />
+      {/* solid paper: no map, no grain — the instruments are the
+          subject and the surface should not compete with them */}
+      <meshStandardMaterial color="#F5F2EC" roughness={0.72} metalness={0} />
     </mesh>
   );
 }
