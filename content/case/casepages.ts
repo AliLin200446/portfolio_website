@@ -209,7 +209,12 @@ export const casePages: Record<string, CasePageData> = {
       posterNote: "system diagram or NFC interaction capture",
     },
     heroCaption:
-      "ZK-SNARKs · NFC · smart contracts · EU DPP · PwC/JPM/Tapestry validated",
+      "ZK-SNARKs · NFC · smart contracts · EU DPP · presented to leads at PwC, JPMorgan and Tapestry",
+    // RETRACTED — do not restore. The block below is the superseded v2
+    // copy, kept only as a record. It contains two claims that were
+    // withdrawn: the plural patent count (there is one merged filed
+    // provisional) and the word "validated" for what was a presentation
+    // to leads. The shipping copy is content/cases/vestige.ts.
     // 作者原文归位(原标 Problem 实为定义)。v2 旧 WHAT 逐字封存:
     // "A digital product passport for luxury goods, built for brands
     //  facing the EU's ESPR disclosure rules. An NFC tag on the object

@@ -40,7 +40,7 @@ export const STATIONS: Station[] = [
     label: "VESTIGE",
     href: "/work/vestige",
     line: "A digital product passport built to outlast the first sale.",
-    hover: "VESTIGE · provenance for physical goods · 2 provisional patents · NFC/zk",
+    hover: "VESTIGE · provenance for physical goods · a filed provisional · NFC/zk",
   },
   {
     id: "material-memory",

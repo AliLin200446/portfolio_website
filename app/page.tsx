@@ -2,7 +2,9 @@ import HomeShell from "@/components/bench/HomeShell";
 
 /*
  * THE BENCH — v2 homepage skeleton (相A).
- * The previous homepage is preserved at /home-v1 until 相D switchover.
+ * The previous homepage and its data file are gone: the route was
+ * unlinked but publicly loadable, and carried a named third-party
+ * brand, a struck overclaim, and an italic that the type law forbids.
  */
 export default function Home() {
   return (
