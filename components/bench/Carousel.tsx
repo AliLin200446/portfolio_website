@@ -487,8 +487,15 @@ function playMechanism(id: string) {
 
 function PointerTargets({
   beginTransition,
+  ringSettled,
 }: {
   beginTransition: (id: string) => void;
+  /** true only when the ring has stopped. A rotating ring drags every
+   *  hit box under a stationary cursor in turn, and each one fires its
+   *  own pointerover — which is why spinning to a berth appeared to
+   *  animate the neighbours. Hover must mean the pointer moved onto an
+   *  object, not the object moved under the pointer. */
+  ringSettled: () => boolean;
 }) {
   const berth = useBenchStore((s) => s.berth);
   const setBerth = useBenchStore((s) => s.setBerth);
@@ -530,7 +537,8 @@ function PointerTargets({
               document.body.style.cursor = "pointer";
               // hover is the mechanism now: the object performs itself
               // in place. No camera move, no navigation.
-              if (!useBenchStore.getState().transitionId) playMechanism(id);
+              if (!useBenchStore.getState().transitionId && ringSettled())
+                playMechanism(id);
             }}
             onPointerOut={() => {
               setHovered(null);
@@ -747,6 +755,17 @@ export default function Carousel() {
     requestAnimationFrame(wait);
   };
 
+  /** Is the ring standing still? Compared against the berth it is
+   *  supposed to be showing, wrapped into (-pi, pi]. */
+  const ringSettled = () => {
+    const want = -useBenchStore.getState().berth * STEP;
+    const cur = ring.current?.rotation.y ?? want;
+    let d = (cur - want) % (Math.PI * 2);
+    if (d > Math.PI) d -= Math.PI * 2;
+    if (d < -Math.PI) d += Math.PI * 2;
+    return Math.abs(d) < 0.02;
+  };
+
   /** Material Memory's click path. Its hit box is deliberately absent
    *  at its own berth so the cloth can be dragged, so the cloth forwards
    *  clicks here and gets the same single-plays / double-enters
@@ -823,7 +842,7 @@ export default function Carousel() {
         <group position={berthPos(berthOf("material-memory"))} rotation={[0, berthAngle(berthOf("material-memory")), 0]}>
           <Cloth position={[0, 0, 0]} onSelect={clothSelect} />
         </group>
-          <PointerTargets beginTransition={beginTransition} />
+          <PointerTargets beginTransition={beginTransition} ringSettled={ringSettled} />
         </group>
         <GlintArc />
         <Rig ring={ring} overlayEl={overlayEl} onCut={onCut} />
