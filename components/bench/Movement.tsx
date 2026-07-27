@@ -4,7 +4,6 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import { berthOf } from "@/lib/bench";
 import { makeBenchEnvMap } from "@/lib/bench/envMap";
 import { useBenchStore } from "@/lib/benchStore";
 
@@ -156,9 +155,16 @@ export default function Movement({
   const liftY = useRef(0);
   const screws = useRef<THREE.InstancedMesh>(null);
 
-  const berth = useBenchStore((s) => s.berth);
   const [hover, setHover] = useState(false);
-  const awake = hover || berth === berthOf("teardown");
+  // The invisible hit box in PointerTargets sits in front of this
+  // group, so its own onPointerOver never fires — the store's hovered
+  // id is the only reliable signal, and it names exactly one object,
+  // so a neighbour cannot start these gears.
+  const hovered = useBenchStore((s) => s.hovered);
+  const running = hover || hovered === "teardown";
+  // the run is hover-only now: a watch movement standing at the front
+  // berth should be still until you look at it.
+  const awake = running;
 
   const plateNormal = useMemo(makePlateNormal, []);
   const envMap = useMemo(makeBenchEnvMap, []);
