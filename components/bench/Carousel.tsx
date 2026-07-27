@@ -791,7 +791,34 @@ export default function Carousel() {
     }
     if (id === "latent") s.b1Feed();
       if (id === "vestige") s.b5Stamp();
-    s.startTransition(id);
+    // The dive is a fixed pose at the FRONT of the ring — it does not
+    // aim at an object. So entering before the ring has actually
+    // arrived flies the camera at whoever is standing at the front
+    // instead. The store's berth updates instantly while the ring
+    // springs over about a second, so checking berth alone is not
+    // enough: wait for the geometry, not the state.
+    const want = -berthOf(id) * STEP;
+    const settled = () => {
+      const cur = ring.current?.rotation.y ?? want;
+      let d = (cur - want) % (Math.PI * 2);
+      if (d > Math.PI) d -= Math.PI * 2;
+      if (d < -Math.PI) d += Math.PI * 2;
+      return Math.abs(d) < 0.02;
+    };
+    if (settled()) {
+      s.startTransition(id);
+      return;
+    }
+    let frames = 0;
+    const wait = () => {
+      if (useBenchStore.getState().transitionId) return;
+      if (settled() || ++frames > 180) {
+        useBenchStore.getState().startTransition(id);
+        return;
+      }
+      requestAnimationFrame(wait);
+    };
+    requestAnimationFrame(wait);
   };
 
   /** Material Memory's click path. Its hit box is deliberately absent
