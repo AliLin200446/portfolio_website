@@ -92,14 +92,14 @@ export const projects: Project[] = [
       "AMPLITUDE — magnitude of displacement. Maps to fal.ai's guidance scale.",
       "THRESHOLD — minimum luminance to trigger displacement. A photographer's luminosity mask as physics.",
       "MEMORY — temporal inertia via pingpong framebuffer. The mesh remembers previous frames.",
-      "RESONANCE — frequency of response to motion energy, via a 4×4 DataTexture spatial frequency map.",
+      "RESONANCE — how strongly the surface responds to motion energy in the frame.",
     ],
     architecture: {
       points: [
         "VideoTexture → GPU realtime pipeline (60fps)",
         "Ridged multifractal noise + luminance blend (GLSL)",
         "Pingpong WebGLRenderTarget for MEMORY",
-        "4×4 DataTexture frequency map for RESONANCE",
+        "4×4 DataTexture driving the RESONANCE response",
         "Latent-space mapping: INFLUENCE → denoising strength, AMPLITUDE → guidance scale, THRESHOLD → luminosity mask",
         "Session recorder: full parameter timeline, exportable JSON",
         "Claude API: realtime form analysis → prompt suggestion",
