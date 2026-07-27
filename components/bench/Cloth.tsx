@@ -117,7 +117,18 @@ function buildRodFrame() {
   return merged;
 }
 
-export default function Cloth({ position }: { position: [number, number, number] }) {
+export default function Cloth({
+  position,
+  onSelect,
+}: {
+  position: [number, number, number];
+  /** The cloth's own onPointerDown stops propagation so a drag does not
+   *  also spin the ring — which meant the invisible hit box behind it
+   *  never saw pointerdown, so R3F never synthesised a click and this
+   *  was the one instrument that could not be entered. It now forwards
+   *  the click itself, using the same single-vs-double logic. */
+  onSelect?: () => void;
+}) {
   const { invalidate, camera } = useThree();
   const berth = useBenchStore((s) => s.berth);
   const setHovered = useBenchStore((s) => s.setHovered);
@@ -426,6 +437,10 @@ export default function Cloth({ position }: { position: [number, number, number]
           document.body.style.cursor = "";
         }}
         onPointerDown={grab}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect?.();
+        }}
       >
         <meshStandardMaterial
           color={fabric.color}

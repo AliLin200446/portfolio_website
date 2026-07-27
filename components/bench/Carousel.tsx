@@ -557,6 +557,29 @@ function PointerTargets({
   const setBerth = useBenchStore((s) => s.setBerth);
   const setHovered = useBenchStore((s) => s.setHovered);
   const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** One click path for every instrument. Off-berth: spin the ring to
+   *  it. On-berth: single click plays the mechanism, double click
+   *  enters. Material Memory has no hit box at its own berth (the cloth
+   *  needs the pointer to drag), so the cloth calls this itself. */
+  const select = (i: number, id: string) => {
+    if (useBenchStore.getState().transitionId) return;
+    if (i !== berth) {
+      setBerth(i);
+      return;
+    }
+    if (pending.current) {
+      clearTimeout(pending.current);
+      pending.current = null;
+      beginTransition(id); // double click = enter
+    } else {
+      pending.current = setTimeout(() => {
+        pending.current = null;
+        playMechanism(id); // single click = play, no nav
+      }, 250);
+    }
+  };
+
   return (
     <>
       {BERTH_ORDER.map((id, i) =>
@@ -571,21 +594,7 @@ function PointerTargets({
             visible={false}
             onClick={(e) => {
               e.stopPropagation();
-              if (useBenchStore.getState().transitionId) return;
-              if (i !== berth) {
-                setBerth(i);
-                return;
-              }
-              if (pending.current) {
-                clearTimeout(pending.current);
-                pending.current = null;
-                beginTransition(id); // double click = enter
-              } else {
-                pending.current = setTimeout(() => {
-                  pending.current = null;
-                  playMechanism(id); // single click = play, no nav
-                }, 250);
-              }
+              select(i, id);
             }}
             onPointerOver={(e) => {
               e.stopPropagation();
@@ -783,6 +792,30 @@ export default function Carousel() {
     s.startTransition(id);
   };
 
+  /** Material Memory's click path. Its hit box is deliberately absent
+   *  at its own berth so the cloth can be dragged, so the cloth forwards
+   *  clicks here and gets the same single-plays / double-enters
+   *  contract every other instrument has. */
+  const clothPending = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clothSelect = () => {
+    const st = useBenchStore.getState();
+    if (st.transitionId) return;
+    const mine = berthOf("material-memory");
+    if (st.berth !== mine) {
+      st.setBerth(mine);
+      return;
+    }
+    if (clothPending.current) {
+      clearTimeout(clothPending.current);
+      clothPending.current = null;
+      beginTransition("material-memory");
+    } else {
+      clothPending.current = setTimeout(() => {
+        clothPending.current = null;
+      }, 250);
+    }
+  };
+
   /** Beat 3: the surface owns the viewport — hand over to the route.
    *  The CUT_KEY flag dresses the case page in the same surface
    *  (BenchArrival) and later arms the 0.5s walk-back reverse. */
@@ -840,7 +873,7 @@ export default function Carousel() {
             <Seal position={[0, 0, 0]} />
           </group>
         <group position={berthPos(berthOf("material-memory"))} rotation={[0, berthAngle(berthOf("material-memory")), 0]}>
-          <Cloth position={[0, 0, 0]} />
+          <Cloth position={[0, 0, 0]} onSelect={clothSelect} />
         </group>
           <PointerTargets beginTransition={beginTransition} />
         </group>
