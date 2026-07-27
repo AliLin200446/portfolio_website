@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { makeBenchEnvMap } from "@/lib/bench/envMap";
+import { berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
@@ -161,7 +162,12 @@ export default function Movement({
   // id is the only reliable signal, and it names exactly one object,
   // so a neighbour cannot start these gears.
   const hovered = useBenchStore((s) => s.hovered);
-  const running = hover || hovered === "teardown";
+  // this component's own onPointerOver fires wherever its geometry is,
+  // including at a background berth, so being the front object is a
+  // separate condition and both must hold
+  const berth = useBenchStore((s) => s.berth);
+  const isFront = berth === berthOf("teardown");
+  const running = isFront && (hover || hovered === "teardown");
   // the run is hover-only now: a watch movement standing at the front
   // berth should be still until you look at it.
   const awake = running;

@@ -533,10 +533,16 @@ function PointerTargets({
             }}
             onPointerOver={(e) => {
               e.stopPropagation();
-              setHovered(id);
               document.body.style.cursor = "pointer";
-              // hover is the mechanism now: the object performs itself
-              // in place. No camera move, no navigation.
+              // Only the object standing at the front is interactive.
+              // Every berth carries a hit box, so a cursor crossing the
+              // ring passes over background boxes on its way — those
+              // must not light up their instrument. Hover therefore
+              // needs all three: the pointer is on THIS object, this
+              // object is the front one, and the ring is standing still
+              // (a turning ring drags boxes under a still cursor).
+              if (i !== berth) return;
+              setHovered(id);
               if (!useBenchStore.getState().transitionId && ringSettled())
                 playMechanism(id);
             }}
