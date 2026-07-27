@@ -108,7 +108,8 @@ export default function AboutPage() {
             The through-line across the work: take an AI capability and make
             it controllable, measurable, or verifiable. A film engine
             calibrated to real stock. An API teardown where every number
-            traces to a source file. A product passport that proves what it
+            traces to a source file — and the raw files ship with the report. A
+            product passport that proves what it
             can&rsquo;t reveal. I&rsquo;m drawn to the point where a
             generative system&rsquo;s output stops being a demo and becomes
             something you can audit, drive, and take away.
