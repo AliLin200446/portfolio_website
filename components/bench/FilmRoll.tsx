@@ -152,12 +152,17 @@ function makeFilmMaps() {
  *  aU ∈ [0,1] rides along it for the reveal. The last 8% tapers into an
  *  asymmetric rounded leader tongue. */
 function buildRibbon() {
+  // Half the previous reach: the tail used to run to x=1.3, it now
+  // stops at 0.65. Only the along-path axes are halved — the sag and
+  // the sideways drift keep their proportion to the shorter run, so the
+  // curve reads as the same ribbon cut shorter rather than a squashed
+  // one, and the lowest point rises further clear of the table.
   const curve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-0.04, EXIT_Y, 0),
-    new THREE.Vector3(0.16, EXIT_Y, 0.02),
-    new THREE.Vector3(0.5, EXIT_Y - 0.02, 0.06),
-    new THREE.Vector3(0.92, EXIT_Y - 0.07, 0.1),
-    new THREE.Vector3(1.3, EXIT_Y - 0.13, 0.12),
+    new THREE.Vector3(-0.02, EXIT_Y, 0),
+    new THREE.Vector3(0.08, EXIT_Y, 0.01),
+    new THREE.Vector3(0.25, EXIT_Y - 0.01, 0.03),
+    new THREE.Vector3(0.46, EXIT_Y - 0.035, 0.05),
+    new THREE.Vector3(0.65, EXIT_Y - 0.065, 0.06),
   ]);
   const L_SEG = 64;
   const geo = new THREE.PlaneGeometry(1, 1, L_SEG, 2);
