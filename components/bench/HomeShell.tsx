@@ -1,162 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { STATIONS, berthOf, HOME_BERTH } from "@/lib/bench";
+import { STATIONS, berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
 import LogoMark from "@/components/LogoMark";
 import TopNav from "@/components/TopNav";
-
-/** CLICK-SPLIT: the explicit way in. Re-arms a copper glint each time
- *  the instrument's mechanism settles (nonce change) — the echo of the
- *  user's own click, never idle. */
-function EnterLink({ slug, nonce }: { slug: string; nonce?: number }) {
-  const [flash, setFlash] = useState(0);
-  const first = useRef(true);
-  useEffect(() => {
-    if (first.current) { first.current = false; return; }
-    if (nonce !== undefined) setFlash((f) => f + 1);
-  }, [nonce]);
-  return (
-    <Link
-      key={flash}
-      href={`/work/${slug}`}
-      className={`enter-press ml-3 border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B] ${flash ? "np-glint" : ""}`}
-    >
-      enter →
-    </Link>
-  );
-}
-
-const plateBase =
-  "plate-in fixed bottom-16 left-6 z-10 font-mono text-xs text-muted";
-const plateBtn =
-  "mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]";
-
-function SilkNameplate() {
-  const berth = useBenchStore((s) => s.berth);
-  const pull = useBenchStore((s) => s.b3Pull);
-  const pullNonce = useBenchStore((s) => s.b3PullNonce);
-  if (berth !== berthOf("skeletal-silk")) return null;
-  return (
-    <div className={plateBase}>
-      <p>
-        <span className="text-ink">SKELETAL SILK</span> — AI as material
-        interpreter ·{" "}
-        <a
-          href="https://skeletal-silk.alilinlab.com"
-          target="_blank"
-          rel="noreferrer"
-          className="transition-colors hover:text-bronze"
-        >
-          skeletal-silk.alilinlab.com
-        </a>
-      </p>
-      <button type="button" onClick={pull} className={plateBtn}>
-        nudge · ENTER
-      </button>
-      <EnterLink slug="skeletal-silk" nonce={pullNonce} />
-    </div>
-  );
-}
-
-function TeardownNameplate() {
-  const berth = useBenchStore((s) => s.berth);
-  if (berth !== berthOf("teardown")) return null;
-  return (
-    <div className={plateBase}>
-      <p>
-        <span className="text-ink">TEARDOWN №1</span> — an API, instrumented ·{" "}
-        <a
-          href="https://teardown.alilinlab.com"
-          target="_blank"
-          rel="noreferrer"
-          className="transition-colors hover:text-bronze"
-        >
-          teardown.alilinlab.com
-        </a>
-        <EnterLink slug="teardown" />
-      </p>
-    </div>
-  );
-}
-
-function MaterialMemoryNameplate() {
-  const berth = useBenchStore((s) => s.berth);
-  if (berth !== berthOf("material-memory")) return null;
-  return (
-    <div className={plateBase}>
-      <p>
-        <span className="text-ink">MATERIAL MEMORY</span> — hand-written cloth
-        physics · Verlet integration ·{" "}
-        <a
-          href="https://material-memory.alilinlab.com"
-          target="_blank"
-          rel="noreferrer"
-          className="transition-colors hover:text-bronze"
-        >
-          live → material-memory.alilinlab.com
-        </a>
-        <EnterLink slug="material-memory" />
-      </p>
-    </div>
-  );
-}
-
-/** B1 nameplate: keyboard path is the feed toggle (B1-REV). */
-function LatentNameplate() {
-  const berth = useBenchStore((s) => s.berth);
-  const feed = useBenchStore((s) => s.b1Feed);
-  const feedNonce = useBenchStore((s) => s.b1FeedNonce);
-  if (berth !== berthOf("latent")) return null;
-
-  return (
-    <div className={plateBase}>
-      <p>
-        <span className="text-ink">LATENT</span> — film physics engine ·{" "}
-        <span className="text-wood">shipped July 2026</span> ·{" "}
-        <a
-          href="https://latentfilm.com"
-          target="_blank"
-          rel="noreferrer"
-          className="transition-colors hover:text-bronze"
-        >
-          latentfilm.com
-        </a>
-      </p>
-      <button type="button" onClick={feed} className={plateBtn}>
-        feed · ENTER
-      </button>
-      <EnterLink slug="latent" nonce={feedNonce} />
-    </div>
-  );
-}
-
-function VestigeNameplate() {
-  const berth = useBenchStore((s) => s.berth);
-  const stamp = useBenchStore((s) => s.b5Stamp);
-  const stampNonce = useBenchStore((s) => s.b5StampNonce);
-  if (berth !== berthOf("vestige")) return null;
-
-  return (
-    <div className={plateBase}>
-      <p>
-        <span className="text-ink">VESTIGE</span> — provenance for physical
-        goods · <span className="text-wood">a filed provisional</span>
-      </p>
-      <button
-        type="button"
-        onClick={stamp}
-        className="mt-2 cursor-pointer select-none border-b border-bronze pb-px outline-none transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
-      >
-        seal · ENTER
-      </button>
-      <EnterLink slug="vestige" nonce={stampNonce} />
-    </div>
-  );
-}
 
 function StationLink({
   station,
@@ -221,15 +71,6 @@ export default function HomeShell() {
       <BenchHome active={bench3d} />
       {/* instrument boot: pure HTML/CSS, first paint before Three parses */}
       {bench3d && <BenchLoader />}
-      {bench3d && (
-        <>
-          <LatentNameplate />
-          <SilkNameplate />
-          <TeardownNameplate />
-          <VestigeNameplate />
-          <MaterialMemoryNameplate />
-        </>
-      )}
 
       {/* top bar: identity + full text navigation, always reachable */}
       <header className="relative z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-b border-line bg-paper/85 px-6 py-4">

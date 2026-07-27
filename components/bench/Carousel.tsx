@@ -124,7 +124,9 @@ const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 /** Matte tabletop: same paper-noise recipe as the rail worktop. */
 function useTableTexture() {
   return useMemo(() => {
-    // procedural walnut, zero network: a warm base, long grain lines
+    // paper-white bench surface: the same procedural grain, but at a
+    // fraction of the contrast so it reads as tooth in paper rather
+    // than as wood. Base is the site's --paper.
     // that wander rather than run straight, a few plank seams, and
     // scattered pores. Drawn once at 1024 and never tiled — a repeating
     // pattern on a round top reads as wallpaper, not as a single board.
@@ -133,15 +135,15 @@ function useTableTexture() {
     c.width = c.height = S;
     const g = c.getContext("2d")!;
 
-    g.fillStyle = "#8A6244";
+    g.fillStyle = "#F5F2EC";
     g.fillRect(0, 0, S, S);
 
     // plank bands: subtle tone shifts so the top reads as jointed stock
     let y = 0;
     while (y < S) {
       const h = 150 + Math.random() * 170;
-      g.fillStyle = `rgba(${Math.random() < 0.5 ? "62,42,26" : "160,126,96"},${
-        0.04 + Math.random() * 0.05
+      g.fillStyle = `rgba(${Math.random() < 0.5 ? "120,114,104" : "255,255,255"},${
+        0.02 + Math.random() * 0.03
       })`;
       g.fillRect(0, y, S, h);
       y += h;
@@ -155,8 +157,8 @@ function useTableTexture() {
       const phase = Math.random() * Math.PI * 2;
       const dark = Math.random() < 0.62;
       g.strokeStyle = dark
-        ? `rgba(76,52,32,${0.05 + Math.random() * 0.14})`
-        : `rgba(188,156,124,${0.04 + Math.random() * 0.09})`;
+        ? `rgba(120,114,104,${0.03 + Math.random() * 0.05})`
+        : `rgba(255,255,255,${0.03 + Math.random() * 0.06})`;
       g.lineWidth = 0.6 + Math.random() * 2.2;
       g.beginPath();
       for (let x = 0; x <= S; x += 8) {
@@ -169,7 +171,7 @@ function useTableTexture() {
 
     // pores: the fine dark flecks that stop it looking airbrushed
     for (let i = 0; i < 2600; i++) {
-      g.fillStyle = `rgba(58,38,20,${0.05 + Math.random() * 0.18})`;
+      g.fillStyle = `rgba(120,114,104,${0.02 + Math.random() * 0.06})`;
       g.fillRect(Math.random() * S, Math.random() * S, 1 + Math.random() * 3, 1);
     }
 
