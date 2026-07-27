@@ -116,6 +116,19 @@ function Fig({ figure }: { figure: Figure }) {
       {body()}
       <figcaption className={CAPTION}>
         {figure.kind === "image" && figure.selfCaptioned ? figure.attribution : figure.caption}
+        {figure.kind === "instrument" && figure.sourceHref && (
+          <>
+            {" · "}
+            <a
+              href={figure.sourceHref}
+              target="_blank"
+              rel="noreferrer"
+              className="border-b border-bronze pb-px transition-colors hover:text-bronze-text"
+            >
+              {figure.sourceLabel ?? "source"}
+            </a>
+          </>
+        )}
         {figure.pending && (
           <>
             <br />

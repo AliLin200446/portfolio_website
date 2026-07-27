@@ -126,17 +126,21 @@ export function LatencyAnatomy() {
 /** FIG C — the steps knob flattens. One bar per adjacent step pair.
  *  source: _tools/adjacent-diffs.txt:5,7,8,9,10 and steps-28-29-diff.txt:8 */
 export function StepDelta() {
-  // every value read off the live evidence table. The four lower rungs
-  // (S1→S2, S2→S4, S4→S8, S12→S16) are absent from it and are drawn as
-  // gaps rather than guessed.
+  // all nine adjacent pairs, read from the deployed
+  // evidence/_tools/adjacent-diffs.txt. The peak is S4→S8 at 16.088%,
+  // not S16→S20 — the knob does its heaviest work early.
   const pairs = [
-    { label: "S8→S12", pct: 6.694 },
-    { label: "S16→S20", pct: 11.92 },
-    { label: "S20→S28", pct: 7.655 },
-    { label: "S28→S36", pct: 1.488 },
-    { label: "S36→S45", pct: 3.98 },
+    { label: "S1→2", pct: 0.066 },
+    { label: "S2→4", pct: 0.657 },
+    { label: "S4→8", pct: 16.088 },
+    { label: "S8→12", pct: 6.694 },
+    { label: "S12→16", pct: 5.91 },
+    { label: "S16→20", pct: 11.92 },
+    { label: "S20→28", pct: 7.655 },
+    { label: "S28→36", pct: 1.488 },
+    { label: "S36→45", pct: 3.98 },
   ];
-  const MAX = 12;
+  const MAX = 18;
   const W = 560;
   const H = 200;
   const BASE = 148;
@@ -150,7 +154,7 @@ export function StepDelta() {
       role="img"
       aria-label="Pixels changed between adjacent step rungs: 6.694, 11.92, 7.655, 1.488 and 3.98 percent."
     >
-      {[0, 4, 8, 12].map((g) => (
+      {[0, 6, 12, 18].map((g) => (
         <g key={g}>
           <line
             x1={LEFT}
@@ -195,7 +199,7 @@ export function StepDelta() {
               y={BASE + 14}
               textAnchor="middle"
               fill={MUTED}
-              fontSize="9"
+              fontSize="8"
               fontFamily="var(--font-geist-mono), monospace"
             >
               {p.label}
@@ -211,7 +215,7 @@ export function StepDelta() {
         fontSize="9"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        pixels changed, Δ&gt;32 · N=1 per pair · the rise at S16→S20 is not monotonic
+        pixels changed, Δ&gt;32 · N=1 per pair · the peak is early, at S4→S8
       </text>
       <text
         x={LEFT}
@@ -220,7 +224,7 @@ export function StepDelta() {
         fontSize="9"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        S1→S2, S2→S4, S4→S8 and S12→S16 omitted: absent from the published evidence
+        past S28 the curve flattens: 7.655% then 1.488% for the same eight steps
       </text>
     </svg>
   );
@@ -234,10 +238,20 @@ export function StepFit() {
   const RUNGS = [1, 2, 4, 8, 12, 16, 20, 28, 36, 45];
   const SLOPE = 19.52;
   const INTERCEPT = -5.0;
-  // the only two per-rung values in the published evidence table
+  // all ten measured values, stats.md:26-35. The low rungs sit well
+  // off the fit — S1 measured 31.9 against a fitted 14.5 — and that is
+  // drawn, not smoothed.
   const KNOWN = [
     { steps: 1, ms: 31.9 },
     { steps: 2, ms: 24.5 },
+    { steps: 4, ms: 62.4 },
+    { steps: 8, ms: 153.8 },
+    { steps: 12, ms: 239.4 },
+    { steps: 16, ms: 318 },
+    { steps: 20, ms: 368.8 },
+    { steps: 28, ms: 520.2 },
+    { steps: 36, ms: 711.6 },
+    { steps: 45, ms: 877 },
   ];
   const W = 560;
   const H = 220;
@@ -298,10 +312,10 @@ export function StepFit() {
         <g key={k.steps}>
           <circle cx={px(k.steps)} cy={py(k.ms)} r="3" fill={INK} />
           <text
-            x={px(k.steps) + 7}
-            y={py(k.ms) - 5}
+            x={px(k.steps) + 6}
+            y={py(k.ms) - 6}
             fill={INK}
-            fontSize="9"
+            fontSize="8"
             fontFamily="var(--font-geist-mono), monospace"
           >
             {k.ms}
@@ -335,16 +349,18 @@ export function StepFit() {
         fontSize="9"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        two points plotted — the other eight rung values are not in the published evidence
+        ten measured points · the low rungs scatter; the fit is clean from S8 up
       </text>
     </svg>
   );
 }
 
-/** FIG D — seed determinism. Three real inference times against one
- *  shared hash and a zero pixel diff. The hash digest itself is not
- *  published, so the cell states the fact without inventing hex.
- *  source: raw-calls.json[18..20].fal_timings.inference */
+/** FIG D — seed determinism. Three measured durations converging on
+ *  one digest. Every value here is file-backed: the durations from
+ *  raw-calls.json experiment e3-1, the digest and the pixel count from
+ *  e3-seed/report.txt. Note the run is 512x512 — and so is the latency
+ *  series, which is why 262,144 is simply 512 squared.
+ *  source: raw-calls.json e3-1 · e3-seed/report.txt */
 export function SeedDeterminism() {
   const runs = [545.1, 546.8, 549.6];
   const W = 560;
@@ -407,7 +423,7 @@ export function SeedDeterminism() {
         fontSize="11"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        one sha256, shared by all three
+        sha256 8dadd968e921aca2… — all three identical
       </text>
       <text
         x={W / 2}
@@ -426,7 +442,7 @@ export function SeedDeterminism() {
         fontSize="9"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        three distinct durations — real recomputation, not a cache
+        three distinct durations — real recomputation, not a cache · 512×512 = 262,144 px
       </text>
     </svg>
   );

@@ -33,7 +33,9 @@ const teardown: CaseData = {
     kind: "instrument",
     component: "latency",
     caption:
-      "where the milliseconds go · queue, the segment the API doesn't return, holds the variance · FIG A · p50 across N=20 at S28 · source: e4-latency/stats.md:11-13",
+      "where the milliseconds go · queue, the segment the API doesn't return, holds the variance · FIG A · p50 across N=20 at S28, 512×512",
+    sourceHref: "https://teardown.alilinlab.com/evidence/e4-latency/stats.md",
+    sourceLabel: "e4-latency/stats.md:11-13",
   },
   what: [
     "AI image APIs ship faster than anyone measures them. Latency claims are marketing, parameter documentation is partial, and the numbers that matter to a production integrator — where the milliseconds live, what a knob actually buys, whether the same call returns the same bytes — are published nowhere.",
@@ -56,8 +58,9 @@ const teardown: CaseData = {
         kind: "instrument",
         component: "stepfit",
         caption:
-          "FIG B · inference against steps · fit y = 19.52x − 5.0, R² 0.9978, N=10 · source: e4-latency/stats.md:20-22 · the two plotted points from :26-27",
-        pending: "eight of ten per-rung values — stats.md still 404s",
+          "FIG B · ten measured points against the published fit y = 19.52x − 5.0, R² 0.9978 · the fit is clean from S8 up; S1, S2 and S4 scatter off it, which a global R² smooths over",
+        sourceHref: "https://teardown.alilinlab.com/evidence/e4-latency/stats.md",
+        sourceLabel: "e4-latency/stats.md:20-35",
       },
     },
   ],
@@ -68,13 +71,15 @@ const teardown: CaseData = {
       {
         label: "THE HIDDEN SEGMENT",
         claim:
-          "The variance lives in the segment the API does not return. inference_ms is linear in steps at 19.52 ms/step, R² = 0.9978, with std 9.9 ms across N=20. Queue std is 277.0 ms — and queue is the one segment absent from the response body. A client measuring total time cannot attribute its own spread.",
+          "The variance lives in the segment the API does not return. inference_ms is linear from the mid rungs up — 19.52 ms/step, R² = 0.9978 across ten rungs, though the low rungs scatter and the global fit smooths that over — with std 9.9 ms across N=20. Queue std is 277.0 ms — and queue is the one segment absent from the response body. A client measuring total time cannot attribute its own spread.",
         source: "e4-latency/stats.md:11-13, 20-22",
         figure: {
           kind: "instrument",
           component: "latency",
           caption:
             "FIG A · inference 533 ms · queue 250.5 ms, drawn dashed because the API does not return it · network 0 ms",
+          sourceHref: "https://teardown.alilinlab.com/evidence/e4-latency/stats.md",
+          sourceLabel: "e4-latency/stats.md:11-13",
         },
       },
       {
@@ -86,8 +91,9 @@ const teardown: CaseData = {
           kind: "instrument",
           component: "seed",
           caption:
-            "FIG D · three runs, one sha256, zero pixels differing · run at 512×512; latency and sweeps at 1024, so the pixel count differs by design · source: raw-calls.json[18..20].fal_timings.inference",
-          pending: "the sha256 digest and the pixel-diff row are asserted from the report, not readable from a deployed evidence file",
+            "FIG D · three runs, one sha256 (8dadd968e921aca2…), 0 of 262,144 pixels differing · run at 512×512 — as is the latency series, so 262,144 is simply 512 squared",
+          sourceHref: "https://teardown.alilinlab.com/evidence/e3-seed/report.txt",
+          sourceLabel: "e3-seed/report.txt",
         },
       },
       {
@@ -99,7 +105,9 @@ const teardown: CaseData = {
           kind: "instrument",
           component: "stepdelta",
           caption:
-            "FIG C · pixels changed between adjacent step rungs, Δ>32 · N=1 per pair",
+            "FIG C · all nine adjacent step pairs, pixels changed at Δ>32 · N=1 per pair · the heaviest work is early, at S4→S8",
+          sourceHref: "https://teardown.alilinlab.com/evidence/_tools/adjacent-diffs.txt",
+          sourceLabel: "_tools/adjacent-diffs.txt",
         },
       },
       {

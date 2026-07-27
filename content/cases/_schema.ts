@@ -47,6 +47,9 @@ export type Figure = Pending &
         kind: "instrument";
         component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed";
         caption: string;
+        /** live evidence file this figure was plotted from */
+        sourceHref?: string;
+        sourceLabel?: string;
       }
     | { kind: "pending"; note: string; caption: string }
   );
