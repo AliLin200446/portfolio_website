@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import { Spectral } from "next/font/google";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
+import LogoMark from "@/components/LogoMark";
 import "./globals.css";
 
 /* CASE-TEMPLATE: the document serif is Spectral, ROMAN ONLY — the
@@ -54,8 +55,23 @@ export default function RootLayout({
             belongs in the layout, where every route gets it. HomeShell
             still draws its own bar over the 3D canvas, so this one hides
             on the index to avoid two navs. */}
-        <header className="site-nav mx-auto flex max-w-5xl items-baseline justify-end px-6 pt-5">
-          <TopNav />
+        {/* ONE bar for every route. The element itself is full-bleed so
+            it reaches both screen edges; only its inner row is capped at
+            the content measure, which is what keeps the type aligned
+            with the page below it.
+            z-[4] on purpose: above page content and the 3D canvas (z-0),
+            but below the bench loader (z-5) and the transition veil
+            (z-6) — a full-screen cut has to cover the bar, not sit
+            under it. */}
+        <header className="site-bar fixed inset-x-0 top-0 z-[4] border-b border-line bg-paper/90 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-5xl items-baseline justify-between gap-x-8 px-6 py-3.5">
+            <Link href="/" className="flex items-center gap-3 font-mono text-xs">
+              <LogoMark />
+              <span className="text-ink">ALI LIN</span>
+              <span className="text-muted">{" — design engineer"}</span>
+            </Link>
+            <TopNav />
+          </div>
         </header>
         {children}
         <footer className="mx-auto max-w-5xl border-t border-line px-6 py-8">

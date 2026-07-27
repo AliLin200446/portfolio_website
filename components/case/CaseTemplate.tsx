@@ -153,7 +153,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
   return (
     <main className="mx-auto max-w-5xl px-6">
       <BenchArrival slug={data.slug} />
-      <header className="flex items-baseline justify-between py-6 font-mono text-xs text-muted">
+      <header className="sticky top-[3.25rem] z-[3] -mx-6 border-b border-line bg-paper/90 px-6 backdrop-blur-sm flex items-baseline justify-between py-3 font-mono text-xs text-muted">
         <Link
           href={berth >= 0 ? `/?berth=${berth}` : "/"}
           className="transition-colors hover:text-bronze-text"

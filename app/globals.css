@@ -140,4 +140,8 @@ body {
 /* The index draws its own bar over the 3D canvas (HomeShell); the
    layout-level nav is for every other route. body[data-index] is set
    by the home page so only one nav is ever visible. */
-body[data-index="true"] .site-nav { display: none; }
+/* Fixed bars leave the flow, so every page needs the bar's height back
+   as top padding or its first line hides underneath. The index is
+   exempt: its scene is a fixed inset-0 canvas, not flowed content. */
+body { padding-top: 3.25rem; }
+body[data-index="true"] { padding-top: 0; }

@@ -5,8 +5,6 @@ import { STATIONS, berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
-import LogoMark from "@/components/LogoMark";
-import TopNav from "@/components/TopNav";
 
 function StationLink({
   station,
@@ -71,16 +69,6 @@ export default function HomeShell() {
       <BenchHome active={bench3d} />
       {/* instrument boot: pure HTML/CSS, first paint before Three parses */}
       {bench3d && <BenchLoader />}
-
-      {/* top bar: identity + full text navigation, always reachable */}
-      <header className="relative z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-b border-line bg-paper/85 px-6 py-4">
-        <p className="flex items-center gap-3 font-mono text-xs">
-          <LogoMark />
-          <span className="text-ink">ALI LIN</span>
-          <span className="text-muted">{" — design engineer"}</span>
-        </p>
-        <TopNav />
-      </header>
 
       {/* DOM list: SSR fallback and the whole story on mobile/coarse/
           reduced-motion/no-JS. Hidden only once the 3D bench mounts. */}
