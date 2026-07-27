@@ -493,7 +493,6 @@ function PointerTargets({
   const berth = useBenchStore((s) => s.berth);
   const setBerth = useBenchStore((s) => s.setBerth);
   const setHovered = useBenchStore((s) => s.setHovered);
-  const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /** One click path for every instrument. Off-berth: spin the ring to
    *  it. On-berth: single click plays the mechanism, double click
@@ -501,20 +500,12 @@ function PointerTargets({
    *  needs the pointer to drag), so the cloth calls this itself. */
   const select = (i: number, id: string) => {
     if (useBenchStore.getState().transitionId) return;
-    if (i !== berth) {
-      setBerth(i);
-      return;
-    }
-    if (pending.current) {
-      clearTimeout(pending.current);
-      pending.current = null;
-      beginTransition(id); // double click = enter
-    } else {
-      pending.current = setTimeout(() => {
-        pending.current = null;
-        playMechanism(id); // single click = play, no nav
-      }, 250);
-    }
+    // One meaning per gesture: click always enters. Off-berth it still
+    // has to bring the object to the front first, but that is the same
+    // journey, not a different outcome — beginTransition waits for the
+    // ring before the camera dives.
+    if (i !== berth) setBerth(i);
+    beginTransition(id);
   };
 
   return (
@@ -537,6 +528,9 @@ function PointerTargets({
               e.stopPropagation();
               setHovered(id);
               document.body.style.cursor = "pointer";
+              // hover is the mechanism now: the object performs itself
+              // in place. No camera move, no navigation.
+              if (!useBenchStore.getState().transitionId) playMechanism(id);
             }}
             onPointerOut={() => {
               setHovered(null);
@@ -757,24 +751,17 @@ export default function Carousel() {
    *  at its own berth so the cloth can be dragged, so the cloth forwards
    *  clicks here and gets the same single-plays / double-enters
    *  contract every other instrument has. */
-  const clothPending = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const clothSelect = () => {
+  const clothSelect = (dragged: boolean) => {
+    // The cloth is the one instrument you can also grab. A pointer that
+    // travelled more than a few pixels was a drag meant to sway the
+    // fabric, not a click meant to leave the page — so it is swallowed
+    // here rather than navigating out from under the user's hand.
+    if (dragged) return;
     const st = useBenchStore.getState();
     if (st.transitionId) return;
     const mine = berthOf("material-memory");
-    if (st.berth !== mine) {
-      st.setBerth(mine);
-      return;
-    }
-    if (clothPending.current) {
-      clearTimeout(clothPending.current);
-      clothPending.current = null;
-      beginTransition("material-memory");
-    } else {
-      clothPending.current = setTimeout(() => {
-        clothPending.current = null;
-      }, 250);
-    }
+    if (st.berth !== mine) st.setBerth(mine);
+    beginTransition("material-memory");
   };
 
   /** Beat 3: the surface owns the viewport — hand over to the route.

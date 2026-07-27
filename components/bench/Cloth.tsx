@@ -127,12 +127,16 @@ export default function Cloth({
    *  never saw pointerdown, so R3F never synthesised a click and this
    *  was the one instrument that could not be entered. It now forwards
    *  the click itself, using the same single-vs-double logic. */
-  onSelect?: () => void;
+  onSelect?: (dragged: boolean) => void;
 }) {
   const { invalidate, camera } = useThree();
   const berth = useBenchStore((s) => s.berth);
   const setHovered = useBenchStore((s) => s.setHovered);
   const mine = berthOf("material-memory");
+
+  /** Where the pointer went down, so a click can be told from a drag:
+   *  past 6px the user was swaying the cloth, not asking to leave. */
+  const down = useRef<{ x: number; y: number } | null>(null);
 
   const [fabricIdx, setFabricIdx] = useState(0);
   const fabric = FABRICS[fabricIdx];
@@ -436,10 +440,19 @@ export default function Cloth({
           setHovered(null);
           document.body.style.cursor = "";
         }}
-        onPointerDown={grab}
+        onPointerDown={(e) => {
+          down.current = { x: e.clientX ?? 0, y: e.clientY ?? 0 };
+          grab(e);
+        }}
         onClick={(e) => {
           e.stopPropagation();
-          onSelect?.();
+          const d = down.current;
+          const moved =
+            d === null
+              ? false
+              : Math.hypot((e.clientX ?? 0) - d.x, (e.clientY ?? 0) - d.y) > 6;
+          down.current = null;
+          onSelect?.(moved);
         }}
       >
         <meshStandardMaterial
