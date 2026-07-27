@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Spectral } from "next/font/google";
 import Link from "next/link";
+import TopNav from "@/components/TopNav";
 import "./globals.css";
 
 /* CASE-TEMPLATE: the document serif is Spectral, ROMAN ONLY — the
@@ -48,6 +49,14 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable} ${spectral.variable}`}
     >
       <body>
+        {/* Nav lived only inside HomeShell, so every subpage was a dead
+            end — you had to go back to the index to move anywhere. It
+            belongs in the layout, where every route gets it. HomeShell
+            still draws its own bar over the 3D canvas, so this one hides
+            on the index to avoid two navs. */}
+        <header className="site-nav mx-auto flex max-w-5xl items-baseline justify-end px-6 pt-5">
+          <TopNav />
+        </header>
         {children}
         <footer className="mx-auto max-w-5xl border-t border-line px-6 py-8">
           <div className="flex items-center justify-between font-mono text-xs text-muted">

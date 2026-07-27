@@ -136,3 +136,8 @@ body {
   30% { opacity: 0.22; }
   100% { opacity: 0; }
 }
+
+/* The index draws its own bar over the 3D canvas (HomeShell); the
+   layout-level nav is for every other route. body[data-index] is set
+   by the home page so only one nav is ever visible. */
+body[data-index="true"] .site-nav { display: none; }

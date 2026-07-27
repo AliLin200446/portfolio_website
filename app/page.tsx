@@ -1,4 +1,5 @@
 import HomeShell from "@/components/bench/HomeShell";
+import IndexBodyFlag from "@/components/IndexBodyFlag";
 
 /*
  * THE BENCH — v2 homepage skeleton (相A).
@@ -9,7 +10,10 @@ import HomeShell from "@/components/bench/HomeShell";
 export default function Home() {
   return (
     <main>
+      <>
+      <IndexBodyFlag />
       <HomeShell />
+    </>
     </main>
   );
 }
