@@ -29,6 +29,9 @@ import { useBenchStore } from "@/lib/benchStore";
 const SHELL_H = 0.42;
 const SHELL_R = 0.11;
 const EXIT_Y = 0.21;
+/** the table top sits at y=0.01; the ribbon keeps clear of it with room
+ *  for its own half-width and the lean the side vector adds */
+const RIBBON_FLOOR = 0.055;
 const RIBBON_LEN = 1.35;
 const RIBBON_W = 0.3;
 const RETRACTED = 0.15; // ~1.5 frames of leader showing
@@ -153,8 +156,8 @@ function buildRibbon() {
     new THREE.Vector3(-0.04, EXIT_Y, 0),
     new THREE.Vector3(0.16, EXIT_Y, 0.02),
     new THREE.Vector3(0.5, EXIT_Y - 0.02, 0.06),
-    new THREE.Vector3(0.92, EXIT_Y - 0.09, 0.1),
-    new THREE.Vector3(1.3, EXIT_Y - 0.2, 0.12),
+    new THREE.Vector3(0.92, EXIT_Y - 0.07, 0.1),
+    new THREE.Vector3(1.3, EXIT_Y - 0.13, 0.12),
   ]);
   const L_SEG = 64;
   const geo = new THREE.PlaneGeometry(1, 1, L_SEG, 2);
@@ -166,6 +169,11 @@ function buildRibbon() {
     const v = pos.getY(i) + 0.5;
     aU[i] = u;
     const P = curve.getPointAt(u);
+    // the tail used to sag to y=0.01, which is exactly the table top —
+    // so half the ribbon's width passed through the surface. The sag is
+    // shallower now, and the sampled point is floored as well so no
+    // control-point tweak can push it back under.
+    if (P.y < RIBBON_FLOOR) P.y = RIBBON_FLOOR;
     const T = curve.getTangentAt(u).normalize();
     const side = up.clone().sub(T.clone().multiplyScalar(up.dot(T))).normalize();
     let vv = v;
