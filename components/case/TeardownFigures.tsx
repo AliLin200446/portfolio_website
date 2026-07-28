@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
 /*
  * TEARDOWN FIGURES — SVG drawn from the live site's own evidence table,
  * not from anything estimated here. Every number below carries the
@@ -17,6 +21,110 @@ const INK = "#1a1714";
 const MUTED = "#6B6357";
 const BRONZE = "#866339";
 const OXBLOOD = "#C4362B";
+
+/** A number that settles on its reading when you look at it. 400ms,
+ *  plain cubic ease-out, no overshoot — an instrument coming to rest,
+ *  not a scoreboard. The last frame assigns the verified value itself
+ *  rather than a computed one, so rounding cannot drop a digit.
+ *  Reduced motion never starts a timer. */
+const SETTLE_MS = 400;
+
+function useSettle(value: number) {
+  const [shown, setShown] = useState(value);
+  const raf = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (raf.current !== null) cancelAnimationFrame(raf.current);
+    },
+    []
+  );
+  const run = () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (raf.current !== null) cancelAnimationFrame(raf.current);
+    const t0 = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - t0) / SETTLE_MS);
+      if (t < 1) {
+        setShown(value * (1 - Math.pow(1 - t, 3)));
+        raf.current = requestAnimationFrame(tick);
+      } else {
+        setShown(value);
+        raf.current = null;
+      }
+    };
+    setShown(0);
+    raf.current = requestAnimationFrame(tick);
+  };
+  return [shown, run] as const;
+}
+
+/** One bar of FIG A. Hovering the row settles its number; each row is
+ *  independent, so looking at queue does not re-run inference. */
+function LatencyRow({
+  r,
+  i,
+  scale,
+  barX,
+}: {
+  r: { name: string; ms: number; sd: string; dashed: boolean };
+  i: number;
+  scale: (ms: number) => number;
+  barX: number;
+}) {
+  const [shown, settle] = useSettle(r.ms);
+  const y = 26 + i * 44;
+  const w = Math.max(scale(r.ms), r.ms === 0 ? 0 : 2);
+  const dec = r.ms % 1 === 0 ? 0 : 1;
+  return (
+    <g onMouseEnter={settle} style={{ cursor: "default" }}>
+      {/* a transparent band so the whole row is the hover target, not
+          just the ink of the bar */}
+      <rect x={0} y={y - 6} width={560} height={32} fill="transparent" />
+      <text
+        x={barX - 12}
+        y={y + 13}
+        textAnchor="end"
+        fill={MUTED}
+        fontSize="10"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        {r.name}
+      </text>
+      {r.ms === 0 ? (
+        <line x1={barX} y1={y} x2={barX} y2={y + 20} stroke={INK} strokeWidth="1.5" />
+      ) : (
+        <rect
+          x={barX}
+          y={y}
+          width={w}
+          height={20}
+          fill={r.dashed ? "none" : INK}
+          stroke={r.dashed ? INK : "none"}
+          strokeWidth={r.dashed ? 1 : 0}
+          strokeDasharray={r.dashed ? "4 3" : undefined}
+        />
+      )}
+      <text
+        x={barX + w + 10}
+        y={y + 13}
+        fill={INK}
+        fontSize="10"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        {shown.toFixed(dec)} ms
+      </text>
+      <text
+        x={barX + w + 68}
+        y={y + 13}
+        fill={MUTED}
+        fontSize="9"
+        fontFamily="var(--font-geist-mono), monospace"
+      >
+        {r.sd}
+      </text>
+    </g>
+  );
+}
 
 /** FIG A — latency anatomy. Bar width is proportional to measured p50.
  *  source: e4-latency/stats.md:11-13 · p50 inf/queue/network, N=20 @S28 */
@@ -40,65 +148,9 @@ export function LatencyAnatomy() {
       role="img"
       aria-label="Measured p50 latency: inference 533 ms, queue 250.5 ms not returned by the API, network 0 ms."
     >
-      {rows.map((r, i) => {
-        const y = 26 + i * 44;
-        const w = Math.max(scale(r.ms), r.ms === 0 ? 0 : 2);
-        return (
-          <g key={r.name}>
-            <text
-              x={BAR_X - 12}
-              y={y + 13}
-              textAnchor="end"
-              fill={MUTED}
-              fontSize="10"
-              fontFamily="var(--font-geist-mono), monospace"
-            >
-              {r.name}
-            </text>
-            {r.ms === 0 ? (
-              // a zero bar is not a short bar: mark the origin instead
-              <line
-                x1={BAR_X}
-                y1={y}
-                x2={BAR_X}
-                y2={y + 20}
-                stroke={INK}
-                strokeWidth="1.5"
-              />
-            ) : (
-              <rect
-                x={BAR_X}
-                y={y}
-                width={w}
-                height={20}
-                fill={r.dashed ? "none" : INK}
-                stroke={r.dashed ? INK : "none"}
-                strokeWidth={r.dashed ? 1 : 0}
-                strokeDasharray={r.dashed ? "4 3" : undefined}
-              />
-            )}
-            <text
-              x={BAR_X + w + 10}
-              y={y + 13}
-              fill={INK}
-              fontSize="10"
-              fontFamily="var(--font-geist-mono), monospace"
-            >
-              {r.ms} ms
-            </text>
-            <text
-              x={BAR_X + w + 68}
-              y={y + 13}
-              fill={MUTED}
-              fontSize="9"
-              fontFamily="var(--font-geist-mono), monospace"
-            >
-              {r.sd}
-            </text>
-          </g>
-        );
-      })}
-
+      {rows.map((r, i) => (
+        <LatencyRow key={r.name} r={r} i={i} scale={scale} barX={BAR_X} />
+      ))}
       {/* the single accent on the page: the segment the API withholds */}
       <text
         x={BAR_X}
