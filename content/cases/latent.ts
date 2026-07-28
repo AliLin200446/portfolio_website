@@ -40,8 +40,8 @@ const latent: CaseData = {
   build: [
     {
       heading: "HALATION, READ OFF THE NEGATIVE",
-      body: "Halation is the red-orange bloom around clipped highlights — light scattering back through the emulsion. I didn't tune it by eye. I sampled the bloom along every clipped edge on my own 800T scans, tracking how much slower the red channel falls off than green and blue. The distance where the red-blue difference decays below threshold is the radius.",
-      data: "radius 4.9px ≈ 0.02 normalized · threshold 0.78 · tint (1.0, 0.4, 0.12) · intensity 0.25 — every number pulled off film, none fit to a curve",
+      body: "Halation is the red bloom around clipped highlights, light scattering back through the emulsion. I didn't tune it by eye. I sampled the bloom along every clipped edge on my own 800T scans, tracking how much slower the red channel falls off than green and blue. The distance where the red-blue difference decays below threshold is the radius.",
+      data: "halation radius 4.9 (6 separable gaussian passes, σ ≈ 30px at full res) · threshold 0.55 · tint (1.2, 0.03, 0.03) · intensity 1.01 · calibrated 2026-07-10 against my own 800T reference scans. Every number pulled off film, none fit to a curve.",
       figure: {
         kind: "image",
         src: "/case-assets/latent/exhibit-01-halation.png",
@@ -82,7 +82,7 @@ const latent: CaseData = {
     items: [
       {
         claim:
-          "HALATION RADIUS measured off my own 800T negatives: 4.9px, ≈0.02 normalized to frame width. Threshold and red-bias tuned to match the scans, not fitted to a curve. Spatial physics, read off film.",
+          "HALATION RADIUS measured off my own 800T negatives: 4.9, a dimensionless step that resolves to 6 separable gaussian passes, σ ≈ 30px at full resolution. Threshold and red bias tuned to match the scans, not fitted to a curve. Spatial physics, read off film.",
       },
       {
         claim:
