@@ -206,7 +206,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         id="claim"
         className="flex min-h-[38svh] scroll-mt-8 items-center border-b border-line"
       >
-        <p className="max-w-[24ch] font-serif text-4xl leading-tight sm:text-5xl">
+        <p className="max-w-[38ch] font-serif text-2xl leading-snug sm:text-[1.75rem]">
           {data.claim}
         </p>
       </section>
