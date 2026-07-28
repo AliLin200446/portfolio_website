@@ -3,19 +3,38 @@
 import { useState } from "react";
 
 /*
- * LATENT hero: the live before/after 拉杆 (spec ③ first priority).
- * Same honest procedural comparator as the exhibit instrument — pure
- * SVG feGaussianBlur, no WebGL context, interactive, silent.
+ * LATENT hero: the live before/after comparator. Pure SVG
+ * feGaussianBlur, no WebGL context, interactive, silent.
+ *
+ * The readout used to print Math.round(t * 24) while the filter ran at
+ * t * 16, so the number on screen was never the number being drawn:
+ * at rest it claimed 10 where the filter was at 6.4. It also called the
+ * result "px", which it is not.
+ *
+ * One value now feeds both, and it is labelled for what it is. SVG
+ * stdDeviation is a true gaussian sigma in user units of this viewBox,
+ * so the label reads sigma, not px.
+ *
+ * Note this sigma is NOT the engine's halationRadius. That parameter
+ * drives an iteration count (N = radius^2 / 4, renderer.ts:310-317), so
+ * the calibrated 4.9 lands near sigma 7.5 in quarter-res texels. The two
+ * scales are not interchangeable and this comparator does not pretend
+ * otherwise.
  */
+
+/** gaussian sigma, in the user units of the 960x420 viewBox below */
+const SIGMA_MAX = 16;
 
 export default function HalationHero() {
   const [t, setT] = useState(0.4);
+  // the single value: what the filter uses IS what the label prints
+  const sigma = t * SIGMA_MAX;
   return (
     <div>
       <svg viewBox="0 0 960 420" className="w-full border border-line" aria-label="halation before/after comparator">
         <defs>
           <filter id="hero-halo" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation={t * 16} />
+            <feGaussianBlur stdDeviation={sigma} />
           </filter>
         </defs>
         <rect width="960" height="420" fill="#14100d" />
@@ -39,10 +58,12 @@ export default function HalationHero() {
           max={100}
           value={Math.round(t * 100)}
           onChange={(e) => setT(Number(e.target.value) / 100)}
-          aria-label="halation radius"
+          aria-label="halation blur sigma"
           className="h-px w-48 cursor-pointer appearance-none bg-line accent-[#8C6A3F]"
         />
-        <span className="text-muted">halation radius · {Math.round(t * 24)} px</span>
+        <span className="text-muted">
+          halation blur &#963; {sigma.toFixed(1)} &#183; viewBox units
+        </span>
       </div>
     </div>
   );
