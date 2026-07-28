@@ -287,12 +287,11 @@ export function StepDelta() {
  *  plotted and the caption says so. Nothing is interpolated.
  *  source: e4-latency/stats.md:20-22 (fit) · :26-27 (the two points) */
 export function StepFit() {
-  const RUNGS = [1, 2, 4, 8, 12, 16, 20, 28, 36, 45];
   const SLOPE = 19.52;
   const INTERCEPT = -5.0;
-  // all ten measured values, stats.md:26-35. The low rungs sit well
-  // off the fit — S1 measured 31.9 against a fitted 14.5 — and that is
-  // drawn, not smoothed.
+  // the ten measured rungs, stats.md:26-35. Integers stay integers: 318
+  // and 877 were recorded without a decimal and padding them would add
+  // a digit of precision nobody measured.
   const KNOWN = [
     { steps: 1, ms: 31.9 },
     { steps: 2, ms: 24.5 },
@@ -306,7 +305,7 @@ export function StepFit() {
     { steps: 45, ms: 877 },
   ];
   const W = 560;
-  const H = 220;
+  const H = 400;
   const L = 52;
   const B = 168;
   const XMAX = 45;
@@ -314,12 +313,36 @@ export function StepFit() {
   const px = (s: number) => L + (s / XMAX) * (W - L - 24);
   const py = (ms: number) => B - (ms / YMAX) * (B - 22);
 
+  // residual against the published fit, computed here rather than
+  // copied, so the column is arithmetic the reader can redo
+  const fitAt = (s: number) => SLOPE * s + INTERCEPT;
+  const rows = KNOWN.map((k) => {
+    const d = k.ms - fitAt(k.steps);
+    const mag = Math.abs(d).toFixed(1);
+    return {
+      ...k,
+      // U+2212, not a hyphen: this is a minus sign
+      delta: (d >= 0 ? "+" : "\u2212") + mag,
+      msInt: String(Math.trunc(k.ms)),
+      msFrac: k.ms % 1 === 0 ? "" : "." + String(k.ms).split(".")[1],
+      dInt: (d >= 0 ? "+" : "\u2212") + mag.split(".")[0],
+      dFrac: "." + mag.split(".")[1],
+    };
+  });
+
+  // table geometry: decimal-aligned columns, hairline row rules only
+  const T0 = 200;
+  const ROW = 16;
+  const C_STEPS = L + 26;
+  const C_MS = L + 150;
+  const C_D = L + 268;
+
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
       className="w-full"
       role="img"
-      aria-label="Inference time against steps: fitted slope 19.52 milliseconds per step, R squared 0.9978."
+      aria-label="Inference time against steps: fitted slope 19.52 milliseconds per step, R squared 0.9978, with the ten measured values and their residuals tabulated."
     >
       {[0, 300, 600, 900].map((v) => (
         <g key={v}>
@@ -337,7 +360,6 @@ export function StepFit() {
         </g>
       ))}
 
-      {/* the published fit, drawn across the measured range */}
       <line
         x1={px(0)}
         y1={py(INTERCEPT)}
@@ -347,61 +369,82 @@ export function StepFit() {
         strokeWidth="1.2"
       />
 
-      {/* rung positions are published even where the y value is not */}
-      {RUNGS.map((s) => (
-        <line
-          key={s}
-          x1={px(s)}
-          y1={B}
-          x2={px(s)}
-          y2={B + 4}
-          stroke={AXIS}
-          strokeWidth="0.5"
-        />
-      ))}
-
+      {/* ticks now carry their rung value; the shape is unlabelled, the
+          numbers all live in the table below */}
       {KNOWN.map((k) => (
         <g key={k.steps}>
-          <circle cx={px(k.steps)} cy={py(k.ms)} r="3" fill={INK} />
+          <line x1={px(k.steps)} y1={B} x2={px(k.steps)} y2={B + 4} stroke={AXIS} strokeWidth="0.5" />
           <text
-            x={px(k.steps) + 6}
-            y={py(k.ms) - 6}
-            fill={INK}
+            x={px(k.steps)}
+            y={B + 15}
+            textAnchor="middle"
+            fill={MUTED}
             fontSize="8"
             fontFamily="var(--font-geist-mono), monospace"
           >
-            {k.ms}
+            {k.steps}
           </text>
+          <circle cx={px(k.steps)} cy={py(k.ms)} r="3" fill={INK} />
         </g>
       ))}
 
       <text
-        x={W - 24}
-        y={py(SLOPE * XMAX + INTERCEPT) - 8}
-        textAnchor="end"
-        fill={INK}
-        fontSize="9.5"
-        fontFamily="var(--font-geist-mono), monospace"
-      >
-        y = 19.52x − 5.0 · R² 0.9978 · N=10
-      </text>
-      <text
         x={L}
-        y={B + 22}
+        y={B + 30}
         fill={MUTED}
-        fontSize="9"
+        fontSize="8"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        steps · ticks mark the ten rungs 1 → 45
+        steps
       </text>
+
+      {/* the reading table: hairlines only, no border, no fill */}
+      <line x1={L} y1={T0 - 10} x2={W - 24} y2={T0 - 10} stroke={AXIS} strokeWidth="0.5" />
+      <text x={C_STEPS} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize="9" fontFamily="var(--font-geist-mono), monospace">
+        steps
+      </text>
+      <text x={C_MS} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize="9" fontFamily="var(--font-geist-mono), monospace">
+        inference_ms
+      </text>
+      <text x={C_D} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize="9" fontFamily="var(--font-geist-mono), monospace">
+        &#916; from fit
+      </text>
+      <line x1={L} y1={T0 + 8} x2={W - 24} y2={T0 + 8} stroke={AXIS} strokeWidth="0.5" />
+
+      {rows.map((r, i) => {
+        const y = T0 + 24 + i * ROW;
+        return (
+          <g key={r.steps}>
+            <text x={C_STEPS} y={y} textAnchor="end" fill={INK} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+              {r.steps}
+            </text>
+            {/* decimal-aligned: integers simply leave the fraction cell
+                empty rather than gaining a .0 they never had */}
+            <text x={C_MS} y={y} textAnchor="end" fill={INK} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+              {r.msInt}
+            </text>
+            <text x={C_MS} y={y} textAnchor="start" fill={INK} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+              {r.msFrac}
+            </text>
+            <text x={C_D} y={y} textAnchor="end" fill={MUTED} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+              {r.dInt}
+            </text>
+            <text x={C_D} y={y} textAnchor="start" fill={MUTED} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+              {r.dFrac}
+            </text>
+            <line x1={L} y1={y + 5} x2={W - 24} y2={y + 5} stroke={AXIS} strokeWidth="0.25" />
+          </g>
+        );
+      })}
+
       <text
         x={L}
-        y={B + 38}
-        fill={BRONZE}
+        y={T0 + 24 + rows.length * ROW + 16}
+        fill={INK}
         fontSize="9"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        ten measured points · the low rungs scatter; the fit is clean from S8 up
+        y = 19.52x &#8722; 5.0 &#183; R&#178; 0.9978 &#183; N=10
       </text>
     </svg>
   );
