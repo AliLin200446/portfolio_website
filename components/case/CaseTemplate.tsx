@@ -116,7 +116,14 @@ function Fig({ figure }: { figure: Figure }) {
     <figure className="my-10">
       {body()}
       <figcaption className={CAPTION}>
-        {figure.kind === "image" && figure.selfCaptioned ? figure.attribution : figure.caption}
+        {figure.kind === "image" && figure.selfCaptioned
+          ? figure.attribution
+          : Array.isArray(figure.caption)
+            ? // one line per entry. No new styling: the block inherits
+              // the same mono size and leading the single-line caption
+              // already uses, so a string caption renders identically.
+              figure.caption.map((line) => <span key={line} className="block">{line}</span>)
+            : figure.caption}
         {figure.kind === "instrument" && figure.sourceHref && (
           <>
             {" · "}

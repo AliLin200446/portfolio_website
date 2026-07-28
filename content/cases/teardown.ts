@@ -57,8 +57,13 @@ const teardown: CaseData = {
       figure: {
         kind: "instrument",
         component: "stepfit",
-        caption:
-          "FIG B \u00b7 ten measured points, 1 to 45 steps \u00b7 linear fit y = 19.52x \u2212 5.0, R\u00b2 0.9978 | \u0394 from fit given twice: absolute ms, and as a share of the measured value | below S8 the fit misses by 17 to 55 percent of the measurement | from S8 up it holds within 4.5 percent | R\u00b2 is carried by the high rungs. The low rungs are not described by this line.",
+        caption: [
+          "FIG B \u00b7 ten measured points, 1 to 45 steps \u00b7 linear fit y = 19.52x \u2212 5.0, R\u00b2 0.9978",
+          "\u0394 from fit given twice: absolute ms, and as a share of the measured value",
+          "below S8 the fit misses by 17 to 55 percent of the measurement",
+          "from S8 up it holds within 5 percent",
+          "R\u00b2 is carried by the high rungs. The low rungs are not described by this line.",
+        ],
         sourceHref: "https://teardown.alilinlab.com/evidence/e4-latency/stats.md",
         sourceLabel: "e4-latency/stats.md:20-35",
       },

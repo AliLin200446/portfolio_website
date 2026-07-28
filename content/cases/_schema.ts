@@ -46,7 +46,9 @@ export type Figure = Pending &
     | {
         kind: "instrument";
         component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed";
-        caption: string;
+        /** an array renders one line per entry; a plain string keeps the
+         *  single-line path byte for byte */
+        caption: string | string[];
         /** live evidence file this figure was plotted from */
         sourceHref?: string;
         sourceLabel?: string;
