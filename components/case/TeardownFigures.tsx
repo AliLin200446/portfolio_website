@@ -319,23 +319,34 @@ export function StepFit() {
   const rows = KNOWN.map((k) => {
     const d = k.ms - fitAt(k.steps);
     const mag = Math.abs(d).toFixed(1);
+    // share of the MEASURED value, which is why the column head names
+    // its denominator. An undeclared denominator is the same fault as
+    // an undeclared threshold.
+    const pct = (d / k.ms) * 100;
+    const pmag = Math.abs(pct).toFixed(1);
+    const sign = (v: number) => (v >= 0 ? "+" : "\u2212"); // U+2212, not a hyphen
     return {
       ...k,
-      // U+2212, not a hyphen: this is a minus sign
-      delta: (d >= 0 ? "+" : "\u2212") + mag,
       msInt: String(Math.trunc(k.ms)),
       msFrac: k.ms % 1 === 0 ? "" : "." + String(k.ms).split(".")[1],
-      dInt: (d >= 0 ? "+" : "\u2212") + mag.split(".")[0],
+      dInt: sign(d) + mag.split(".")[0],
       dFrac: "." + mag.split(".")[1],
+      pInt: sign(pct) + pmag.split(".")[0],
+      pFrac: "." + pmag.split(".")[1],
     };
   });
 
   // table geometry: decimal-aligned columns, hairline row rules only
   const T0 = 200;
   const ROW = 16;
-  const C_STEPS = L + 26;
+  // full-width render is 976 CSS px against a 560 viewBox, so the scale
+  // is 1.743: 8 lands at 13.9 CSS px and 7 at 12.2
+  const F_ROW = 8;
+  const F_HEAD = 7;
+  const C_STEPS = L + 30;
   const C_MS = L + 150;
-  const C_D = L + 268;
+  const C_D = L + 240;
+  const C_P = L + 372;
 
   return (
     <svg
@@ -379,7 +390,7 @@ export function StepFit() {
             y={B + 15}
             textAnchor="middle"
             fill={MUTED}
-            fontSize="8"
+            fontSize={7}
             fontFamily="var(--font-geist-mono), monospace"
           >
             {k.steps}
@@ -392,7 +403,7 @@ export function StepFit() {
         x={L}
         y={B + 30}
         fill={MUTED}
-        fontSize="8"
+        fontSize={7}
         fontFamily="var(--font-geist-mono), monospace"
       >
         steps
@@ -400,14 +411,17 @@ export function StepFit() {
 
       {/* the reading table: hairlines only, no border, no fill */}
       <line x1={L} y1={T0 - 10} x2={W - 24} y2={T0 - 10} stroke={AXIS} strokeWidth="0.5" />
-      <text x={C_STEPS} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize="9" fontFamily="var(--font-geist-mono), monospace">
+      <text x={C_STEPS} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize={F_HEAD} fontFamily="var(--font-geist-mono), monospace">
         steps
       </text>
-      <text x={C_MS} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize="9" fontFamily="var(--font-geist-mono), monospace">
+      <text x={C_MS} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize={F_HEAD} fontFamily="var(--font-geist-mono), monospace">
         inference_ms
       </text>
-      <text x={C_D} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize="9" fontFamily="var(--font-geist-mono), monospace">
-        &#916; from fit
+      <text x={C_D} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize={F_HEAD} fontFamily="var(--font-geist-mono), monospace">
+        &#916; ms
+      </text>
+      <text x={C_P} y={T0 + 2} textAnchor="end" fill={MUTED} fontSize={F_HEAD} fontFamily="var(--font-geist-mono), monospace">
+        &#916; % of measured
       </text>
       <line x1={L} y1={T0 + 8} x2={W - 24} y2={T0 + 8} stroke={AXIS} strokeWidth="0.5" />
 
@@ -415,22 +429,28 @@ export function StepFit() {
         const y = T0 + 24 + i * ROW;
         return (
           <g key={r.steps}>
-            <text x={C_STEPS} y={y} textAnchor="end" fill={INK} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+            <text x={C_STEPS} y={y} textAnchor="end" fill={INK} fontSize={F_ROW} fontFamily="var(--font-geist-mono), monospace">
               {r.steps}
             </text>
             {/* decimal-aligned: integers simply leave the fraction cell
                 empty rather than gaining a .0 they never had */}
-            <text x={C_MS} y={y} textAnchor="end" fill={INK} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+            <text x={C_MS} y={y} textAnchor="end" fill={INK} fontSize={F_ROW} fontFamily="var(--font-geist-mono), monospace">
               {r.msInt}
             </text>
-            <text x={C_MS} y={y} textAnchor="start" fill={INK} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+            <text x={C_MS} y={y} textAnchor="start" fill={INK} fontSize={F_ROW} fontFamily="var(--font-geist-mono), monospace">
               {r.msFrac}
             </text>
-            <text x={C_D} y={y} textAnchor="end" fill={MUTED} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+            <text x={C_D} y={y} textAnchor="end" fill={MUTED} fontSize={F_ROW} fontFamily="var(--font-geist-mono), monospace">
               {r.dInt}
             </text>
-            <text x={C_D} y={y} textAnchor="start" fill={MUTED} fontSize="11" fontFamily="var(--font-geist-mono), monospace">
+            <text x={C_D} y={y} textAnchor="start" fill={MUTED} fontSize={F_ROW} fontFamily="var(--font-geist-mono), monospace">
               {r.dFrac}
+            </text>
+            <text x={C_P} y={y} textAnchor="end" fill={MUTED} fontSize={F_ROW} fontFamily="var(--font-geist-mono), monospace">
+              {r.pInt}
+            </text>
+            <text x={C_P} y={y} textAnchor="start" fill={MUTED} fontSize={F_ROW} fontFamily="var(--font-geist-mono), monospace">
+              {r.pFrac}
             </text>
             <line x1={L} y1={y + 5} x2={W - 24} y2={y + 5} stroke={AXIS} strokeWidth="0.25" />
           </g>
@@ -441,7 +461,7 @@ export function StepFit() {
         x={L}
         y={T0 + 24 + rows.length * ROW + 16}
         fill={INK}
-        fontSize="9"
+        fontSize={F_HEAD}
         fontFamily="var(--font-geist-mono), monospace"
       >
         y = 19.52x &#8722; 5.0 &#183; R&#178; 0.9978 &#183; N=10
