@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
 import CaseIndex from "@/components/folio/CaseIndex";
+import InstrumentFacade from "./InstrumentFacade";
 import HalationHero from "@/components/folio/HalationHero";
 import { LatencyAnatomy, StepDelta, StepFit, SeedDeterminism } from "./TeardownFigures";
 import LiveFacade from "@/components/folio/LiveFacade";
@@ -209,6 +210,19 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
           {data.claim}
         </p>
       </section>
+
+      {/* TEST, teardown only: the instrument you arrived through, close
+          up. Facade by default — Three is behind a dynamic import fired
+          by the click, so an unclicked page carries none of it. */}
+      {data.slug === "teardown" && (
+        <section className="pt-10">
+          <InstrumentFacade label="the movement · click to inspect it in three dimensions" />
+          <p className="mt-3 font-mono text-[11px] leading-relaxed tracking-wide text-muted">
+            the instrument from the index, in detail · drag to lean around it,
+            click to run the gears · loads on click
+          </p>
+        </section>
+      )}
 
       {/* ③ HERO — the strongest single visual */}
       <section className="py-12">

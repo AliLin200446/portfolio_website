@@ -144,8 +144,12 @@ const SCREWS: [number, number, number][] = [
 
 export default function Movement({
   position,
+  standalone,
 }: {
   position: [number, number, number];
+  /** off the rail there is no front berth, so the case page's detail
+   *  inspector has to be allowed to run the mechanism on its own */
+  standalone?: boolean;
 }) {
   const { invalidate } = useThree();
   const group = useRef<THREE.Group>(null);
@@ -166,7 +170,7 @@ export default function Movement({
   // including at a background berth, so being the front object is a
   // separate condition and both must hold
   const berth = useBenchStore((s) => s.berth);
-  const isFront = berth === berthOf("teardown");
+  const isFront = standalone || berth === berthOf("teardown");
   const running = isFront && (hover || hovered === "teardown");
   // the run is hover-only now: a watch movement standing at the front
   // berth should be still until you look at it.
