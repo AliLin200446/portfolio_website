@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import CasePage from "@/components/folio/CasePage";
-import { casePages } from "@/content/case/casepages";
 import CaseTemplate from "@/components/case/CaseTemplate";
 import latent from "@/content/cases/latent";
 import materialMemory from "@/content/cases/material-memory";
@@ -10,9 +8,13 @@ import teardown from "@/content/cases/teardown";
 import skeletalSilk from "@/content/cases/skeletal-silk";
 import type { CaseData } from "@/content/cases/_schema";
 
-/* CASE-TEMPLATE: one template, six content files. Slugs present here
- * render the new template; the rest keep the previous body until their
- * copy is ported. */
+/*
+ * One dispatch, one registry. Every case slug resolves through
+ * content/cases/ and renders with CaseTemplate; anything else is a 404.
+ * The legacy casepages fallback and its CasePage renderer are gone,
+ * their registry having emptied as the last pages were ported. The one
+ * archived entry that lived in it is at content/archive/acubot.md.
+ */
 const cases: Record<string, CaseData> = { latent, "material-memory": materialMemory, vestige, "skeletal-silk": skeletalSilk, teardown };
 
 /*
@@ -26,9 +28,7 @@ const cases: Record<string, CaseData> = { latent, "material-memory": materialMem
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return [...new Set([...Object.keys(casePages), ...Object.keys(cases)])].map(
-    (slug) => ({ slug })
-  );
+  return Object.keys(cases).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -38,9 +38,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = (await params).slug;
   const c = cases[slug];
-  if (c) return { title: c.name.toUpperCase(), description: Array.isArray(c.claim) ? c.claim.join(" ") : c.claim };
-  const cp = casePages[slug];
-  return cp ? { title: cp.name, description: cp.claim } : {};
+  if (!c) return {};
+  return {
+    title: c.name.toUpperCase(),
+    description: Array.isArray(c.claim) ? c.claim.join(" ") : c.claim,
+  };
 }
 
 export default async function WorkPage({
@@ -49,10 +51,7 @@ export default async function WorkPage({
   params: Promise<{ slug: string }>;
 }) {
   const slug = (await params).slug;
-  // CASE-TEMPLATE first; un-ported slugs keep their previous body
-  const ported = cases[slug];
-  if (ported) return <CaseTemplate data={ported} />;
-  const cp = casePages[slug];
-  if (!cp) notFound();
-  return <CasePage data={cp} />;
+  const c = cases[slug];
+  if (!c) notFound();
+  return <CaseTemplate data={c} />;
 }

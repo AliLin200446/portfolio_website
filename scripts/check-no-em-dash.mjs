@@ -15,7 +15,9 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
 const ROOTS=["app","components","content","lib"];
-const SKIP=new Set(["node_modules",".next","_archive"]);
+// content/archive is recovered copy from deleted files: never routed,
+// never reviewed, and not something a reader can reach
+const SKIP=new Set(["node_modules",".next","_archive","archive"]);
 const EXTS=new Set([".ts",".tsx",".js",".jsx",".md",".css"]);
 function strip(src){let o="",i=0,m="code";while(i<src.length){const c=src[i],n=src[i+1];
 if(m==="code"){if(c==="/"&&n==="/"){m="line";o+="  ";i+=2;continue;}

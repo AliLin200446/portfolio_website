@@ -18,7 +18,11 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
 
 const ROOTS = ["app", "components", "content", "lib"];
-const SKIP = new Set(["node_modules", ".next", "_archive"]);
+// content/archive holds copy pulled out of deleted files so it is not
+// lost to git history alone. It is never routed and never rendered, and
+// by definition has not been through disclosure or claim review, so
+// scanning it would report faults in text that cannot reach a reader.
+const SKIP = new Set(["node_modules", ".next", "_archive", "archive"]);
 const EXTS = new Set([".ts", ".tsx", ".js", ".jsx", ".md", ".glsl"]);
 
 const RULES = [
