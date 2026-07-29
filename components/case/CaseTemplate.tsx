@@ -214,7 +214,13 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         className="flex min-h-[38svh] scroll-mt-8 items-center border-b border-line"
       >
         <p className="max-w-[38ch] font-serif text-2xl leading-snug sm:text-[1.75rem]">
-          {data.claim}
+          {Array.isArray(data.claim)
+            ? data.claim.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))
+            : data.claim}
         </p>
       </section>
 
@@ -281,6 +287,11 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
       {/* ⑥ WHY IT HOLDS — evidence, then limits */}
       <section id="proof" className="scroll-mt-8 border-t border-line py-14">
         <p className={LABEL}>{data.proofLabel ?? "PROOF"}</p>
+        {data.proof.intro?.map((para, i) => (
+          <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
+            {para}
+          </p>
+        ))}
         <ul className={data.proofSplit ? "mt-8" : "mt-8 max-w-[68ch]"}>
           {data.proof.items.map((p) => (
             <li

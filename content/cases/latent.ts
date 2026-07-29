@@ -1,105 +1,154 @@
 import type { CaseData } from "./_schema";
 
 /*
- * LATENT — copy supplied by the author, verbatim.
+ * LATENT: copy supplied by the author, verbatim.
  *
- * DISCLOSURE BOUNDARY (binding): the halation numbers and the spectral
- * FINDINGS are cleared for publication. The b₂ FIT DOMAIN and the exact
- * rmsK2 values are NOT cleared — pending Vestige claim review — so they
- * render as PENDING-IP chips and appear nowhere in this file. No number
- * below comes from anywhere but the author's copy.
+ * Every parameter here was checked against lib/latent-gl before this
+ * rewrite landed: threshold 0.55, radius 4.9, tint [1.2, 0.03, 0.03],
+ * intensity 1.01, calibrated 2026-07-10, and N = round(radius^2 / 4)
+ * giving 6 passes at about sigma 30 full-res. Zero mismatch. If the
+ * engine moves, this file is wrong until it moves with it.
  */
 const latent: CaseData = {
   slug: "latent",
   name: "LATENT",
-  oneLine:
-    "a film-emulation engine that puts measured film physics onto frames that never passed through a camera",
+  oneLine: "a film physics engine that runs in your browser",
   meta: {
     type: "film physics engine",
-    stack: "WebGL2 / GLSL",
+    stack: "WebGL2 / GLSL / WebCodecs",
     year: "2026",
-    status: "shipped",
+    status: "shipped July 2026",
     live: "https://latentfilm.com",
   },
-  claim: "“Filmic” can be measured.",
+  claim: [
+    "AI video gets light wrong.",
+    "The light does not follow optics.",
+    "The grain does not follow chemistry.",
+  ],
   hero: {
     kind: "instrument",
     component: "halation",
     caption:
-      "CineStill 800T emulation · WebGL2, 30fps · calibrated against my own scans · halation radius, live — drag to compare",
+      "the halation comparator, live · drag to change the blur radius",
   },
   what: [
-    "A WebGL2 engine that renders film physics onto AI-generated frames — for footage that was never shot on film, and shows it. Each frame runs a GLSL pipeline: spectral response, then halation, then grain. Every stage is calibrated against CineStill 800T I shot, developed, and scanned myself.",
-    "Film emulation usually means a LUT and a grain overlay — a look, applied. Latent treats the look as physics: light scattering in an emulsion, dye-layer crosstalk, grain that clumps by luminance. The difference is that every parameter traces to a negative I can hold up, not to a preset I liked.",
+    "If you want to add film texture to AI video, you have three options today: LUTs, filters, or film emulation inside professional color software. The last is hard to learn, complex, and slow.",
+    "Latent sits between the cheap filter and the pro plugin. It is a film physics engine that runs in your browser.",
+    "You upload your footage. It goes through a pipeline that models real film chemistry. Halation grows out of the clipped highlights already in your frame. Grain refreshes every frame with the statistics of real film. Gate weave shifts the frame the way a real projector does. Nothing is pasted on top.",
   ],
-  whatFigure: {
-    kind: "code",
-    code: "input → spectral response → halation → grain → output",
-    caption: "GLSL pipeline · three physical stages · calibrated per stage",
-  },
   build: [
     {
-      heading: "HALATION, READ OFF THE NEGATIVE",
-      body: "Halation is the red bloom around clipped highlights, light scattering back through the emulsion. I didn't tune it by eye. I sampled the bloom along every clipped edge on my own 800T scans, tracking how much slower the red channel falls off than green and blue. The distance where the red-blue difference decays below threshold is the radius.",
-      data: "halation radius 4.9 (6 separable gaussian passes, σ ≈ 30px at full res) · threshold 0.55 · tint (1.2, 0.03, 0.03) · intensity 1.01 · calibrated 2026-07-10 against my own 800T reference scans. Every number pulled off film, none fit to a curve.",
+      heading: "CLIENT SIDE ONLY",
+      body: "The pipeline is six GLSL passes on WebGL2. All of it runs on your GPU. No server. No upload. No API key. Video export uses WebCodecs, also local. Your footage never leaves your machine.",
+      body2:
+        "That is not only a privacy stance. It means the tool has no running cost, no queue, and no quota. The only limit is your graphics card.",
+    },
+    {
+      heading: "PARAMETERS COME FROM MEASUREMENT, NOT TASTE",
+      body: "The CineStill 800T values in the engine are halation threshold 0.55, radius 4.9, tint [1.2, 0.03, 0.03], intensity 1.01. I did not tune those until they looked good. I got them by calibrating against 800T negatives I shot and scanned myself.",
+      data: "calibration date 2026-07-10, stored with the source data",
+    },
+    {
+      heading: "IT CAN BE PROVEN WRONG",
+      body: "Every parameter points to a source file, which is a measurement of my own film. That means it can be wrong. A tool you cannot check is a toy.",
+    },
+    {
+      heading: "ARCHITECTURE",
+      body: "Six passes in a chain: linearize input, halation, grain, color response, gate weave, output encode.",
+      figure: {
+        kind: "code",
+        code: `linearize input
+  -> halation
+  -> grain
+  -> color response
+  -> gate weave
+  -> output encode`,
+        caption:
+          "the six-pass chain · WebGL2, all of it on the GPU · NEEDS REDRAWING: this is a placeholder list, not the original diagram",
+      },
+    },
+    {
+      heading: "HALATION",
+      body: "In physics this is a wide, soft spread of light. A large gaussian blur is too expensive for a real time pipeline. So Latent maps the radius parameter to an iteration count instead.",
+      body2:
+        "The radius resolves through N = round(radius squared / 4) into N separable gaussian passes. Each pass runs at quarter resolution. Sigma stacks with each pass. Radius 4.9 resolves to 6 passes, which is about sigma 30 in full resolution pixels.",
       figure: {
         kind: "image",
         src: "/case-assets/latent/exhibit-01-halation.png",
+        caption:
+          "halation on a clipped highlight, engine output against the negative it was calibrated to",
         width: 1379,
         height: 844,
         selfCaptioned: true,
-        caption:
-          "EXHIBIT 01 · CineStill 800T · halation radius measured off negatives",
-        attribution: "EXHIBIT 01 · measured off my own CineStill 800T negatives",
+        attribution:
+          "EXHIBIT 01 · halation measured off my own 800T negatives, not fitted to a curve",
       },
     },
     {
-      heading: "THE DETECTOR, RUN BACKWARDS",
-      body: "Forensics researchers flag AI images by the slope of their radial power spectrum: natural images sit near a k⁻² falloff, generated frames fall steeper. I built the same analyzer — not to detect, but to aim. It reads where a frame's spectrum sits and pushes it toward where real film lives.",
+      heading: "GRAIN",
+      body: "Generated with a PCG3D hash, refreshed on its own 24fps clock. Even if your footage is 30 or 60 frames per second, the grain still moves at the rate of film, because that is what a projector does.",
       body2:
-        "Then measuring my own scans complicated the target, in a way worth keeping. Real 800T doesn't rest on the k⁻² line either — and its reading swings with content and framing. Across crops of the same negative the spectral energy ranges nearly fourfold. Film refuses to be one number. So the engine's target was never “hit −2.” It moves footage from where it sits toward a region real film occupies — a region, not a line.",
-      // CHIPS LIFTED: exhibit-02 publishes these values in the figure
-      // itself, so holding them back in the text would contradict the
-      // image on the same page. Both values are read off the plot —
-      // the domain from its x-axis, the spread from its footnote.
-      data: "three hand-scanned 800T frames · spectral slope fit over k = 2–128 cycles across a 256 px native patch · b₂ = −3.19 / −0.95 / −3.25 · reading swings ~4× across crops of one negative",
-      note: "scans delivered as JPEG; DCT quantization thins the mid-frequency tail, so any absolute reading reflects film through this delivery chain, not the emulsion itself",
-      figure: {
-        kind: "image",
-        src: "/case-assets/latent/exhibit-02-spectral.png",
-        width: 1600,
-        height: 1080,
-        selfCaptioned: true,
-        caption:
-          "EXHIBIT 02 · radial power spectrum · real film vs engine output",
-        attribution:
-          "EXHIBIT 02 · measured 2026-07-26 on the shipping implementation",
-      },
+        "On its own this detail is tiny. Stacked with the others it becomes the thing you cannot name but can feel.",
     },
   ],
-  proofLabel: "FINDINGS",
+  proofLabel: "CALIBRATION",
   proof: {
+    intro: [
+      "I shot real 800T. Night scenes with clipped light sources. I scanned it. Then I put the scan next to the engine output in a workbench I wrote for this.",
+      "I compared one light source parameter by parameter. Is the halo the right size. Is the red shift strong enough. Does the falloff have the same shape. I kept going until the engine matched the scan on every measurable axis.",
+      "PROOFREADING. The case page had copy errors from an early draft. Several published parameters and units did not match the real values in the engine. Nothing was visibly broken, so nobody noticed for a long time.",
+      "After fixing the copy, I added a build guard. If any public claim drifts from the source code, the build fails. I tested the guard by planting failures on purpose, not by watching one clean run pass.",
+      "This changed what I think calibration means. Calibration does not only happen inside the engine. What you say in public has to match what the code says. Otherwise the project is wrong, even if the engine is right.",
+    ],
     items: [
       {
+        label: "THE WORKBENCH",
         claim:
-          "HALATION RADIUS measured off my own 800T negatives: 4.9, a dimensionless step that resolves to 6 separable gaussian passes, σ ≈ 30px at full resolution. Threshold and red bias tuned to match the scans, not fitted to a curve. Spatial physics, read off film.",
+          "The scan and the engine output sat side by side while I compared one light source parameter by parameter. This is that comparison.",
+        figure: {
+          kind: "pending",
+          note: "WORKBENCH SCREENSHOT · drop the file at public/case-assets/latent/workbench.png",
+          caption:
+            "the calibration workbench · scan against engine output, one light source at a time",
+          pending: "screenshot not supplied yet",
+        },
       },
       {
+        label: "THE 800T PARAMETER SET",
         claim:
-          "REAL FILM REFUSES TO BE ONE NUMBER. Across crops of my own hand-scanned 800T, not one lands on the k⁻² line forensics researchers call “natural,” and the readings swing with content and framing. So the engine never chased −2. It moves AI footage from where it sits toward where real film actually lives: a region, not a line. The AI source frame falls at b₂ −3.49; the same frame through the engine lands at −3.22, between two of the three 800T negatives (−3.19 and −3.25) — while the third sits at −0.95, which is why this is a displacement, not a pass mark.",
-        source:
-          "36 crops across the same three negatives span b₂ −0.49 … −3.40 (exhibit 02)",
+          "halation threshold 0.55, radius 4.9, tint [1.2, 0.03, 0.03], intensity 1.01. Copied word for word from the calibration file, long decimals included, not retyped by hand.",
+        source: "lib/latent-gl/stocks.ts, CINESTILL_800T",
       },
       {
+        label: "WHAT RADIUS 4.9 ACTUALLY DOES",
         claim:
-          "EMULATION AS PHYSICS, NOT PRESET. Halation, grain, dye crosstalk, highlight roll-off — each is simulated from a measured cause, not applied as a filter. The look is the output of the physics, not a layer on top.",
+          "It is a dimensionless step, not a pixel count. N = round(radius squared / 4) resolves it to 6 separable gaussian passes at quarter resolution, about sigma 30 at full resolution.",
+        source: "lib/latent-gl/renderer.ts, blur iteration count",
+      },
+      {
+        label: "THE DATE IS PART OF THE CLAIM",
+        claim:
+          "Calibrated 2026-07-10 against 800T negatives I shot and scanned myself. A parameter set without a date is not a measurement.",
+        source: "calibration JSON, stored with the source data",
       },
     ],
-    limits: [],
-  },
+    limits: [
+      "One stock, calibrated by one person, from one shoot. The method ports to other film stocks; these numbers do not.",
+    ],
+    },
   context:
-    "Latent is one instrument in a larger practice: I build tools that measure what generative models actually do, rather than decorate their output. The spectral analyzer here is the same idea as Teardown № 1 — take the math built to detect machines, and turn it into something that measures or repairs. The crop-sensitivity finding above is its own open thread: what I took for film's spectral fingerprint turned out to be my framing's.",
-  byline: "Ali Lin — design engineer",
+    "AI video output is exploding. But the frames all share one look. Too clean. No optical root.",
+  contextParas: [
+    "AI video output is exploding. But the frames all share one look. Too clean. No optical root.",
+    "At the same time people want film texture more than ever. On one side there is a flood of images with no physical basis. On the other side there is real demand for physical texture. There is no bridge between them.",
+    "The current options cannot be that bridge. A LUT cannot model a spatial effect, by design. A filter is a sticker. A pro plugin has a workflow cost. So Latent is not a better filter. It is a new category. A film physics layer that is checkable and runs natively in the browser.",
+    "THE MOAT IS IN TWO PLACES. The calibration data: the parameters come from real negatives measured under controlled conditions. That requires film shooting, a scanning chain, and modeling, all in one person. That overlap is small. To copy these numbers you have to go shoot, scan, and measure them yourself.",
+    "Verifiability as a position. Every tool in this market says cinematic and film grade. A tool that publishes its calibration date, its source data, and what each parameter actually means is standing somewhere nobody else is standing. The price of standing there is agreeing to be checked, and marketing language exists to avoid being checked.",
+    "This position gets more valuable as the market matures. The more your users know, the more it is worth to be checkable.",
+    "FOR ME PERSONALLY. Latent is also proof. It proves that four years of editorial photography is not a decorative line on a resume. It is a measuring skill that converts directly into engineering parameters. It proves you can go from seeing that something is wrong, to measuring why it is wrong, to building something that is right.",
+    "That path is observe, measure, build, then let the thing be checked. Latent taught me to work that way. It is now how I work on everything.",
+  ],
+  byline: "Ali Lin, design engineer",
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },
 };
 export default latent;

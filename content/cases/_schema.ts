@@ -94,8 +94,10 @@ export type CaseData = {
   name: string;
   oneLine: string;
   meta: { type: string; stack: string; year: string; status: string; live?: string };
-  /** ② one sentence, no hedging */
-  claim: string;
+  /** ② one sentence, no hedging. An array renders one line per entry
+   *  inside the claim block; a plain string keeps the old single-line
+   *  path unchanged. */
+  claim: string | string[];
   /** ③ the strongest single visual */
   hero: Figure;
   /** ④ two short paragraphs, followable by a smart non-specialist */
@@ -109,7 +111,12 @@ export type CaseData = {
   /** findings sit beside their figure instead of above it */
   proofSplit?: boolean;
   contextParas?: string[];
-  proof: { items: Proof[]; limits: string[] };
+  proof: {
+    /** prose that sets up the evidence, before the itemised claims */
+    intro?: string[];
+    items: Proof[];
+    limits: string[];
+  };
   /** ⑦ one paragraph of placement */
   context: string;
   byline?: string;

@@ -38,7 +38,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = (await params).slug;
   const c = cases[slug];
-  if (c) return { title: c.name.toUpperCase(), description: c.claim };
+  if (c) return { title: c.name.toUpperCase(), description: Array.isArray(c.claim) ? c.claim.join(" ") : c.claim };
   const cp = casePages[slug];
   return cp ? { title: cp.name, description: cp.claim } : {};
 }
