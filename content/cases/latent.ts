@@ -54,18 +54,9 @@ const latent: CaseData = {
     },
     {
       heading: "ARCHITECTURE",
-      body: "Six passes in a chain: linearize input, halation, grain, color response, gate weave, output encode.",
-      figure: {
-        kind: "code",
-        code: `linearize input
-  -> halation
-  -> grain
-  -> color response
-  -> gate weave
-  -> output encode`,
-        caption:
-          "the six-pass chain · WebGL2, all of it on the GPU · NEEDS REDRAWING: this is a placeholder list, not the original diagram",
-      },
+      body: "Five GL passes: highlight threshold at quarter resolution, a separable gaussian run N times, composite where the halation glow is screened back in linear light, film colour response, then grain. Gate weave is applied where the source is first sampled, so the whole chain sees the same weaved frame. Linearize and encode are not passes. Every shader decodes and re-encodes sRGB inline.",
+      body2:
+        "Grain is last because it is the developed crystal structure, not an exposure effect.",
     },
     {
       heading: "HALATION",
@@ -86,7 +77,7 @@ const latent: CaseData = {
     },
     {
       heading: "GRAIN",
-      body: "Generated with a PCG3D hash, refreshed on its own 24fps clock. Even if your footage is 30 or 60 frames per second, the grain still moves at the rate of film, because that is what a projector does.",
+      body: "Generated with a PCG3D hash and reseeded on every rendered frame. A fresh noise field each time, so there is no fixed pattern anywhere in the image. A still source still boils, the way film does.",
       body2:
         "On its own this detail is tiny. Stacked with the others it becomes the thing you cannot name but can feel.",
     },
