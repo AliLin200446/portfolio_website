@@ -65,6 +65,15 @@ function stripComments(src) {
   return out;
 }
 
+/** Escapes are text too. A file that has been generated or serialised
+ *  carries its strings as \uXXXX, which no amount of regex over the raw
+ *  bytes will ever match. Decode first, then judge. */
+function decodeEscapes(src) {
+  return src.replace(/\\u([0-9a-fA-F]{4})/g, (_, h) =>
+    String.fromCharCode(parseInt(h, 16))
+  );
+}
+
 function walk(dir, acc = []) {
   for (const name of readdirSync(dir)) {
     if (SKIP.has(name)) continue;
@@ -75,7 +84,7 @@ function walk(dir, acc = []) {
   return acc;
 }
 
-const CHECKED = new Set([".ts", ".tsx", ".js", ".jsx", ".svg", ".css", ".html"]);
+const CHECKED = new Set([".ts", ".tsx", ".js", ".jsx", ".svg", ".css", ".html", ".glsl"]);
 const hits = [];
 
 for (const root of ROOTS) {
@@ -84,13 +93,17 @@ for (const root of ROOTS) {
   for (const file of files) {
     const ext = extname(file);
     if (!CHECKED.has(ext)) continue;
-    const raw = readFileSync(file, "utf8");
+    const raw = decodeEscapes(readFileSync(file, "utf8"));
     if (!CJK.test(raw)) continue;
     // markup paints its content but not its comments: <!-- --> in
     // svg/html and /* */ in css are as author-facing as a // in code
     const blank = (m) => m.replace(/[^\n]/g, " ");
     const visible =
-      ext === ".svg" || ext === ".html"
+      // GLSL is compiled into a string and shipped whole, comments and
+      // all, so it has no author-only tier the way code does
+      ext === ".glsl"
+        ? raw
+        : ext === ".svg" || ext === ".html"
         ? raw.replace(/<!--[\s\S]*?-->/g, blank)
         : ext === ".css"
           ? raw.replace(/\/\*[\s\S]*?\*\//g, blank)

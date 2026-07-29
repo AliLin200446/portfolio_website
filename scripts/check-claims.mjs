@@ -19,7 +19,7 @@ import { join, extname } from "node:path";
 
 const ROOTS = ["app", "components", "content", "lib"];
 const SKIP = new Set(["node_modules", ".next", "_archive"]);
-const EXTS = new Set([".ts", ".tsx", ".js", ".jsx", ".md"]);
+const EXTS = new Set([".ts", ".tsx", ".js", ".jsx", ".md", ".glsl"]);
 
 const RULES = [
   {
@@ -92,6 +92,15 @@ function stripComments(src) {
   return out;
 }
 
+/** Escapes are text too. A file that has been generated or serialised
+ *  carries its strings as \uXXXX, which no amount of regex over the raw
+ *  bytes will ever match. Decode first, then judge. */
+function decodeEscapes(src) {
+  return src.replace(/\\u([0-9a-fA-F]{4})/g, (_, h) =>
+    String.fromCharCode(parseInt(h, 16))
+  );
+}
+
 function walk(dir, acc = []) {
   for (const name of readdirSync(dir)) {
     if (SKIP.has(name)) continue;
@@ -108,9 +117,11 @@ for (const root of ROOTS) {
   try { files = walk(root); } catch { continue; }
   for (const file of files) {
     if (!EXTS.has(extname(file))) continue;
-    const raw = readFileSync(file, "utf8");
-    // .md has no code comments to strip; everything in it is readable
-    const shipped = extname(file) === ".md" ? raw : stripComments(raw);
+    const raw = decodeEscapes(readFileSync(file, "utf8"));
+    // .md and .glsl ship whole: neither has an author-only tier, so
+    // nothing is stripped before judging
+    const ext = extname(file);
+    const shipped = ext === ".md" || ext === ".glsl" ? raw : stripComments(raw);
     // path-level, not content-level: a passing mention of Resonance in
     // some other file's comment must not make that file's own approved
     // copy fail. Latent's "film physics engine" lives next to such a
