@@ -97,11 +97,15 @@ const latent: CaseData = {
         claim:
           "The scan and the engine output sat side by side while I compared one light source parameter by parameter. This is that comparison.",
         figure: {
-          kind: "pending",
-          note: "WORKBENCH SCREENSHOT · drop the file at public/case-assets/latent/workbench.png",
+          kind: "image",
+          src: "/case-assets/latent/workbench.webp",
+          width: 1952,
+          height: 1066,
           caption:
-            "the calibration workbench · scan against engine output, one light source at a time",
-          pending: "screenshot not supplied yet",
+            "the calibration workbench · reference scan on the left, engine output on the right, the parameter panel on the right edge",
+          selfCaptioned: true,
+          attribution:
+            "the workbench · the panel reads threshold 0.55, radius 4.90, intensity 1.01, tint 1.20 / 0.03 / 0.03, the same values this page quotes",
         },
       },
       {
