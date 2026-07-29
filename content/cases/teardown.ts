@@ -139,7 +139,7 @@ const teardown: CaseData = {
     "Instrument-building over tool-using: the harness, the pixel-diff tooling, and the verification pipeline are all first-party. Claims survive audit: every number on the site carries its source file, line, sample size, and threshold, and the raw files ship with the report. Limits are stated by the author, not discovered by the reader: N=1 per rung, single region, single day, no residual-to-reference series — so no convergence claim is made.",
     "TEARDOWN № 1 is the first in a series. The method — sweep, diff, time, log, publish with sources — ports to any inference API. The findings do not: they are one model, measured.",
   ],
-  byline: "Ali Lin — design engineer",
+  byline: "Ali Lin, design engineer",
   next: { label: "VESTIGE", href: "/work/vestige" },
 };
 export default teardown;

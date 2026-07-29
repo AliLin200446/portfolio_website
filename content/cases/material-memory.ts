@@ -73,7 +73,7 @@ const materialMemory: CaseData = {
   },
   context:
     "Material Memory is the product-facing end of the same practice: Latent and Teardown measure what generative systems do; this one takes a hand-built physics engine and points it at a business number returns can't otherwise reach. Where those instruments prove rigor, this one proves the rigor aims at something someone pays for.",
-  byline: "Ali Lin — design engineer",
+  byline: "Ali Lin, design engineer",
   prev: { label: "LATENT", href: "/work/latent" },
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },
 };

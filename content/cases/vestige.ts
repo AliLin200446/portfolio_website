@@ -100,7 +100,7 @@ const vestige: CaseData = {
   },
   context:
     "Vestige is where the practice meets a market. Latent and Teardown instrument what generative systems do; Vestige instruments trust itself — turning a regulatory burden into something a brand can use, without surrendering the secrets that make it a brand. The seal, the provenance, the object that remembers who owned it — it's the same instinct as a maker's mark, rebuilt in zero knowledge.",
-  byline: "Ali Lin — design engineer",
+  byline: "Ali Lin, design engineer",
   prev: { label: "TEARDOWN № 1", href: "/work/teardown" },
   next: { label: "MATERIAL MEMORY", href: "/work/material-memory" },
 };
