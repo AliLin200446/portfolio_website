@@ -103,42 +103,6 @@ export const casePages: Record<string, CasePageData> = {
   /* latent has moved to the case template (content/cases/latent.ts);
    * its legacy entry — and the build notes that had leaked into it —
    * are removed rather than left to rot beside the live copy. */
-  "material-memory": {
-    slug: "material-memory",
-    type: "specimen",
-    name: "MATERIAL MEMORY",
-    metaLine:
-      "MATERIAL MEMORY — hand-written cloth physics · Verlet integration · live · material-memory.alilinlab.com · 2026 · PENDING — status",
-    claim: "PENDING — claim not yet chosen",
-    hero: {
-      kind: "facade",
-      liveUrl: "https://material-memory.alilinlab.com",
-      embeddable: true,
-      // MATCH-CUT: poster 应为布面特写(揭帛 cut 从经纬间显现才真正落地)
-      posterNote: "cloth close-up or recording (poster slot; the live button already works)",
-    },
-    heroCaption: "PENDING — content · condition · date",
-    // MM-FILL:Problem+Solution+统计句(归因待回填)。润色稿上屏,原文逐字:
-    // AUTHOR VERBATIM (Problem): "Luxury e-commerce has high return rate
-    //   since it only shows you what fabric looks like, never what it
-    //   feels like."
-    // AUTHOR VERBATIM (Stack): "Three.js + GLSL shaders / Verlet cloth
-    //   physics / WebGL"
-    // Solution 原文与 "By closing the tactile gap…" 全句未随 prompt 附上
-    //   ——到手即补封此处。
-    // NAMING: pending author decision (Material Memory vs Material
-    //   Simulator)——裁定前铭牌/hover/case 三处统一站 title。
-    // SPECS 无 schema 槽(不发明区块),规范化后封存待位:
-    //   Three.js · GLSL · Verlet cloth physics · WebGL
-    //   (WebGL 按站内探测保留:bundle 含 "webgl" 无 "webgl2",
-    //    2026-07-22;PENDING)
-    // patent 仍不写(filed 未确认)。claim 草案供作者选(不上屏):
-    //   Feel before you buy. / Fabric, felt. / The tactile gap, closed.
-    what: "Luxury e-commerce shows you what a fabric looks like — never what it feels like. The return rate follows. Material Memory is a WebGL engine that simulates fabric behavior in real time — drape, weight, sheen, friction — so a buyer can feel a garment before they buy it. Industry studies report that 3D material previews cut return rates by 20–36% and lift conversion by up to 40%. PENDING — source: study, publisher, year",
-    mech: { placeholder: "PENDING — mechanism diagram" },
-    role: "Design Engineer",
-    next: { label: "LATENT", href: "/work/latent" }, // closing berth → loop
-  },
 /* ARCHIVED (B6-SWAP) · RETURNING: pending App Store — ACUBOT 陈列签
  * 双闸占位原样封存;App Store 上架后解封回位。
   //   acubot: {
