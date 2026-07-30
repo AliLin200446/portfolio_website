@@ -270,7 +270,10 @@ function Rig({
       snapTimer.current = setTimeout(() => {
         const i = Math.round(target.current / STEP);
         target.current = i * STEP; // always settles ON a berth
-        setBerth(((-i % 6) + 6) % 6);
+        // BERTH_ORDER.length, never a literal. This read 6 while the
+        // ring carried 5, so any i > 0 mapped to the wrong berth and
+        // one value fell off the end entirely.
+        setBerth(((-i % BERTH_ORDER.length) + BERTH_ORDER.length) % BERTH_ORDER.length);
         invalidate();
       }, SNAP_DELAY_MS);
     };
@@ -316,12 +319,12 @@ function Rig({
       const b = useBenchStore.getState().berth;
       if (e.key === "ArrowLeft") {
         engage();
-        useBenchStore.getState().setBerth((b + 5) % 6);
+        useBenchStore.getState().setBerth((b + BERTH_ORDER.length - 1) % BERTH_ORDER.length);
         e.preventDefault();
       }
       if (e.key === "ArrowRight") {
         engage();
-        useBenchStore.getState().setBerth((b + 1) % 6);
+        useBenchStore.getState().setBerth((b + 1) % BERTH_ORDER.length);
         e.preventDefault();
       }
     };
@@ -723,9 +726,10 @@ export default function Carousel() {
     if (s.transitionId) return;
     if (id === "material-memory" && clothDrag.active) {
       // 拖拽中触发 enter: let go, settle a beat, then unveil
+      // let the cloth go, settle a beat, then run the SAME guarded path
+      // rather than starting the dive blind on a timer
       setTimeout(() => {
-        if (!useBenchStore.getState().transitionId)
-          useBenchStore.getState().startTransition(id);
+        if (!useBenchStore.getState().transitionId) beginTransition(id);
       }, 200);
       return;
     }
@@ -745,7 +749,32 @@ export default function Carousel() {
       if (d < -Math.PI) d += Math.PI * 2;
       return Math.abs(d) < 0.02;
     };
+    /** The regression guard. This bug has now shipped twice, both times
+     *  invisible until someone clicked. If the dive ever starts while
+     *  the ring is off its mark, say so loudly with the numbers rather
+     *  than waiting to be noticed by hand. */
+    const assertAligned = (where: string) => {
+      if (process.env.NODE_ENV === "production") return;
+      const cur = ring.current?.rotation.y;
+      if (cur === undefined) {
+        console.error(`[bench] dive started with no ring ref (${where}, ${id})`);
+        return;
+      }
+      let d = (cur - want) % (Math.PI * 2);
+      if (d > Math.PI) d -= Math.PI * 2;
+      if (d < -Math.PI) d += Math.PI * 2;
+      if (Math.abs(d) > 0.05) {
+        console.error(
+          `[bench] dive started ${((d * 180) / Math.PI).toFixed(1)} deg off ` +
+            `target for "${id}" (${where}). ring.rotation.y=${cur.toFixed(4)} ` +
+            `want=${want.toFixed(4)} berth=${useBenchStore.getState().berth}. ` +
+            `The camera will fly at whatever is at the front instead.`
+        );
+      }
+    };
+
     if (settled()) {
+      assertAligned("immediate");
       s.startTransition(id);
       return;
     }
@@ -753,6 +782,7 @@ export default function Carousel() {
     const wait = () => {
       if (useBenchStore.getState().transitionId) return;
       if (settled() || ++frames > 180) {
+        assertAligned(frames > 180 ? "frame cap" : "settled");
         useBenchStore.getState().startTransition(id);
         return;
       }
