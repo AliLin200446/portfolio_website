@@ -6,11 +6,10 @@ import { FolioBar } from "@/components/folio/FolioChrome";
 export const metadata: Metadata = { title: "Experiments" };
 
 /*
- * NAV-IA §2 — /experiments landing skeleton. FolioChrome blood: paper,
- * mono data, 0.5px lines, no cards/shadows/radius, no cinnabar. All
- * copy is a VISIBLE placeholder — nothing invented, and which pieces
- * count as experiments is the author's call, not ours.
- * // 候选: Cyber I Ching / Whorl / De-AI spectral study — 作者确认后启用
+ * /experiments landing. FolioChrome blood: paper, mono data, 0.5px
+ * lines, no cards, no shadows, no radius, no cinnabar. Which pieces
+ * count as experiments is the author's call; this file only frames
+ * them.
  */
 export default function ExperimentsPage() {
   return (
@@ -20,8 +19,8 @@ export default function ExperimentsPage() {
         <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
           EXPERIMENTS
         </h1>
-        <p className="mt-4 font-mono text-xs tracking-wide text-muted">
-          PENDING — one line of positioning
+        <p className="mt-4 max-w-[52ch] font-serif text-xl text-muted">
+          An archive of unfinished thoughts and generative trials.
         </p>
       </section>
       {/* 可筛选文字索引 — 数据在 content/experiments.ts,作者填字即增删 */}

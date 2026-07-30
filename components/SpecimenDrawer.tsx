@@ -287,10 +287,37 @@ function Scene({ active }: { active: Tag | null }) {
         </mesh>
       </group>
 
-      {/* contact shadow: the cabinet rests, it does not float */}
+      {/* The cabinet rests, it does not float. Three layers, all of
+          them cheap: a tight dark core right under the carcass, the
+          wider soft falloff that was already here, and a plinth just
+          proud of the footprint so there is a surface for the shadow
+          to fall ON. Without the plinth the shadow reads as a smudge
+          in mid-air, which is the floating problem restated rather
+          than solved. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -H / 2 - 0.048, -0.12]}>
+        <planeGeometry args={[W * 0.99, 0.34]} />
+        <meshBasicMaterial
+          map={shadowTex}
+          transparent
+          opacity={0.55}
+          depthWrite={false}
+        />
+      </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -H / 2 - 0.05, -0.12]}>
         <planeGeometry args={[W * 1.15, 0.6]} />
-        <meshBasicMaterial map={shadowTex} transparent depthWrite={false} />
+        <meshBasicMaterial
+          map={shadowTex}
+          transparent
+          opacity={0.42}
+          depthWrite={false}
+        />
+      </mesh>
+      {/* the plinth: barely there, and deliberately paper rather than
+          a new colour, so it reads as the surface the page is already
+          made of */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -H / 2 - 0.056, -0.12]}>
+        <planeGeometry args={[W * 1.02, 0.42]} />
+        <meshBasicMaterial color="#EFEBE2" />
       </mesh>
 
       {/* 纸签: English name + mono number, zero decorative hanzi */}

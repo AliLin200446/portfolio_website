@@ -41,7 +41,24 @@ export default function ExperimentsIndex() {
       <span className={big ? "font-serif text-2xl" : "font-serif text-lg"}>
         {e.name}
       </span>
-      <span className="text-sm text-muted">{e.line}</span>
+      <span className="text-sm text-muted">
+        {e.line.replace(/^DRAFT:\s*/, "")}
+      </span>
+      {/* half-filled ring: the entry exists but its line is still a
+          draft. Drawn, not an emoji, so it inherits currentColor and
+          the page keeps one type system. */}
+      {/^DRAFT:/.test(e.line) && (
+        <svg
+          viewBox="0 0 12 12"
+          width="9"
+          height="9"
+          aria-label="draft"
+          className="shrink-0 self-center text-muted"
+        >
+          <circle cx="6" cy="6" r="4.5" fill="none" stroke="currentColor" strokeWidth="1" />
+          <path d="M6 1.5 A4.5 4.5 0 0 1 6 10.5 Z" fill="currentColor" />
+        </svg>
+      )}
       <span className="font-mono text-xs text-muted">{e.year}</span>
       <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
         {e.tags.join(" · ")}
@@ -72,7 +89,11 @@ export default function ExperimentsIndex() {
         <button
           type="button"
           onClick={() => pick(null)}
-          className={active === null ? "text-bronze-text" : "text-muted hover:text-ink"}
+          className={
+            active === null
+              ? "text-bronze-text"
+              : "text-muted opacity-40 transition-opacity hover:text-ink hover:opacity-100"
+          }
         >
           ALL <span className="text-[10px]">{visible.length}</span>
         </button>
@@ -81,7 +102,11 @@ export default function ExperimentsIndex() {
             key={t}
             type="button"
             onClick={() => pick(t)}
-            className={`uppercase ${active === t ? "text-bronze-text" : "text-muted hover:text-ink"}`}
+            className={`uppercase ${
+              active === t
+                ? "text-bronze-text"
+                : "text-muted opacity-40 transition-opacity hover:text-ink hover:opacity-100"
+            }`}
           >
             {t} <span className="text-[10px]">{counts[t]}</span>
           </button>
