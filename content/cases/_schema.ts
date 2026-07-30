@@ -45,7 +45,7 @@ export type Figure = Pending &
     | { kind: "code"; lang?: string; code: string; caption: string }
     | {
         kind: "instrument";
-        component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed";
+        component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed" | "passstack";
         /** an array renders one line per entry; a plain string keeps the
          *  single-line path byte for byte */
         caption: string | string[];

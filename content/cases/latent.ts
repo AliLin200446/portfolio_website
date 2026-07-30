@@ -57,6 +57,12 @@ const latent: CaseData = {
       body: "Five GL passes: highlight threshold at quarter resolution, a separable gaussian run N times, composite where the halation glow is screened back in linear light, film colour response, then grain. Gate weave is applied where the source is first sampled, so the whole chain sees the same weaved frame. Linearize and encode are not passes. Every shader decodes and re-encodes sRGB inline.",
       body2:
         "Grain is last because it is the developed crystal structure, not an exposure effect.",
+      figure: {
+        kind: "instrument",
+        component: "passstack",
+        caption:
+          "the five passes as six planes · drag to turn the stack, select a pass to isolate it · the source plane carries the gate weave, which is why it is the one thing moving at rest",
+      },
     },
     {
       heading: "HALATION",

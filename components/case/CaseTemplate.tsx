@@ -3,6 +3,7 @@ import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
 import CaseIndex from "@/components/folio/CaseIndex";
 import InstrumentFacade from "./InstrumentFacade";
+import PassStackFacade from "./PassStackFacade";
 import HalationHero from "@/components/folio/HalationHero";
 import { LatencyAnatomy, StepDelta, StepFit, SeedDeterminism } from "./TeardownFigures";
 import LiveFacade from "@/components/folio/LiveFacade";
@@ -68,6 +69,7 @@ function Fig({ figure }: { figure: Figure }) {
         if (figure.component === "stepdelta") return <StepDelta />;
         if (figure.component === "stepfit") return <StepFit />;
         if (figure.component === "seed") return <SeedDeterminism />;
+        if (figure.component === "passstack") return <PassStackFacade />;
         return <HalationHero />;
       case "video":
         return (
