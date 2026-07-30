@@ -63,14 +63,9 @@ export default function AboutPage() {
           About
         </h1>
 
-        {/* ① the one line they remember */}
-        <p className="mt-10 max-w-[26ch] font-serif text-3xl leading-tight sm:text-4xl">
-          I build instruments that measure what generative models actually
-          do, instead of decorating what they output.
-        </p>
-
-        {/* ② WHO */}
-        <div className="mt-14 border-t border-line pt-10">
+        {/* WHO. The positioning line that used to sit above this was
+            removed; the first paragraph now opens the page. */}
+        <div className="mt-10 pt-2">
           <p className={PROSE}>
             Ali Lin — design engineer in Manhattan. I work at the seam
             between design and code: WebGL shaders, measurement harnesses,

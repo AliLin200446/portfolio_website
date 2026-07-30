@@ -48,3 +48,5 @@ next-env.d.ts
 *.mov
 latent/demo/
 material_memory/demo.mov
+
+.next-build
