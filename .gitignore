@@ -50,3 +50,6 @@ latent/demo/
 material_memory/demo.mov
 
 .next-build
+
+# stray screenshots dropped at the repo root
+/workbench.png
