@@ -14,7 +14,13 @@ import type { NextConfig } from "next";
  * only .next-build.
  */
 const nextConfig: NextConfig = {
-  distDir: process.env.NODE_ENV === "production" ? ".next-build" : ".next",
+  // Only local builds get the separate directory. Vercel builds with
+  // NODE_ENV=production too, and it looks for .next, so keying on that
+  // alone broke the deploy. VERCEL is set only in their environment.
+  distDir:
+    process.env.NODE_ENV === "production" && !process.env.VERCEL
+      ? ".next-build"
+      : ".next",
 };
 
 export default nextConfig;
