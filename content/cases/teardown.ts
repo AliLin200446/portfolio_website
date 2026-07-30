@@ -56,6 +56,16 @@ const teardown: CaseData = {
       body: "Five experiments: a steps sweep (10 rungs, 1→45), a guidance sweep (8 rungs, 1→20), a seed determinism run (3 identical calls, byte comparison), a latency series (N=20 at fixed parameters), and a friction log of every gap between the documentation and the wire.",
       figure: {
         kind: "instrument",
+        component: "expspace",
+        caption:
+          "the five experiments placed where they were taken · drag to turn the volume, select one to isolate it · the friction log has no coordinate, so it shows as the volume itself",
+      },
+    },
+    {
+      heading: "THE FIT",
+      body: "Inference time against steps, ten rungs, with the residual given twice so the caption below can be checked rather than taken.",
+      figure: {
+        kind: "instrument",
         component: "stepfit",
         caption: [
           "FIG B \u00b7 ten measured points, 1 to 45 steps \u00b7 linear fit y = 19.52x \u2212 5.0, R\u00b2 0.9978",
