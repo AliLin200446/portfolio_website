@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import HalationHero from "./HalationHero";
 
 /*
- * LIVE-FACADE (§1) — the HERO becomes a facade: poster/recording (or
+ * LIVE-FACADE (§1). The HERO becomes a facade: poster/recording (or
  * the latent comparator, or a gate frame while assets are missing) by
  * default, with `▶ run live` mounting the real site in an iframe ONLY
- * on click. The iframe does not exist in the DOM before that click —
+ * on click. The iframe does not exist in the DOM before that click
  * auto-loading a second app is unconstitutional and a budget breach;
  * LCP and first-screen weight are untouched. `open live ↗` (new tab)
  * is always present top-right. Mobile <768px never offers the iframe
@@ -110,7 +110,7 @@ export default function LiveFacade({
           ) : (
             <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-[#EDE9E0]">
               <span className="font-mono text-xs text-oxblood">
-                loads on click — the real engine
+                loads on click. The real engine
               </span>
               {posterNote && (
                 <span className="font-mono text-[11px] text-muted">

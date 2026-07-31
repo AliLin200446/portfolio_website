@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { FORMATS, rolls, type Format, type Roll } from "@/content/photography";
 
 /*
- * PHOTO SHEET — a contact sheet, not a gallery: rolls as groups, mono
+ * PHOTO SHEET. A contact sheet, not a gallery: rolls as groups, mono
  * headers, frame numbers, hairline separators. Thumbs stay small (the
  * photograph reads as a swatch inside the paper order); color is let
  * loose ONLY inside the loupe. Pipeline rides next/image: build-time
@@ -44,7 +44,7 @@ export default function PhotoSheet() {
   if (rolls.length === 0)
     return (
       <p className="border-t border-line py-14 font-mono text-sm text-muted">
-        PENDING — content/photography.ts: one roll per group (camera ·
+        PENDING: content/photography.ts: one roll per group (camera ·
         stock · format · place · year + numbered frames)
       </p>
     );

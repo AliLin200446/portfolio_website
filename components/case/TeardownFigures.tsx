@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /*
- * TEARDOWN FIGURES — SVG drawn from the live site's own evidence table,
+ * TEARDOWN FIGURES: SVG drawn from the live site's own evidence table,
  * not from anything estimated here. Every number below carries the
  * source string the live site cites, and nothing is plotted that could
  * not be read off it. Two figures are missing on purpose: the step-fit
@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
  * return 404. They render as PENDING chips rather than as plausible
  * shapes.
  *
- * Accent discipline: annotation red appears exactly once on this page —
+ * Accent discipline: annotation red appears exactly once on this page
  * the queue segment's "not returned by the API" label in FIG A.
  */
 
@@ -23,7 +23,7 @@ const BRONZE = "#866339";
 const OXBLOOD = "#C4362B";
 
 /** A number that settles on its reading when you look at it. 400ms,
- *  plain cubic ease-out, no overshoot — an instrument coming to rest,
+ *  plain cubic ease-out, no overshoot. An instrument coming to rest,
  *  not a scoreboard. The last frame assigns the verified value itself
  *  rather than a computed one, so rounding cannot drop a digit.
  *  Reduced motion never starts a timer. */
@@ -126,7 +126,7 @@ function LatencyRow({
   );
 }
 
-/** FIG A — latency anatomy. Bar width is proportional to measured p50.
+/** FIG A: latency anatomy. Bar width is proportional to measured p50.
  *  source: e4-latency/stats.md:11-13 · p50 inf/queue/network, N=20 @S28 */
 export function LatencyAnatomy() {
   // real p50 milliseconds, and the real standard deviations beside them
@@ -159,7 +159,7 @@ export function LatencyAnatomy() {
         fontSize="9.5"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        dashed = not returned by the API — and where the variance lives
+        dashed = not returned by the API, and where the variance lives
       </text>
       <text
         x={BAR_X}
@@ -175,12 +175,12 @@ export function LatencyAnatomy() {
   );
 }
 
-/** FIG C — the steps knob flattens. One bar per adjacent step pair.
+/** FIG C. The steps knob flattens. One bar per adjacent step pair.
  *  source: _tools/adjacent-diffs.txt:5,7,8,9,10 and steps-28-29-diff.txt:8 */
 export function StepDelta() {
   // all nine adjacent pairs, read from the deployed
   // evidence/_tools/adjacent-diffs.txt. The peak is S4→S8 at 16.088%,
-  // not S16→S20 — the knob does its heaviest work early.
+  // not S16→S20. The knob does its heaviest work early.
   const pairs = [
     { label: "S1→2", pct: 0.066 },
     { label: "S2→4", pct: 0.657 },
@@ -282,7 +282,7 @@ export function StepDelta() {
   );
 }
 
-/** FIG B — inference is linear in steps. The fit is published; the ten
+/** FIG B: inference is linear in steps. The fit is published; the ten
  *  per-rung values are not, so only the two that ARE published are
  *  plotted and the caption says so. Nothing is interpolated.
  *  source: e4-latency/stats.md:20-22 (fit) · :26-27 (the two points) */
@@ -470,10 +470,10 @@ export function StepFit() {
   );
 }
 
-/** FIG D — seed determinism. Three measured durations converging on
+/** FIG D: seed determinism. Three measured durations converging on
  *  one digest. Every value here is file-backed: the durations from
  *  raw-calls.json experiment e3-1, the digest and the pixel count from
- *  e3-seed/report.txt. Note the run is 512x512 — and so is the latency
+ *  e3-seed/report.txt. Note the run is 512x512, and so is the latency
  *  series, which is why 262,144 is simply 512 squared.
  *  source: raw-calls.json e3-1 · e3-seed/report.txt */
 export function SeedDeterminism() {
@@ -538,7 +538,7 @@ export function SeedDeterminism() {
         fontSize="11"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        sha256 8dadd968e921aca2… — all three identical
+        sha256 8dadd968e921aca2…: all three identical
       </text>
       <text
         x={W / 2}
@@ -557,7 +557,7 @@ export function SeedDeterminism() {
         fontSize="9"
         fontFamily="var(--font-geist-mono), monospace"
       >
-        three distinct durations — real recomputation, not a cache · 512×512 = 262,144 px
+        three distinct durations: real recomputation, not a cache · 512×512 = 262,144 px
       </text>
     </svg>
   );

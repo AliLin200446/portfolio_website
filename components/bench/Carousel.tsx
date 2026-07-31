@@ -13,18 +13,18 @@ import Movement from "./Movement";
 import Seal from "./Seal";
 
 /*
- * CAROUSEL — experimental outward-facing round-table alternative to the
+ * CAROUSEL: experimental outward-facing round-table alternative to the
  * linear rail (BENCH-LAYOUT stays intact on feature/bench-home for A/B).
  * Six instruments every 60° on the table edge, backs to the center,
  * faces out toward the viewing arc. The RING rotates (lazy susan); the
  * camera never orbits.
  *
- * Entrance move (§2) status: NOT APPROVED — skipped. Compliant
+ * Entrance move (§2) status: NOT APPROVED: skipped. Compliant
  * fallback: first visit parks a STATIC overhead establishing shot; any
- * input hands the camera a damped descent to the reading pose — user-
+ * input hands the camera a damped descent to the reading pose: user-
  * driven, not autoplay. sessionStorage remembers arrival; ?berth= deep
  * links land engaged. reduced-motion / <768px never mount this scene
- * (useBench3d gate) — the DOM list is the whole story there.
+ * (useBench3d gate). The DOM list is the whole story there.
  *
  * HOVER (§决策C): pointer over an instrument raises a one-line Geist
  * Mono DOM card (facts only) + prefetches the case route + pulses the
@@ -32,16 +32,16 @@ import Seal from "./Seal";
  *
  * TRANSITION (穿过表面进入): click the FRONT instrument → three beats,
  * ≤1.0s total: (1) the instrument answers with its OWN existing
- * mechanism (feed / strike / lantern / hard-stop / stamp — triggered
+ * mechanism (feed / strike / lantern / hard-stop / stamp: triggered
  * through the same store bridges the nameplates use, zero new
  * choreography), (2) the camera dives ease-out toward the object,
  * (3) a DOM surface matching that object's material takes the viewport
- * and the case page arrives already dressed in it (BenchArrival veil) —
+ * and the case page arrives already dressed in it (BenchArrival veil)
  * no black, no curtain, zero new render targets. Esc / any press
  * during the dive reverses at 1.5×; walking back in from a case page
  * plays the same path backwards in 0.5s. ACUBOT has no destination yet
  * (and its needle mechanism retired with B6-REV), so it hovers but
- * does not enter — wiring waits for mechanism/data/page to exist.
+ * does not enter: wiring waits for mechanism/data/page to exist.
  *
  * Constitution: damping 0.08, snap always ON a berth, no overshoot,
  * frameloop="demand", settled = zero rAF, DOM above 3D, warm fog only.
@@ -62,19 +62,19 @@ const OVER_PITCH = THREE.MathUtils.degToRad(-75);
 const ARRIVED_KEY = "bench-carousel-arrived";
 const CUT_KEY = "bench-cut";
 
-/* Transition timeline (§5): ONE 1.0s grammar — answer ~0.2 / dive
- * ~0.55 / cut ~0.25 — but the beats are WINDOWS on a single master
+/* Transition timeline (§5): ONE 1.0s grammar, answer ~0.2 / dive
+ * ~0.55 / cut ~0.25, but the beats are WINDOWS on a single master
  * curve, not chained tweens: camera progress is C1-continuous across
  * every boundary (§1), so the reverse (1.5×) and the walk-back inherit
  * the same velocity profile for free. The route handover fires at
  * T_NAV, after the overlay is opaque; the visual cut (overlay crossing
- * ~50%) lands near peak camera speed — the invisible-cut trick (§7). */
+ * ~50%) lands near peak camera speed. The invisible-cut trick (§7). */
 const T_TOTAL = 1.0;
 const T_NAV = 0.85;
 const FADE_START = 0.6;
 const FADE_LEN = 0.22;
 
-/** cubic-bezier(x1,y1,x2,y2) easing — Newton on x, like CSS. */
+/** cubic-bezier(x1,y1,x2,y2) easing: Newton on x, like CSS. */
 function cubicBezierEase(x1: number, y1: number, x2: number, y2: number) {
   const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
   const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
@@ -105,7 +105,7 @@ const DIVES: Record<string, DivePose> = {
   "skeletal-silk": { y: 0.56, z: RADIUS + 0.95, pitch: -2 },
   teardown: { y: 0.85, z: RADIUS + 0.7, pitch: -38 },
   vestige: { y: 0.5, z: RADIUS + 1.0, pitch: -18 },
-  // TRANSITION: 揭帛 pending,另轮实装 — 现走通用覆面 crossfade,无答礼拍
+  // TRANSITION: 揭帛 pending,另轮实装: 现走通用覆面 crossfade,无答礼拍
   "material-memory": { y: 0.55, z: RADIUS + 1.1, pitch: -8 },
 };
 
@@ -114,7 +114,7 @@ const DIVES: Record<string, DivePose> = {
 const CUT_SURFACE: Record<string, { bg: string; label?: string }> = {
   latent: { bg: "#14100d" },
   "skeletal-silk": { bg: "#FBF5E8" },
-  teardown: { bg: "#241C15", label: "LOG #—" },
+  teardown: { bg: "#241C15", label: "LOG #: " },
   vestige: { bg: "#F5F2EC" },
   "material-memory": { bg: "#F5F2EC" }, // 揭帛 pending: paper crossfade
 };
@@ -167,7 +167,7 @@ function Rig({
     out.roll = 0;
     // …then the dive ARCS on top (§2): a quadratic bezier that drifts
     // sideways and sinks a touch instead of the shortest line, with a
-    // path-inherent lean ≤2.2° — no orbit, no free look. dp comes off
+    // path-inherent lean ≤2.2°: no orbit, no free look. dp comes off
     // the single MASTER curve, so it is C1 through every beat.
     const id = useBenchStore.getState().transitionId;
     const dive = id ? DIVES[id] : undefined;
@@ -214,7 +214,7 @@ function Rig({
 
     // stale transition from an outbound nav dies here; then, if we came
     // back from a case page entered THROUGH an instrument, resume at the
-    // cut frame and reverse out — the 0.5s walk-back (器物落回醒态)
+    // cut frame and reverse out. The 0.5s walk-back (器物落回醒态)
     useBenchStore.getState().endTransition();
     const back = sessionStorage.getItem(CUT_KEY);
     if (engaged && back && BERTH_ORDER[initial] === back && DIVES[back]) {
@@ -241,7 +241,7 @@ function Rig({
     invalidate();
   }, [transitionId, invalidate]);
 
-  // nav / keyboard / side-click jumps: store is truth — spring the ring
+  // nav / keyboard / side-click jumps: store is truth: spring the ring
   // to the nearest equivalent angle (shortest way around)
   useEffect(() => {
     let want = -berth * STEP;
@@ -308,7 +308,7 @@ function Rig({
       scheduleSnap();
     };
 
-    // global ←/→ stepping — the ring wraps, no ends
+    // global ←/→ stepping. The ring wraps, no ends
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && transiting()) {
         useBenchStore.getState().reverseTransition();
@@ -469,17 +469,17 @@ function GlintArc() {
 
 /**
  * Invisible pointer targets over every berth (visible=false still
- * raycasts — zero draw calls). Hover raises the info card (+prefetch,
+ * raycasts: zero draw calls). Hover raises the info card (+prefetch,
  * +glint via store). Click: side berth rotates to front; FRONT berth
  * begins the enter-transition. Instruments' own pointer handlers are
- * shadowed by design — mechanisms fire through the nameplate buttons
+ * shadowed by design: mechanisms fire through the nameplate buttons
  * and as transition answer beats, never from a stray hover (§1).
  */
 /** CLICK-SPLIT: the first click belongs to the instrument, not to
  *  navigation. Front single click plays the mechanism through the
  *  existing store bridges (repeatable); double click (250ms window)
  *  enters via the existing transition; side click still rotates.
- *  teardown has no click bridge for the hard-stop — reported, not
+ *  teardown has no click bridge for the hard-stop: reported, not
  *  invented; enter → lives on its nameplate. */
 function playMechanism(id: string) {
   const s = useBenchStore.getState();
@@ -495,7 +495,7 @@ function PointerTargets({
   beginTransition: (id: string) => void;
   /** true only when the ring has stopped. A rotating ring drags every
    *  hit box under a stationary cursor in turn, and each one fires its
-   *  own pointerover — which is why spinning to a berth appeared to
+   *  own pointerover, which is why spinning to a berth appeared to
    *  animate the neighbours. Hover must mean the pointer moved onto an
    *  object, not the object moved under the pointer. */
   ringSettled: () => boolean;
@@ -512,7 +512,7 @@ function PointerTargets({
     if (useBenchStore.getState().transitionId) return;
     // One meaning per gesture: click always enters. Off-berth it still
     // has to bring the object to the front first, but that is the same
-    // journey, not a different outcome — beginTransition waits for the
+    // journey, not a different outcome: beginTransition waits for the
     // ring before the camera dives.
     if (i !== berth) setBerth(i);
     beginTransition(id);
@@ -539,7 +539,7 @@ function PointerTargets({
               document.body.style.cursor = "pointer";
               // Only the object standing at the front is interactive.
               // Every berth carries a hit box, so a cursor crossing the
-              // ring passes over background boxes on its way — those
+              // ring passes over background boxes on its way: those
               // must not light up their instrument. Hover therefore
               // needs all three: the pointer is on THIS object, this
               // object is the front one, and the ring is standing still
@@ -569,7 +569,7 @@ function Table() {
           of the base so the edge catches a highlight instead of ending
           in a hard cylinder wall */}
       <cylinderGeometry args={[TABLE_R, TABLE_R * 0.985, 0.16, 96]} />
-      {/* solid paper: no map, no grain — the instruments are the
+      {/* solid paper: no map, no grain. The instruments are the
           subject and the surface should not compete with them */}
       <meshStandardMaterial color="#F5F2EC" roughness={0.72} metalness={0} />
     </mesh>
@@ -596,7 +596,7 @@ function HoverCard() {
   if (!station?.hover) return null;
   // FISH-POLISH §3 取证: exit was a bare 0.2s opacity fade, no motion.
   // Now: in = 0.2s fade + 4px rise; out = 0.15s fade + 4px sink. One
-  // card instance keyed on the last hovered id — a fast sweep across
+  // card instance keyed on the last hovered id. A fast sweep across
   // instruments REPLACES the card content, never stacks ghosts.
   // reduced-motion: .hovercard transitions killed in globals.css.
   return (
@@ -676,7 +676,7 @@ function CutOverlay({
           }}
         />
       )}
-      {/* UNVEIL 拍③: the page develops out of the warp/weft — the
+      {/* UNVEIL 拍③: the page develops out of the warp/weft. The
           cloth's own weave canvas as a fading CSS layer, zero new RT */}
       {transitionId === "material-memory" && getWeaveURL() && (
         <div
@@ -735,7 +735,7 @@ export default function Carousel() {
     }
     if (id === "latent") s.b1Feed();
       if (id === "vestige") s.b5Stamp();
-    // The dive is a fixed pose at the FRONT of the ring — it does not
+    // The dive is a fixed pose at the FRONT of the ring. It does not
     // aim at an object. So entering before the ring has actually
     // arrived flies the camera at whoever is standing at the front
     // instead. The store's berth updates instantly while the ring
@@ -809,7 +809,7 @@ export default function Carousel() {
   const clothSelect = (dragged: boolean) => {
     // The cloth is the one instrument you can also grab. A pointer that
     // travelled more than a few pixels was a drag meant to sway the
-    // fabric, not a click meant to leave the page — so it is swallowed
+    // fabric, not a click meant to leave the page, so it is swallowed
     // here rather than navigating out from under the user's hand.
     if (dragged) return;
     const st = useBenchStore.getState();
@@ -819,7 +819,7 @@ export default function Carousel() {
     beginTransition("material-memory");
   };
 
-  /** Beat 3: the surface owns the viewport — hand over to the route.
+  /** Beat 3: the surface owns the viewport: hand over to the route.
    *  The CUT_KEY flag dresses the case page in the same surface
    *  (BenchArrival) and later arms the 0.5s walk-back reverse. */
   const onCut = (id: string) => {
@@ -851,7 +851,7 @@ export default function Carousel() {
         }}
         aria-hidden
       >
-        {/* warm paper haze: rear of the ring dims and recedes — no blue */}
+        {/* warm paper haze: rear of the ring dims and recedes. No blue */}
         <fog attach="fog" args={["#E9E3D6", 7, 20]} />
         <directionalLight
           position={[-3, 6, 4]}

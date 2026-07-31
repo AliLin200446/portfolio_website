@@ -1,8 +1,8 @@
 import type { CaseData } from "./_schema";
 
 /*
- * MATERIAL MEMORY — copy supplied by the author, verbatim.
- * Every percentage here belongs to the CATEGORY, not to this engine:
+ * MATERIAL MEMORY: copy supplied by the author, verbatim.
+ * Every percentage here belongs to the CATEGORY, not to this engine
  * the copy attributes it to industry studies of 3D product previews and
  * never claims it as a measured result of its own. The citations
  * themselves have not been supplied, so they render as PENDING chips
@@ -27,20 +27,20 @@ const materialMemory: CaseData = {
     motion: "/case-assets/material-memory/hero-loop.webp",
     motionStill: "/case-assets/material-memory/hero-still.webp",
     caption:
-      "the shipping simulator · the FOLD test, looping · push, drop and drag it yourself — click to run live",
+      "the shipping simulator · the FOLD test, looping · push, drop and drag it yourself: click to run live",
   },
   what: [
-    "Luxury returns run high because a product page shows a still image — drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph. About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025–26). Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought.",
-    "One engine, two readings. For the shopper it ends the guessing. For the brand it ends the returning — the same simulation that answers “how does this move” is the thing that keeps it from coming back.",
+    "Luxury returns run high because a product page shows a still image. Drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph. About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025–26). Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought.",
+    "One engine, two readings. For the shopper it ends the guessing. For the brand it ends the returning. The same simulation that answers “how does this move” is the thing that keeps it from coming back.",
   ],
   build: [
     {
       heading: "CLOTH THAT DRAPES, NOT A LOOP OF FRAMES",
-      body: "The fabric runs on Verlet cloth physics — a mass-spring mesh under distance constraints, integrated per frame in Three.js and GLSL, so the cloth holds together while it drapes, swings, and settles. Real-time, driven by the user's push and drag, not a pre-baked animation.",
+      body: "The fabric runs on Verlet cloth physics. A mass-spring mesh under distance constraints, integrated per frame in Three.js and GLSL, so the cloth holds together while it drapes, swings, and settles. Real-time, driven by the user's push and drag, not a pre-baked animation.",
       body2:
-        "The material feel — drape, weight, sheen, how light rolls across a fold — I tuned by hand, iterating against how real cloth falls. Not measured off a reference; judged by eye, the way you judge whether a fabric hangs right. Latent measures; this one is felt.",
+        "The material feel, drape and weight and sheen and how light rolls across a fold, I tuned by hand, iterating against how real cloth falls. Not measured off a reference; judged by eye, the way you judge whether a fabric hangs right. Latent measures; this one is felt.",
       /* A recording was ruled out: the demo is high-motion cloth, which
-       * compresses badly — a soft 480p loop undersells the material it
+       * compresses badly. A soft 480p loop undersells the material it
        * exists to show. The figure runs the real engine instead, mounted
        * only on click, with a still poster once one is exported. */
       figure: {
@@ -55,7 +55,7 @@ const materialMemory: CaseData = {
     items: [
       {
         claim:
-          "TACTILE PREVIEW IS A PROVEN LEVER — FOR THE CATEGORY. Apparel leads e-commerce returns at roughly 25%, and fit and material drive about half of them (NRF / Statista, 2025–26). Products with 3D/AR previews see up to 40% fewer returns and markedly higher conversion (Shopify platform data). Material Memory is an implementation of that lever for fabric — the numbers belong to the category, and the engine is built to capture them, not a measured result of its own.",
+          "TACTILE PREVIEW IS A PROVEN LEVER: FOR THE CATEGORY. Apparel leads e-commerce returns at roughly 25%, and fit and material drive about half of them (NRF / Statista, 2025–26). Products with 3D/AR previews see up to 40% fewer returns and markedly higher conversion (Shopify platform data). Material Memory is an implementation of that lever for fabric. The numbers belong to the category, and the engine is built to capture them, not a measured result of its own.",
         source:
           "apparel return ~25%: NRF/Statista 2025–26 · fit/material ~50% of apparel returns · 3D/AR up to −40% returns: Shopify platform data",
       },
@@ -66,7 +66,7 @@ const materialMemory: CaseData = {
       },
       {
         claim:
-          "BUILT AROUND THE DOMINANT SHOPPER. Maya, 27 — she's the shopper a product page can't reach — she can't feel the fabric, so she guesses, and the guess is wrong often enough to drive the category's return rate. Material Memory isn't a feature for some shoppers; it's infrastructure for the default one.",
+          "BUILT AROUND THE DOMINANT SHOPPER. Maya, 27, is the shopper a product page cannot reach. She can't feel the fabric, so she guesses, and the guess is wrong often enough to drive the category's return rate. Material Memory isn't a feature for some shoppers; it's infrastructure for the default one.",
       },
     ],
     limits: [],

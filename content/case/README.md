@@ -10,7 +10,7 @@
 | resonance.alilinlab.com | 200 | 无 | 可嵌 ✓ |
 
 无 framing 头 = 浏览器默认允许嵌入(当前全部可嵌,零站待配置)。
-但"未设防"≠"已授权"——建议作者在各子域 vercel.json 落此片段,
+但"未设防"≠"已授权": 建议作者在各子域 vercel.json 落此片段,
 显式只允许 alilinlab.com 嵌入:
 
 ```json

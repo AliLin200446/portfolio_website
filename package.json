@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/check-no-cjk.mjs && node scripts/check-claims.mjs && next build",
+    "build": "node scripts/check-no-cjk.mjs && node scripts/check-claims.mjs && node scripts/check-no-em-dash.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "check:cjk": "node scripts/check-no-cjk.mjs",

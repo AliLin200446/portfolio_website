@@ -1,5 +1,5 @@
 /*
- * EXPERIMENTS 索引数据 — 作者只填这个文件,组件零改动。
+ * EXPERIMENTS 索引数据: 作者只填这个文件,组件零改动。
  * 声部三条:一句话写做了什么 · 无形容词 · 年份必填。
  * 纪律闸:①href/repo 皆空的条目不上屏 ②credit 仅确证者可填
  * ③ACUBOT 及任何未公开/涉 NDA 作品不得出现在此文件。
@@ -10,13 +10,13 @@ export type Tag = "web3" | "3d" | "web" | "ios" | "generative" | "emotion";
 
 export type Experiment = {
   name: string; // 作品名
-  line: string; // 一句话——写做了什么,不写形容词
+  line: string; // 一句话: 写做了什么,不写形容词
   year: string; // '2025'
   tags: Tag[];
   href?: string; // live demo 优先;无则 repo;两者皆无不上屏
   repo?: string;
   featured?: boolean; // 置顶区
-  credit?: string; // 可验证背书 — 仅确证者可填
+  credit?: string; // 可验证背书: 仅确证者可填
 };
 
 export const TAGS: Tag[] = ["web3", "3d", "web", "ios", "generative", "emotion"];
@@ -36,12 +36,12 @@ export const experiments: Experiment[] = [
     line: "DRAFT: generative visual API", // ← 猜测非事实,上线前必须换
     year: "2025", // DRAFT
     tags: ["web", "generative"], // DRAFT
-    // 子域拼写实测:arua-api 200 在线,aura-api 无 DNS —— 保留 arua
+    // 子域拼写实测:arua-api 200 在线,aura-api 无 DNS: 保留 arua
     href: "https://arua-api.alilinlab.com/",
   },
   {
     name: "Project Lethe",
-    line: "two ritual paths — water or fire — for letting a memory go",
+    line: "two ritual paths, water or fire, for letting a memory go",
     year: "2025", // DRAFT
     tags: ["web3", "emotion"],
     href: "https://lethe-river.alilinlab.com/",
@@ -59,7 +59,7 @@ export const experiments: Experiment[] = [
   {
     name: "Consensus Couture",
     // the mechanism, not the pitch: what actually happens, in order
-    line: "the market votes on a design first — only voted-for units get produced",
+    line: "the market votes on a design first: only voted-for units get produced",
     year: "2026", // DRAFT: 年份待你核
     tags: ["web3", "3d"],
     href: "https://consensus-couture.alilinlab.com/",

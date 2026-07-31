@@ -5,10 +5,10 @@ import SpecimenDrawer from "@/components/SpecimenDrawer";
 import { TAGS, experiments, type Tag } from "@/content/experiments";
 
 /*
- * EXPERIMENTS-INDEX — one line per piece, filterable, data-driven.
+ * EXPERIMENTS-INDEX. One line per piece, filterable, data-driven.
  * Filtering is an ENHANCEMENT: no-JS renders every entry (SSR emits
  * the full list); ?tag= deep-links; active tag in copper, never
- * cinnabar. Entries without href AND repo never render. Pure text —
+ * cinnabar. Entries without href AND repo never render. Pure text
  * nothing here may touch LCP.
  */
 
@@ -38,10 +38,10 @@ export default function ExperimentsIndex() {
       className="group flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-line py-4 transition-colors hover:text-bronze"
       style={{ borderBottomWidth: "0.5px" }}
     >
-      <span className={big ? "font-serif text-2xl" : "font-serif text-lg"}>
+      <span className={big ? "font-serif text-3xl" : "font-serif text-xl"}>
         {e.name}
       </span>
-      <span className="text-sm text-muted">
+      <span className="text-base text-muted">
         {e.line.replace(/^DRAFT:\s*/, "")}
       </span>
       {/* half-filled ring: the entry exists but its line is still a
@@ -75,7 +75,7 @@ export default function ExperimentsIndex() {
   if (visible.length === 0)
     return (
       <p className="border-t border-line py-14 font-mono text-sm text-muted">
-        PENDING — experiments list: content/experiments.ts (name · one
+        PENDING: experiments list: content/experiments.ts (name · one
         line · year · tags · link)
       </p>
     );

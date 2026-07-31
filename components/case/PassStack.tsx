@@ -8,9 +8,8 @@ import * as THREE from "three";
  * THE PASS STACK — the five GL passes as six planes you can turn.
  *
  * Ported rather than pasted. Three things in the original could not
- * ship here:
- *
- *   - it pulled three r128 off a CDN. This repo already depends on
+ * ship here
+ * *   - it pulled three r128 off a CDN. This repo already depends on
  *     three, and a page that fetches a second copy of it from another
  *     origin breaks the zero-network rule the rest of the site keeps.
  *   - it re-linked Spectral and Geist Mono from Google. Both are
@@ -259,7 +258,7 @@ export default function PassStack() {
                 >
                   {L.t}
                 </span>
-                <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">
+                <span className="mt-0.5 block text-[17px] leading-snug text-muted">
                   {L.d}
                 </span>
               </li>
@@ -270,7 +269,7 @@ export default function PassStack() {
           <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-bronze-text">
             {active >= 0 ? "why here" : "order"}
           </span>
-          <p className="max-w-[62ch] font-serif text-[14.5px] leading-relaxed">
+          <p className="max-w-[62ch] font-serif text-[18px] leading-relaxed">
             {active >= 0
               ? LAYERS[active].why
               : "Weave, then exposure, then development, then the crystal structure you are left looking at. Each position is where that step happens on real film."}

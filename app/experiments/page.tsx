@@ -19,7 +19,7 @@ export default function ExperimentsPage() {
         <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
           EXPERIMENTS
         </h1>
-        <p className="mt-4 max-w-[52ch] font-serif text-xl text-muted">
+        <p className="mt-4 max-w-[52ch] font-serif text-2xl text-muted">
           An archive of unfinished thoughts and generative trials.
         </p>
       </section>

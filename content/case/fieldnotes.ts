@@ -1,10 +1,10 @@
 /*
- * FIELD NOTES — the six working notes from TEARDOWN № 1, transcribed
+ * FIELD NOTES. The six working notes from TEARDOWN № 1, transcribed
  * verbatim from the author's own report at teardown.alilinlab.com/notes
  * (bodies and every metric: value · label · source file:line · N ·
  * threshold). Division of labour with the case page's FINDINGS: the
  * findings are the CONCLUSIONS, these are the working notes that carry
- * the evidence behind them — one card, one question, its sources.
+ * the evidence behind them. One card, one question, its sources.
  * Nothing here is written by the site; numbers are the author's.
  */
 
@@ -20,7 +20,7 @@ export type FieldNote = {
 export const fieldNotes: FieldNote[] = [
   {
     id: "n01",
-    title: "steps — quality curve flattens where?",
+    title: "steps: quality curve flattens where?",
     headline: "7.655% vs 1.488%",
     body:
       "The sweep uses uneven spacing: 1, 2, 4, 8, 12, 16, 20, 28, 36, 45. Only two adjacent pairs span the same 8 steps, S20→S28 and S28→S36, which at 19.52 ms/step cost 156 ms each; the first moves 7.655% of pixels above Δ>32, the second 1.488%. A single step, S28→S29, already moves 1.291% at the same threshold against the same S28 anchor. The series is not monotonic: S16→S20 (11.92%, Δ>32) exceeds S8→S12 (6.694%, Δ>32), and S36→S45 (3.98%, Δ>32) exceeds S28→S36. Steps are a budget dial, and past 28 the eight steps you pay for return what one step has already delivered.",
@@ -37,7 +37,7 @@ export const fieldNotes: FieldNote[] = [
   },
   {
     id: "n02",
-    title: "guidance — prompt adherence vs artifact tradeoff",
+    title: "guidance: prompt adherence vs artifact tradeoff",
     headline: "17.167% floor",
     body:
       "Across G1→G20 no adjacent pair falls below 17.167% changed pixels at Δ>32, and the last rung, G15→G20, still moves 57.591% at the same threshold. Inference time over the same sweep stays between 529.0 and 557.0 ms with steps fixed at 28. This sweep ran on a different prompt from the steps sweep, so the two percentage series are not directly comparable. Guidance never enters a band where the image stops responding, which makes 3.5 a choice rather than a convergence point.",
@@ -50,7 +50,7 @@ export const fieldNotes: FieldNote[] = [
   },
   {
     id: "n03",
-    title: "latency anatomy — where the milliseconds live",
+    title: "latency anatomy, where the milliseconds live",
     headline: "277.0 ms vs 9.9 ms",
     body:
       "inference_ms is linear in steps at 19.52 ms/step, R² = 0.9978 over N=10, though the intercept is −5.0 ms and the fit breaks at the low end: steps=1 measured 31.9 ms against 24.5 ms at steps=2. At steps=28 over N=20 the p50 breakdown is inference 533 ms, queue 250.5 ms, network 0 ms. Standard deviations across the same run are queue 277.0 ms, inference 9.9 ms, and network 0.5 ms, and the first call sat 1500 ms in queue against 180 to 454 ms for calls 2 through 20. Steps add time to the segment the response body reports; the variance sits in the segment it does not, so a client measuring total time cannot attribute its own spread.",
@@ -66,7 +66,7 @@ export const fieldNotes: FieldNote[] = [
   },
   {
     id: "n04",
-    title: "seed determinism — what it enables for production",
+    title: "seed determinism: what it enables for production",
     headline: "0 / 262144",
     body:
       "Three calls at identical parameters returned inference times of 0.5451, 0.5468, and 0.5496 seconds and produced byte-identical files, sha256 8dadd968e921aca2, 0 of 262144 pixels differing. The three distinct inference times are consistent with recomputation and show no sign of a cache. Moving one step, 28 to 29, changes 73.084% of pixels at any Δ but 1.291% at Δ>32, with a single-channel maximum of 205/255. Changing seed changes 99.967% and 99.994% at any Δ. Determinism is binary and visible difference is not, so cache keys and reproducibility live at the byte layer while what a client notices lives at the amplitude layer.",
@@ -83,7 +83,7 @@ export const fieldNotes: FieldNote[] = [
   },
   {
     id: "n05",
-    title: "DX friction — what the docs don't tell you",
+    title: "DX friction: what the docs don't tell you",
     headline: "1 key of N",
     body:
       "The response body documents timings as required and types it as Timings, a type that is not defined; across 26 successful calls the field carried one key, inference. Queue time is not returned and must be derived client-side, and that derived segment holds std 277.0 ms against inference std 9.9 ms. num_inference_steps documents a default of 28 and no range; the ceiling of 50 appeared only in the error body after sending 999. Validation errors arrive as a Pydantic array and gateway errors as {error: string}, so the client parses two shapes. The one segment the API does not return is the one carrying the variance.",
@@ -98,10 +98,10 @@ export const fieldNotes: FieldNote[] = [
   },
   {
     id: "n06",
-    title: "what I'd change — three concrete API design notes",
+    title: "what I'd change: three concrete API design notes",
     headline: "3 changes",
     body:
-      "01 — Return the segments already measured. timings ships one key across 26 calls, and the segment it omits carries std 277.0 ms against inference std 9.9 ms. I would define Timings as queue, inference, total and populate all three. 02 — Publish bounds in the schema. The steps ceiling of 50 is discoverable only by sending 999 and reading the error body. I would put min and max in the model schema. 03 — Declare the image URL lifetime. The response ships a URL rather than bytes, archiving requires a second request, and no TTL is stated. I would add an expiry field.",
+      "01. Return the segments already measured. timings ships one key across 26 calls, and the segment it omits carries std 277.0 ms against inference std 9.9 ms. I would define Timings as queue, inference, total and populate all three. 02. Publish bounds in the schema. The steps ceiling of 50 is discoverable only by sending 999 and reading the error body. I would put min and max in the model schema. 03. Declare the image URL lifetime. The response ships a URL rather than bytes, archiving requires a second request, and no TTL is stated. I would add an expiry field.",
     metrics: [
       { value: "26", label: "calls where timings shipped 1 key", source: "e5-dx/friction-log.md #6" },
       { value: "277.0 / 9.9 ms", label: "std omitted vs reported segment, N=20", source: "e4-latency/stats.md:11-12" },

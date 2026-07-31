@@ -390,7 +390,7 @@ export const PORTRA_400: FilmStock = {
 // practicals on Kodak negative. The "artificial warm" pole of the East-Asian
 // poetic family.
 export const LOOK_ITMFL: FilmStock = {
-  name: 'Look — In the Mood for Love',
+  name: 'Look: In the Mood for Love',
   // PRIOR: doc threshold 0.78 verbatim; radius 0.02 → 245·0.02 = 4.9;
   // intensity 0.25 → ×2.5 = 0.63. Tint (1.0, 0.4, 0.12) verbatim — glow
   // spectrum is already a relative-RGB vector in both systems.
@@ -453,7 +453,7 @@ export const LOOK_ITMFL: FilmStock = {
 // candle flame, heavy fog scenes. Same bloodline as ITMFL ("natural warm +
 // cold fog" pole), split into its own card per the doc's two-pole reading.
 export const LOOK_ASSASSIN: FilmStock = {
-  name: 'Look — The Assassin',
+  name: 'Look: The Assassin',
   // PRIOR: candle flame, not tungsten bulbs — higher trigger, gentler glow,
   // slightly broader/golder spectrum than ITMFL
   halationThreshold: 0.8,
@@ -509,7 +509,7 @@ export const LOOK_ASSASSIN: FilmStock = {
 // ("faded honesty"). Skin ΔS −5% is global desaturation — INEXPRESSIBLE
 // in the current engine (V2 parking lot: global saturation pass).
 export const LOOK_ROHMER: FilmStock = {
-  name: 'Look — Éric Rohmer',
+  name: 'Look: Éric Rohmer',
   // PRIOR: doc "≈ off" — intensity 0.08 → ×2.5 = 0.2, high threshold,
   // small radius; daylight has almost nothing to bloom
   halationThreshold: 0.85,
@@ -528,7 +528,7 @@ export const LOOK_ROHMER: FilmStock = {
   crosstalkAmount: 1,
   toeStrength: 0.15,
   toePoint: 0.07,
-  // PRIOR: "medium — skies softly overexposed"
+  // PRIOR: "medium, skies softly overexposed"
   shoulderStrength: 0.5,
   shoulderPoint: 0.6,
   // PRIOR: doc shadow Δ(0, 0, +0.008) → barely-blue neutral
@@ -566,7 +566,7 @@ export const LOOK_ROHMER: FilmStock = {
 // lot: global saturation pass); the milkiness below is carried by fog +
 // shoulder + highlight desat instead.
 export const LOOK_COPPOLA: FilmStock = {
-  name: 'Look — Sofia Coppola',
+  name: 'Look: Sofia Coppola',
   // PRIOR: doc threshold 0.85, radius 0.015 → 3.7, intensity 0.12 → 0.3;
   // broader/paler tint — this is digital-era bloom, not remjet halation
   halationThreshold: 0.85,
@@ -627,7 +627,7 @@ export const LOOK_COPPOLA: FilmStock = {
 // doc's warning stands: do NOT protect skin here, light pollution is the
 // aesthetic.
 export const LOOK_FALLEN_ANGELS: FilmStock = {
-  name: 'Look — Fallen Angels',
+  name: 'Look: Fallen Angels',
   // 800T calibrated base: threshold stays at the CALIBRATED 0.55 (the prior
   // 0.72 is known-conservative, see conversion note 3); radius pushed to the
   // doc's 0.03 → 7.4; intensity pushed past the calibrated 1.01
@@ -689,7 +689,7 @@ export const LOOK_FALLEN_ANGELS: FilmStock = {
 // is FUJI GREEN — greens toward emerald/mint, split from Kodak's yellow-green
 // — which the doc explicitly routes through the crosstalk matrix.
 export const LOOK_KOREEDA: FilmStock = {
-  name: 'Look — Kore-eda',
+  name: 'Look: Kore-eda',
   // PRIOR: doc threshold 0.82, radius 0.012 → 2.9, intensity 0.1 → 0.25
   halationThreshold: 0.82,
   halationRadius: 2.9,

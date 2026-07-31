@@ -6,13 +6,13 @@ export const metadata: Metadata = {
 };
 
 /*
- * RESONANCE — deliberately not a case page. It sits on a static route
+ * RESONANCE: deliberately not a case page. It sits on a static route
  * rather than in the case registry so it cannot inherit the five-section
  * template and start looking like evidence it does not have.
  *
  * Three claims were struck and must not return. Nothing here may say
  * the piece runs a solver, that it computes anything in the frequency
- * domain, or that it scores the quality of a generation — none of those
+ * domain, or that it scores the quality of a generation: none of those
  * are true, and the readout that displayed such numbers was removed
  * with them, since the numbers were not measurements. What is left is
  * what is true: a closed loop.
@@ -34,11 +34,11 @@ export default function ResonancePage() {
       </header>
 
       <section className="py-16">
-        <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">
+        <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
           RESONANCE
         </h1>
-        <p className="mt-5 max-w-[52ch] font-serif text-xl text-muted">
-          an interface for steering generative video — closed human-in-the-loop
+        <p className="mt-5 max-w-[52ch] font-serif text-2xl text-muted">
+          an interface for steering generative video: closed human-in-the-loop
           generation.
         </p>
         <p className="mt-6 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs text-muted">
@@ -69,25 +69,24 @@ export default function ResonancePage() {
                               conditions
                               the next)`}
           </pre>
-          <figcaption className="mt-3 font-mono text-[11px] leading-relaxed tracking-wide text-muted">
+          <figcaption className="mt-3 font-mono text-[13px] leading-relaxed tracking-wide text-muted">
             the loop · what is rendered conditions what is generated, and what
             is generated is rendered back in
           </figcaption>
         </figure>
 
         <div className="max-w-[68ch] border-t border-line pt-8">
-          <p className="font-serif text-[17px] leading-relaxed">
+          <p className="font-serif text-[21px] leading-relaxed">
             Most generative video is open-loop: you write a prompt, wait, and
             accept or discard what returns. Resonance closes the loop. What is
             on the canvas is fed back as the condition for the next generation,
             so the output becomes something you steer continuously rather than
-            re-roll. The interface exists to make that steering direct — you
+            re-roll. The interface exists to make that steering direct. You
             adjust the surface, and the next generation inherits it.
           </p>
-          <p className="mt-5 font-serif text-[17px] leading-relaxed text-muted">
+          <p className="mt-5 font-serif text-[21px] leading-relaxed text-muted">
             This one is an experiment, not an instrument. Nothing here is
-            measured or benchmarked, and no claim is made about output quality —
-            it demonstrates a control loop and stops there.
+            measured or benchmarked, and no claim is made about output quality. It demonstrates a control loop and stops there.
           </p>
         </div>
 
@@ -95,7 +94,7 @@ export default function ResonancePage() {
           <p className="font-mono text-xs uppercase tracking-widest text-bronze-text">
             THE MEASURED SIBLINGS
           </p>
-          <p className="mt-5 font-serif text-[17px] leading-relaxed">
+          <p className="mt-5 font-serif text-[21px] leading-relaxed">
             Where this one demonstrates,{" "}
             <Link href="/work/latent" className={link}>
               Latent

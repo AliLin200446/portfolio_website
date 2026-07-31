@@ -12,7 +12,7 @@ import { berthOf } from "@/lib/bench";
 import type { CaseData, Figure } from "@/content/cases/_schema";
 
 /*
- * CASE TEMPLATE — one component, six pages. Sections run in one fixed
+ * CASE TEMPLATE. One component, six pages. Sections run in one fixed
  * order and never move: MASTHEAD · CLAIM · HERO · WHAT · BUILD ·
  * PROOF · MORE. Six cases sharing one rigorous structure read as one
  * methodical person; six bespoke layouts read as six.
@@ -20,7 +20,7 @@ import type { CaseData, Figure } from "@/content/cases/_schema";
  * Type is fixed here so no page can drift: Geist Mono for nav, section
  * labels, metadata, captions and data; Spectral (roman, no axis
  * loaded) for prose; single column capped at 68ch. Figures alternate
- * with prose — no more than two paragraphs without a visual break —
+ * with prose. No more than two paragraphs without a visual break
  * and every figure carries a mono caption.
  *
  * Reused rather than rebuilt: the left rail is the same CaseIndex the
@@ -29,13 +29,13 @@ import type { CaseData, Figure } from "@/content/cases/_schema";
  * comparator is the same SVG instrument.
  */
 
-const LABEL = "font-mono text-xs uppercase tracking-widest text-bronze-text";
-const PROSE = "max-w-[68ch] font-serif text-[17px] leading-relaxed";
+const LABEL = "font-mono text-sm uppercase tracking-widest text-bronze-text";
+const PROSE = "max-w-[68ch] font-serif text-[21px] leading-relaxed";
 const CAPTION =
-  "mt-3 font-mono text-[11px] leading-relaxed tracking-wide text-muted";
+  "mt-3 font-mono text-[13px] leading-relaxed tracking-wide text-muted";
 
 /** A value that has not arrived yet. Loud on purpose: mono, boxed,
- *  annotation-red — it exists so an unfinished page cannot be mistaken
+ *  annotation-red. It exists so an unfinished page cannot be mistaken
  *  for a finished one. These chips are temporary by definition; when
  *  the real value lands the chip goes with it. */
 function Pending({ what, ip }: { what: string; ip?: boolean }) {
@@ -61,7 +61,7 @@ function Fig({ figure }: { figure: Figure }) {
             posterNote={
               figure.poster || figure.motion
                 ? undefined
-                : "high-res still pending — the live engine runs on click"
+                : "high-res still pending. The live engine runs on click"
             }
           />
         );
@@ -185,7 +185,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
           {data.name}
         </h1>
-        <p className="mt-4 max-w-[52ch] font-serif text-xl text-muted">
+        <p className="mt-4 max-w-[52ch] font-serif text-2xl text-muted">
           {data.oneLine}
         </p>
         <p className="mt-6 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs text-muted">
@@ -212,12 +212,12 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         </p>
       </section>
 
-      {/* ② CLAIM — one sentence, the thesis */}
+      {/* ② CLAIM. One sentence, the thesis */}
       <section
         id="claim"
         className="flex min-h-[38svh] scroll-mt-8 items-center border-b border-line"
       >
-        <p className="max-w-[38ch] font-serif text-2xl leading-snug sm:text-[1.75rem]">
+        <p className="max-w-[38ch] font-serif text-[1.75rem] leading-snug sm:text-[2.15rem]">
           {Array.isArray(data.claim)
             ? data.claim.map((line) => (
                 <span key={line} className="block">
@@ -229,19 +229,19 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
       </section>
 
       {/* TEST, teardown only: the instrument you arrived through, close
-          up. Facade by default — Three is behind a dynamic import fired
+          up. Facade by default: Three is behind a dynamic import fired
           by the click, so an unclicked page carries none of it. */}
       {data.slug === "teardown" && (
         <section className="pt-10">
           <InstrumentFacade label="the movement · click to inspect it in three dimensions" />
-          <p className="mt-3 font-mono text-[11px] leading-relaxed tracking-wide text-muted">
+          <p className="mt-3 font-mono text-[13px] leading-relaxed tracking-wide text-muted">
             the instrument from the index, in detail · drag to lean around it,
             click to run the gears · loads on click
           </p>
         </section>
       )}
 
-      {/* ③ HERO — the strongest single visual */}
+      {/* ③ HERO. The strongest single visual */}
       <section className="py-12">
         <Fig figure={data.hero} />
       </section>
@@ -259,19 +259,19 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         </div>
       </section>
 
-      {/* ⑤ HOW I BUILT IT — one decision per subsection */}
+      {/* ⑤ HOW I BUILT IT. One decision per subsection */}
       <section id="build" className="scroll-mt-8 border-t border-line py-14">
         <p className={LABEL}>{data.buildLabel ?? "BUILD"}</p>
         <div className="mt-8 space-y-14">
           {data.build.map((d) => (
             <div key={d.heading}>
-              <h2 className="font-mono text-xs uppercase tracking-widest text-ink">
+              <h2 className="font-mono text-sm uppercase tracking-widest text-ink">
                 {d.heading}
               </h2>
               <p className={`${PROSE} mt-4`}>{d.body}</p>
               {d.body2 && <p className={`${PROSE} mt-4`}>{d.body2}</p>}
               {d.data && (
-                <p className="mt-5 max-w-[68ch] font-mono text-[11px] leading-relaxed text-ink">
+                <p className="mt-5 max-w-[68ch] font-mono text-[13px] leading-relaxed text-ink">
                   {d.data}
                   {d.dataPending && <Pending what={d.dataPending} ip />}
                   {d.dataTail}
@@ -288,7 +288,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         </div>
       </section>
 
-      {/* ⑥ WHY IT HOLDS — evidence, then limits */}
+      {/* ⑥ WHY IT HOLDS: evidence, then limits */}
       <section id="proof" className="scroll-mt-8 border-t border-line py-14">
         <p className={LABEL}>{data.proofLabel ?? "PROOF"}</p>
         {data.proof.intro?.map((para, i) => (
@@ -309,13 +309,13 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
             >
               <div className="max-w-[68ch]">
               {p.label && (
-                <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-ink">
+                <p className="mb-2 font-mono text-[13px] uppercase tracking-widest text-ink">
                   {p.label}
                 </p>
               )}
-              <p className="font-serif text-[17px] leading-relaxed">{p.claim}</p>
+              <p className="font-serif text-[21px] leading-relaxed">{p.claim}</p>
               {p.source && (
-                <p className="mt-2 font-mono text-[11px] tracking-wide text-bronze-text">
+                <p className="mt-2 font-mono text-[13px] tracking-wide text-bronze-text">
                   {p.source}
                 </p>
               )}
@@ -336,7 +336,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
             </p>
             <ul className="mt-4 max-w-[68ch] space-y-3">
               {data.proof.limits.map((l) => (
-                <li key={l} className="font-serif text-[15px] leading-relaxed text-muted">
+                <li key={l} className="font-serif text-[19px] leading-relaxed text-muted">
                   {l}
                 </li>
               ))}
@@ -355,7 +355,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         ))}
         {/* the ending is an action, not a conclusion: on a page whose
             subject is a working tool, the last thing the reader meets is
-            the door to it — larger than the byline, ahead of the nav */}
+            the door to it: larger than the byline, ahead of the nav */}
         {data.cta && (
           <p className="mt-10">
             <a
