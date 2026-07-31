@@ -5,6 +5,15 @@ import { STATIONS, berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+
+/* One instrument, mounted only on the phone path, dynamic so the
+ * desktop bundle never carries it. */
+const MobileBench = dynamic(() => import("./MobileBench"), {
+  ssr: false,
+  loading: () => <div className="aspect-square w-full border border-line bg-[#EDE9E0]" />,
+});
 
 function StationLink({
   station,
@@ -63,6 +72,9 @@ function NavJump({ station }: { station: (typeof STATIONS)[number] }) {
 
 export default function HomeShell() {
   const bench3d = useBench3d();
+  // which instrument the phone is showing. The list is the control,
+  // so the canvas needs no pointer handling of its own.
+  const [shown, setShown] = useState("latent");
 
   return (
     <div className="min-h-svh">
@@ -74,12 +86,25 @@ export default function HomeShell() {
           reduced-motion/no-JS. Hidden only once the 3D bench mounts. */}
       {!bench3d && (
         <section className="relative z-10 mx-auto max-w-3xl px-6 py-12">
+          {/* the bench, reduced to one turning object. Tapping a
+              station below swaps it rather than opening a second
+              context. */}
+          <div className="mb-8">
+            <MobileBench slug={shown} />
+          </div>
           <h2 className="mb-6 font-mono text-xs uppercase tracking-widest text-bronze">
             Stations
           </h2>
           <ol className="border-t border-line">
             {STATIONS.map((s, i) => (
-              <li key={s.id} className="border-b border-line">
+              <li
+                key={s.id}
+                className={`border-b border-line transition-opacity ${
+                  shown === s.id ? "" : "opacity-60"
+                }`}
+                onPointerEnter={() => setShown(s.id)}
+                onFocusCapture={() => setShown(s.id)}
+              >
                 <StationLink
                   station={s}
                   className="group grid gap-1 py-5"
