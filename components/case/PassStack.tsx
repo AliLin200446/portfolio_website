@@ -8,8 +8,9 @@ import * as THREE from "three";
  * THE PASS STACK — the five GL passes as six planes you can turn.
  *
  * Ported rather than pasted. Three things in the original could not
- * ship here
- * *   - it pulled three r128 off a CDN. This repo already depends on
+ * ship here:
+ *
+ *   - it pulled three r128 off a CDN. This repo already depends on
  *     three, and a page that fetches a second copy of it from another
  *     origin breaks the zero-network rule the rest of the site keeps.
  *   - it re-linked Spectral and Geist Mono from Google. Both are
