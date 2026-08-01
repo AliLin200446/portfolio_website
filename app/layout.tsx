@@ -5,6 +5,7 @@ import { Spectral } from "next/font/google";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import LogoMark from "@/components/LogoMark";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 /* CASE-TEMPLATE: the document serif is Spectral, ROMAN ONLY. The
@@ -99,6 +100,7 @@ export default function RootLayout({
             </nav>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
