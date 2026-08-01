@@ -12,6 +12,14 @@
  *
  * Accent discipline: oxblood appears once, on brocade's deviation,
  * which is the one thing in the figure that is a finding.
+ *
+ * Two layouts, not one scaled down. At 390px the column is 342px wide,
+ * so a 560 unit viewBox renders at 0.61 and the 8px axis labels land at
+ * 4.9 CSS px, a third of the smallest type anywhere else on the site.
+ * The narrow variant is 344 units wide, which is 1:1 in that column, so
+ * 8px means 8px. It pays for that by dropping the per-row axis names to
+ * a single line above the plot; the values column stays, because the
+ * numbers are the evidence.
  */
 
 const INK = "#1a1714";
@@ -29,32 +37,65 @@ const ROWS = [
 const AXES = ["rigidity", "flow", "specular"];
 const REF = ROWS[0].v;
 
-const W = 560;
-const L = 92;
-const R = 96;
-const PLOT = W - L - R;
-const ROW_H = 46;
-const BAR_H = 9;
-const TOP = 34;
-const H = TOP + ROWS.length * ROW_H + 52;
-const px = (v: number) => L + v * PLOT;
+type L = {
+  W: number;
+  L: number;
+  R: number;
+  ROW_H: number;
+  BAR_H: number;
+  TOP: number;
+  rowFS: number;
+  valFS: number;
+  tickFS: number;
+  refFS: number;
+  /** per-row axis names only fit in the wide layout */
+  axisNames: boolean;
+};
 
-export default function SilkControl() {
+const WIDE: L = {
+  W: 560, L: 92, R: 96, ROW_H: 46, BAR_H: 9, TOP: 34,
+  rowFS: 11, valFS: 10, tickFS: 9, refFS: 8, axisNames: true,
+};
+const NARROW: L = {
+  W: 344, L: 62, R: 44, ROW_H: 42, BAR_H: 8, TOP: 44,
+  rowFS: 10, valFS: 9, tickFS: 9, refFS: 8, axisNames: false,
+};
+
+function Fig({ c }: { c: L }) {
+  const PLOT = c.W - c.L - c.R;
+  const H = c.TOP + ROWS.length * c.ROW_H + 52;
+  const px = (v: number) => c.L + v * PLOT;
+  const base = c.TOP + ROWS.length * c.ROW_H;
+
   return (
     <svg
-      viewBox={`0 0 ${W} ${H}`}
+      viewBox={`0 0 ${c.W} ${H}`}
       className="w-full"
       role="img"
       aria-label="Rigidity, flow and specular for a grey control, cotton, knit and brocade. Cotton and knit sit on the control values; brocade separates on all three."
     >
+      {/* the narrow layout has no room for a name beside every bar, so
+          the reading order is stated once */}
+      {!c.axisNames && (
+        <text
+          x={c.L}
+          y={16}
+          fill={MUTED}
+          fontSize="8"
+          fontFamily="var(--font-geist-mono), monospace"
+        >
+          {AXES.join("  /  ")}, top to bottom
+        </text>
+      )}
+
       {[0, 0.5, 1].map((t) => (
         <text
           key={t}
           x={px(t)}
-          y={20}
+          y={c.TOP - 14}
           textAnchor="middle"
           fill={MUTED}
-          fontSize="9"
+          fontSize={c.tickFS}
           fontFamily="var(--font-geist-mono), monospace"
         >
           {t.toFixed(1)}
@@ -67,18 +108,18 @@ export default function SilkControl() {
         <g key={i}>
           <line
             x1={px(v)}
-            y1={TOP - 8}
+            y1={c.TOP - 8}
             x2={px(v)}
-            y2={TOP + ROWS.length * ROW_H - 6}
+            y2={base - 6}
             stroke={AXIS}
             strokeWidth="1"
           />
           <text
             x={px(v)}
-            y={TOP + ROWS.length * ROW_H + (i === 1 ? 22 : 10)}
+            y={base + (i === 1 ? 22 : 10)}
             textAnchor="middle"
             fill={MUTED}
-            fontSize="8"
+            fontSize={c.refFS}
             fontFamily="var(--font-geist-mono), monospace"
           >
             {v}
@@ -87,23 +128,23 @@ export default function SilkControl() {
       ))}
 
       {ROWS.map((r, ri) => {
-        const y0 = TOP + ri * ROW_H;
+        const y0 = c.TOP + ri * c.ROW_H;
         return (
           <g key={r.name}>
             <text
-              x={L - 12}
-              y={y0 + 18}
+              x={c.L - 12}
+              y={y0 + 16}
               textAnchor="end"
               fill={r.control ? MUTED : INK}
-              fontSize="11"
+              fontSize={c.rowFS}
               fontFamily="var(--font-geist-mono), monospace"
             >
               {r.name}
             </text>
             {r.control && (
               <text
-                x={L - 12}
-                y={y0 + 31}
+                x={c.L - 12}
+                y={y0 + 29}
                 textAnchor="end"
                 fill={MUTED}
                 fontSize="8"
@@ -115,7 +156,7 @@ export default function SilkControl() {
             )}
 
             {r.v.map((v, ai) => {
-              const y = y0 + ai * (BAR_H + 2);
+              const y = y0 + ai * (c.BAR_H + 2);
               // brocade is the only row that leaves the control's
               // lines, so it carries the page's one accent
               const off = Math.abs(v - REF[ai]) > 0.05;
@@ -123,29 +164,29 @@ export default function SilkControl() {
               return (
                 <g key={ai}>
                   <rect
-                    x={L}
+                    x={c.L}
                     y={y}
                     width={Math.max(v * PLOT, 1)}
-                    height={BAR_H}
+                    height={c.BAR_H}
                     fill={fill}
                     stroke={r.control ? MUTED : "none"}
                     strokeWidth={r.control ? 1 : 0}
                     strokeDasharray={r.control ? "3 2" : undefined}
                   />
                   <text
-                    x={W - R + 8}
-                    y={y + BAR_H - 1}
+                    x={c.W - c.R + 8}
+                    y={y + c.BAR_H - 1}
                     fill={off ? OXBLOOD : MUTED}
-                    fontSize="10"
+                    fontSize={c.valFS}
                     fontFamily="var(--font-geist-mono), monospace"
                     style={{ fontVariantNumeric: "tabular-nums" }}
                   >
                     {v.toFixed(2)}
                   </text>
-                  {ri === 0 && (
+                  {c.axisNames && ri === 0 && (
                     <text
-                      x={W - R + 46}
-                      y={y + BAR_H - 1}
+                      x={c.W - c.R + 46}
+                      y={y + c.BAR_H - 1}
                       fill={MUTED}
                       fontSize="8"
                       fontFamily="var(--font-geist-mono), monospace"
@@ -160,5 +201,18 @@ export default function SilkControl() {
         );
       })}
     </svg>
+  );
+}
+
+export default function SilkControl() {
+  return (
+    <>
+      <div className="hidden sm:block">
+        <Fig c={WIDE} />
+      </div>
+      <div className="sm:hidden">
+        <Fig c={NARROW} />
+      </div>
+    </>
   );
 }
