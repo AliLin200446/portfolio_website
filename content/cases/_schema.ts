@@ -42,10 +42,19 @@ export type Figure = Pending &
         selfCaptioned?: boolean;
         attribution?: string;
       }
-    | { kind: "code"; lang?: string; code: string; caption: string }
+    | {
+        kind: "code";
+        lang?: string;
+        code: string;
+        caption: string;
+        /** a code figure can cite a source too: these are readings, not
+         *  illustrations */
+        sourceHref?: string;
+        sourceLabel?: string;
+      }
     | {
         kind: "instrument";
-        component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed" | "passstack" | "expspace";
+        component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed" | "passstack" | "expspace" | "silkcontrol";
         /** an array renders one line per entry; a plain string keeps the
          *  single-line path byte for byte */
         caption: string | string[];

@@ -5,6 +5,7 @@ import CaseIndex from "@/components/folio/CaseIndex";
 import InstrumentFacade from "./InstrumentFacade";
 import PassStackFacade from "./PassStackFacade";
 import ExperimentSpaceFacade from "./ExperimentSpaceFacade";
+import SilkControl from "./SilkControl";
 import HalationHero from "@/components/folio/HalationHero";
 import { LatencyAnatomy, StepDelta, StepFit, SeedDeterminism } from "./TeardownFigures";
 import LiveFacade from "@/components/folio/LiveFacade";
@@ -72,6 +73,7 @@ function Fig({ figure }: { figure: Figure }) {
         if (figure.component === "seed") return <SeedDeterminism />;
         if (figure.component === "passstack") return <PassStackFacade />;
         if (figure.component === "expspace") return <ExperimentSpaceFacade />;
+        if (figure.component === "silkcontrol") return <SilkControl />;
         return <HalationHero />;
       case "video":
         return (
@@ -128,7 +130,7 @@ function Fig({ figure }: { figure: Figure }) {
               // already uses, so a string caption renders identically.
               figure.caption.map((line) => <span key={line} className="block">{line}</span>)
             : figure.caption}
-        {figure.kind === "instrument" && figure.sourceHref && (
+        {(figure.kind === "instrument" || figure.kind === "code") && figure.sourceHref && (
           <>
             {" · "}
             <a
