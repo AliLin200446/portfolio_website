@@ -10,6 +10,12 @@
  * and the control row itself is dashed and labelled, because a neutral
  * grey square is not a material and should not be read as one.
  *
+ * The rules carry no labels. Their three values are the control row's
+ * own numbers, already printed in the values column at the top of the
+ * same figure; printing them again under the plot said the same thing
+ * twice, and it put 0.45 and 0.40 within 12px of each other, which
+ * read as two levels of tick rather than one set of readings.
+ *
  * Accent discipline: oxblood appears once, on brocade's deviation,
  * which is the one thing in the figure that is a finding.
  *
@@ -47,23 +53,22 @@ type L = {
   rowFS: number;
   valFS: number;
   tickFS: number;
-  refFS: number;
   /** per-row axis names only fit in the wide layout */
   axisNames: boolean;
 };
 
 const WIDE: L = {
   W: 560, L: 92, R: 96, ROW_H: 46, BAR_H: 9, TOP: 34,
-  rowFS: 11, valFS: 10, tickFS: 9, refFS: 8, axisNames: true,
+  rowFS: 11, valFS: 10, tickFS: 9, axisNames: true,
 };
 const NARROW: L = {
   W: 344, L: 62, R: 44, ROW_H: 42, BAR_H: 8, TOP: 44,
-  rowFS: 10, valFS: 9, tickFS: 9, refFS: 8, axisNames: false,
+  rowFS: 10, valFS: 9, tickFS: 9, axisNames: false,
 };
 
 function Fig({ c }: { c: L }) {
   const PLOT = c.W - c.L - c.R;
-  const H = c.TOP + ROWS.length * c.ROW_H + 52;
+  const H = c.TOP + ROWS.length * c.ROW_H;
   const px = (v: number) => c.L + v * PLOT;
   const base = c.TOP + ROWS.length * c.ROW_H;
 
@@ -105,26 +110,15 @@ function Fig({ c }: { c: L }) {
       {/* the control's three values, carried the full height. This is
           the figure's argument: two rows land on these, one does not */}
       {REF.map((v, i) => (
-        <g key={i}>
-          <line
-            x1={px(v)}
-            y1={c.TOP - 8}
-            x2={px(v)}
-            y2={base - 6}
-            stroke={AXIS}
-            strokeWidth="1"
-          />
-          <text
-            x={px(v)}
-            y={base + (i === 1 ? 22 : 10)}
-            textAnchor="middle"
-            fill={MUTED}
-            fontSize={c.refFS}
-            fontFamily="var(--font-geist-mono), monospace"
-          >
-            {v}
-          </text>
-        </g>
+        <line
+          key={i}
+          x1={px(v)}
+          y1={c.TOP - 8}
+          x2={px(v)}
+          y2={base - 6}
+          stroke={AXIS}
+          strokeWidth="1"
+        />
       ))}
 
       {ROWS.map((r, ri) => {
