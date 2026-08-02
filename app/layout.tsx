@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Spectral } from "next/font/google";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
-import LogoMark from "@/components/LogoMark";
+import BrandMark from "@/components/BrandMark";
 import "./globals.css";
 
 /* CASE-TEMPLATE: the document serif is Spectral, ROMAN ONLY. The
@@ -16,6 +16,8 @@ const spectral = Spectral({
   style: ["normal"],
 });
 
+export const viewport: Viewport = { themeColor: "#F5F2EC" };
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://alilinlab.com"),
   title: {
@@ -24,15 +26,26 @@ export const metadata: Metadata = {
   },
   description:
     "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
+  manifest: "/brand/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/brand/favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/favicon-96.png", sizes: "96x96", type: "image/png" },
+    ],
+    shortcut: "/brand/favicon.ico",
+    apple: "/brand/apple-touch-icon.png",
+  },
   openGraph: {
     siteName: "Ali Lin",
     type: "website",
     title: "Ali Lin: Design Engineer",
     description:
       "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
+    images: [{ url: "/brand/og.png", width: 1200, height: 630 }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
+    images: ["/brand/og.png"],
     title: "Ali Lin: Design Engineer",
     description:
       "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
@@ -65,8 +78,12 @@ export default function RootLayout({
             under it. */}
         <header className="site-bar fixed inset-x-0 top-0 z-[4] border-b border-line bg-paper/90 backdrop-blur-sm">
           <div className="mx-auto flex max-w-5xl items-baseline justify-between gap-x-8 px-6 py-3.5">
-            <Link href="/" className="flex items-center gap-3 font-mono text-xs">
-              <LogoMark />
+            <Link
+              href="/"
+              aria-label="Ali Lin Lab, home"
+              className="group flex items-center gap-3 font-mono text-xs"
+            >
+              <BrandMark />
               <span className="text-ink">ALI LIN</span>
             </Link>
             <TopNav />

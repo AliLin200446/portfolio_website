@@ -1,0 +1,12 @@
+{
+  "name": "Ali Lin Lab",
+  "short_name": "Ali Lin",
+  "background_color": "#F5F2EC",
+  "theme_color": "#F5F2EC",
+  "display": "standalone",
+  "start_url": "/",
+  "icons": [
+    { "src": "/brand/favicon-96.png", "sizes": "96x96", "type": "image/png" },
+    { "src": "/brand/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
