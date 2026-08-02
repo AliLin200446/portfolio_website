@@ -28,9 +28,12 @@ import Seal from "./Seal";
  *     turns slowly on its own and the list stays the way in.
  *   - reduced motion stops the rotation and leaves a still object.
  *
- * The cloth is not here on purpose: it runs a Verlet sim every frame,
- * which is the one thing in the set a phone should not be asked to do
- * while scrolling.
+ * The cloth is not in the canvas on purpose: it runs a Verlet sim every
+ * frame, which is the one thing in the set a phone should not be asked
+ * to do while scrolling. It is not missing either. It gets the hero
+ * loop from its own case page, which is a recording of that same sim,
+ * so the list stays five long and in rail order. An instrument that
+ * vanishes on a phone reads as an instrument that does not work.
  */
 
 const TURN = 0.22; // radians per second, slow enough to read as drift
@@ -57,19 +60,40 @@ function Turntable({ slug }: { slug: string }) {
   );
 }
 
-/** Material Memory has no object here. Saying so beats showing an
- *  empty frame and hoping nobody asks. */
+/** The four the phone renders live. MATERIAL MEMORY is the fifth and
+ *  is served as its own hero loop instead. */
 const HAS_OBJECT = new Set(["skeletal-silk", "latent", "teardown", "vestige"]);
 
 export default function MobileBench({ slug }: { slug: string }) {
-  if (!HAS_OBJECT.has(slug))
+  if (slug === "material-memory")
     return (
-      <div className="flex aspect-square w-full items-center justify-center border border-line bg-[#EDE9E0]">
-        <span className="px-6 text-center font-mono text-[11px] leading-relaxed text-muted">
-          the cloth runs a live simulation, so it stays on the desktop bench
-        </span>
-      </div>
+      <figure className="w-full border border-line">
+        {/* the animated loop for anyone who will see motion, the still
+            frame for anyone who has asked not to. Both are recordings
+            of the sim that runs on the desktop rail. */}
+        <picture>
+          <source
+            srcSet="/case-assets/material-memory/hero-still.webp"
+            media="(prefers-reduced-motion: reduce)"
+          />
+          <img
+            src="/case-assets/material-memory/hero-loop.webp"
+            alt="Hand written Verlet cloth, swinging on its rod"
+            // contained, not cropped: the loop is 482x240 and the live
+            // canvases beside it are square, so cover would cut the rod
+            // off the top of the one instrument that is a recording
+            className="block aspect-square w-full object-contain"
+          />
+        </picture>
+        <figcaption className="border-t border-line px-3 py-2 font-mono text-[10px] leading-relaxed text-muted">
+          recorded, not running: the sim is a per frame cost the phone
+          should not pay while you scroll
+        </figcaption>
+      </figure>
     );
+
+  if (!HAS_OBJECT.has(slug))
+    return <div className="aspect-square w-full border border-line bg-[#EDE9E0]" />;
 
   return (
     <div className="aspect-square w-full border border-line">

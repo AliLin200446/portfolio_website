@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { STATIONS, berthOf } from "@/lib/bench";
+import { BERTH_ORDER, STATIONS, berthOf } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
@@ -74,7 +74,12 @@ export default function HomeShell() {
   const bench3d = useBench3d();
   // which instrument the phone is showing. The list is the control,
   // so the canvas needs no pointer handling of its own.
-  const [shown, setShown] = useState("latent");
+  const [shown, setShown] = useState<string>(BERTH_ORDER[0]);
+  // the phone reads the same sequence the rail walks, so the two are
+  // never telling a visitor a different story about what comes first
+  const ordered = BERTH_ORDER.map(
+    (id) => STATIONS.find((s) => s.id === id)!
+  );
 
   return (
     <div className="min-h-svh">
@@ -96,7 +101,7 @@ export default function HomeShell() {
             Stations
           </h2>
           <ol className="border-t border-line">
-            {STATIONS.map((s, i) => (
+            {ordered.map((s, i) => (
               <li
                 key={s.id}
                 className={`border-b border-line transition-opacity ${
@@ -115,8 +120,10 @@ export default function HomeShell() {
                   <span className="font-serif text-2xl decoration-bronze decoration-1 underline-offset-4 group-hover:underline">
                     {s.label}
                   </span>
-                  {s.line && (
-                    <span className="text-sm text-muted">{s.line}</span>
+                  {s.blurb && (
+                    <span className="text-[15px] leading-snug text-muted">
+                      {s.blurb}
+                    </span>
                   )}
                   {s.external && (
                     <span className="font-mono text-xs text-muted">
