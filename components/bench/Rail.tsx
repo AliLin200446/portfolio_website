@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import {
   BERTH_MAX,
@@ -122,6 +122,16 @@ const TRIM: Record<string, number> = {
   "material-memory": 0.8,
   vestige: 0.8,
 };
+
+/** World size of each instrument AFTER it has been fitted, written by
+ *  Fit and read by the hit boxes.
+ *
+ *  The hit boxes used to be the stage: 86 percent of the frame wide,
+ *  whatever the object inside it came out as. Latent is 22 percent of
+ *  the frame wide before its trim, so four fifths of its target was
+ *  empty paper and the pointer triggered it from most of the way
+ *  across the screen, well before it was anywhere near the object. */
+const FITTED = new Map<string, { w: number; h: number; d: number }>();
 
 const STAGE_W_FRAC = 0.86;
 const STAGE_H_FRAC = 0.62;
@@ -556,7 +566,15 @@ function playMechanism(id: string) {
  *  instead of quietly changing how big it looks. Measured once: these
  *  are static resting shapes, and re-fitting the cloth every frame
  *  would make it breathe in and out as it swings. */
-function Fit({ id, children }: { id: string; children: React.ReactNode }) {
+function Fit({
+  id,
+  onFit,
+  children,
+}: {
+  id: string;
+  onFit: () => void;
+  children: React.ReactNode;
+}) {
   const trim = TRIM[id] ?? 1;
   const g = useRef<THREE.Group>(null);
   const { invalidate, size } = useThree();
@@ -616,6 +634,10 @@ function Fit({ id, children }: { id: string; children: React.ReactNode }) {
         -box.min.y * s,
         -box.max.z * s
       );
+      // the object is now centred on its berth in x, standing on y = 0
+      // and receding from z = 0, so its world size is just d scaled
+      FITTED.set(id, { w: d.x * s, h: d.y * s, d: d.z * s });
+      onFit();
       invalidate();
     };
 
@@ -628,11 +650,17 @@ function Fit({ id, children }: { id: string; children: React.ReactNode }) {
     // both times and this costs it one Box3.
     const again = setTimeout(fit, 900);
     return () => clearTimeout(again);
-  }, [id, trim, invalidate, size.width, size.height]);
+  }, [id, trim, onFit, invalidate, size.width, size.height]);
   return <group ref={g}>{children}</group>;
 }
 
-function Instruments({ clothSelect }: { clothSelect: (dragged: boolean) => void }) {
+function Instruments({
+  clothSelect,
+  onFit,
+}: {
+  clothSelect: (dragged: boolean) => void;
+  onFit: () => void;
+}) {
   const berth = useBenchStore((s) => s.berth);
   const passing = useBenchStore((s) => s.passing);
   // both windows: `berth` so the destination is already standing there
@@ -645,27 +673,27 @@ function Instruments({ clothSelect }: { clothSelect: (dragged: boolean) => void 
   return (
     <>
       {near("latent") && (
-        <Fit id="latent">
+        <Fit id="latent" onFit={onFit}>
           <FilmRoll position={[0, 0, 0]} />
         </Fit>
       )}
       {near("teardown") && (
-        <Fit id="teardown">
+        <Fit id="teardown" onFit={onFit}>
           <Movement position={[0, 0, 0]} />
         </Fit>
       )}
       {near("skeletal-silk") && (
-        <Fit id="skeletal-silk">
+        <Fit id="skeletal-silk" onFit={onFit}>
           <Cocoon position={[0, 0, 0]} />
         </Fit>
       )}
       {near("material-memory") && (
-        <Fit id="material-memory">
+        <Fit id="material-memory" onFit={onFit}>
           <Cloth position={[0, 0, 0]} onSelect={clothSelect} />
         </Fit>
       )}
       {near("vestige") && (
-        <Fit id="vestige">
+        <Fit id="vestige" onFit={onFit}>
           <Seal position={[0, 0, 0]} />
         </Fit>
       )}
@@ -694,6 +722,9 @@ function PointerTargets({
   const router = useRouter();
   const { size } = useThree();
   const stage = stageOf(size.width, size.height);
+  /** the object's own size once measured; the stage only until then */
+  const hit = (id: string) =>
+    FITTED.get(id) ?? { w: stage.w, h: stage.h, d: 1.5 };
 
   /** One click path for every instrument: click always enters. Off
    *  centre it has to bring the object to the front first, but that is
@@ -714,7 +745,7 @@ function PointerTargets({
         Math.abs(i - berth) > 1 || (id === "material-memory" && i === berth) ? null : (
           <mesh
             key={id}
-            position={[railX(i), stage.h / 2, 0]}
+            position={[railX(i), hit(id).h / 2, -hit(id).d / 2]}
             visible={false}
             onClick={(e) => {
               e.stopPropagation();
@@ -742,10 +773,10 @@ function PointerTargets({
               document.body.style.cursor = "";
             }}
           >
-            {/* the stage box, not the model: a hit target that changed
-                every time a model did would be a different affordance
-                on each instrument */}
-            <boxGeometry args={[stage.w, stage.h, 1.5]} />
+            {/* the object, not the stage. A target the size of the
+                stage means the pointer is "on" an instrument while it
+                is still most of a screen away from it. */}
+            <boxGeometry args={[hit(id).w, hit(id).h, hit(id).d]} />
           </mesh>
         )
       )}
@@ -924,6 +955,15 @@ export default function Rail() {
   const overlayEl = useRef<HTMLDivElement>(null);
   /** The instrument a hover asked for while the rail was still moving. */
   const pending = useRef<string | null>(null);
+  // bumped when an instrument finishes fitting, so the hit boxes
+  // re-render at the object's size instead of the stage fallback
+  // A state bump, not a key. PointerTargets reads FITTED at render
+  // time, so a re-render is all it needs; keying it would unmount and
+  // remount the hit boxes on every fit, including the deferred one at
+  // 900ms, and a remount under a resting pointer fires a spurious
+  // pointerout followed by nothing.
+  const [, setFitTick] = useState(0);
+  const onFit = useCallback(() => setFitTick((t) => t + 1), []);
   const router = useRouter();
 
   useEffect(() => {
@@ -1070,7 +1110,7 @@ export default function Rail() {
         <fog attach="fog" args={["#E9E3D6", 7, 20]} />
         <directionalLight position={[-3, 6, 4]} intensity={1.4} color="#fff6e8" />
         <ambientLight intensity={0.75} />
-        <Instruments clothSelect={clothSelect} />
+        <Instruments clothSelect={clothSelect} onFit={onFit} />
         <PointerTargets
           beginTransition={beginTransition}
           railSettled={railSettled}
