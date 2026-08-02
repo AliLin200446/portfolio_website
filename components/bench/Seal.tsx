@@ -407,10 +407,11 @@ export default function Seal({
           <boxGeometry args={[0.365, 0.008, 0.365]} />
           <meshBasicMaterial ref={glowMat} color="#FFB46B" transparent opacity={0} />
         </mesh>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
-          <circleGeometry args={[0.3, 24]} />
-          <meshBasicMaterial color="#1a1714" transparent opacity={0.14} />
-        </mesh>
+      {/* No contact shadow. It sat on the wooden turntable, where a
+          disc of ink read as the object touching the wood. The rail
+          stands the instruments on paper against a single horizon rule,
+          and the disc scales with the object, so at stage size it was a
+          grey ellipse across a third of the frame. STYLE: no shadows. */}
       </group>
 
       {/* the marks: current + one fading predecessor, same bay */}

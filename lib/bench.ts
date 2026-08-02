@@ -88,10 +88,15 @@ export const berthOf = (id: string) => BERTH_ORDER.indexOf(id as (typeof BERTH_O
 /** Landing berth: the first step of the argument, not a middle. */
 export const HOME_BERTH = berthOf("latent");
 
-/** World-unit spacing between berths along the rail X axis. Wide enough
- *  that a neighbour sits fully outside the frame at rest, so a visitor
- *  reads one instrument rather than a row of them. */
-export const BERTH_SPACING = 3.2;
+/** World-unit spacing between berths along the rail X axis.
+ *
+ *  Measured, not chosen by eye. At the reading distance the frame is
+ *  2.48 world units tall and 3.97 wide at 16:9, and an instrument is
+ *  fitted to 86 percent of that width. A neighbour therefore clears the
+ *  frame edge from 0.93 x frame width, which is 3.69 at 16:9. 5.2 holds
+ *  that clearance out to roughly 2.2:1; past there the next instrument
+ *  starts to show an edge. */
+export const BERTH_SPACING = 5.2;
 /** The far end of the rail. A hard stop, not a wrap. */
 export const BERTH_MAX = (BERTH_ORDER.length - 1) * BERTH_SPACING;
 

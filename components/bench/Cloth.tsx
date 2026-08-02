@@ -36,7 +36,7 @@ import { useBenchStore } from "@/lib/benchStore";
  * change on the spot and the drape visibly changes character.
  * Watermark: the 林 seal at ≤8% single-color darkening, baked into
  * the weave texture — never cinnabar.
- * Budget: cloth 1 + rod frame 1 + ring 1 + shadow 1 = 4 draw calls;
+ * Budget: cloth 1 + rod frame 1 + ring 1 = 3 draw calls;
  * 32×40 CPU Verlet <0.5ms/frame, runs only while unconverged.
  */
 
@@ -485,11 +485,11 @@ export default function Cloth({
         </Html>
       )}
 
-      {/* one cheap contact shadow */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0.02]}>
-        <planeGeometry args={[0.5, 0.16]} />
-        <meshBasicMaterial color="#1a1714" transparent opacity={0.14} />
-      </mesh>
+      {/* No contact shadow. It sat on the wooden turntable, where a
+          disc of ink read as the object touching the wood. The rail
+          stands the instruments on paper against a single horizon rule,
+          and the disc scales with the object, so at stage size it was a
+          grey ellipse across a third of the frame. STYLE: no shadows. */}
     </group>
   );
 }

@@ -395,11 +395,11 @@ export default function FilmRoll({
         {/* the film: pre-bent ribbon, revealed along its curve */}
         <mesh geometry={ribbonGeom} material={ribbonMat} />
 
-        {/* soft contact shadow */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
-          <circleGeometry args={[0.5, 24]} />
-          <meshBasicMaterial color="#1a1714" transparent opacity={0.14} />
-        </mesh>
+      {/* No contact shadow. It sat on the wooden turntable, where a
+          disc of ink read as the object touching the wood. The rail
+          stands the instruments on paper against a single horizon rule,
+          and the disc scales with the object, so at stage size it was a
+          grey ellipse across a third of the frame. STYLE: no shadows. */}
       </group>
     </group>
   );

@@ -4,8 +4,18 @@ import { HOME_BERTH } from "@/lib/bench";
 /** Bench state. Berth index survives case-page round trips (相C); the
  *  b* fields are the DOM↔3D bridges for each instrument's keyboard path. */
 type BenchState = {
+  /** which instrument is being shown. Intent: set by the ticks, the
+   *  arrow keys, the nav and a drag. The camera follows it. */
   berth: number;
   setBerth: (i: number) => void;
+  /** which berth the camera is physically over right now. Follows the
+   *  travel rather than the intent, and exists only so the mount window
+   *  covers the instruments a long jump passes over. Writing this into
+   *  `berth` instead looks like it works and does not: the frame loop
+   *  would overwrite every commanded jump on the next frame, before the
+   *  camera had moved far enough to agree with it. */
+  passing: number;
+  setPassing: (i: number) => void;
   /** instrument boot: real milestones only, monotonic, never inflated */
   bootTarget: number;
   bootLabel: string;
@@ -41,6 +51,8 @@ type BenchState = {
 export const useBenchStore = create<BenchState>((set) => ({
   berth: HOME_BERTH,
   setBerth: (i) => set({ berth: i }),
+  passing: HOME_BERTH,
+  setPassing: (i) => set({ passing: i }),
   bootTarget: 0,
   bootLabel: "runtime fetch",
   setBoot: (t, label) =>
