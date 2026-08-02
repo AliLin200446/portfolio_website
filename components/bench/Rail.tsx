@@ -120,6 +120,7 @@ const stageOf = (w: number, h: number) => {
   return { w: f.w * STAGE_W_FRAC, h: f.h * STAGE_H_FRAC };
 };
 
+
 const CUT_KEY = "bench-cut";
 
 /* Transition timeline: ONE 1.0s grammar, answer ~0.2 / dive to 0.85 /
@@ -551,14 +552,15 @@ function Fit({ id, children }: { id: string; children: React.ReactNode }) {
       // and recedes backwards, which is also how a thing on a table
       // reads.
       //
-      // That pushes it further from the camera, so the fit is solved
-      // twice: once against the frame at the rule, then again against
-      // the frame at the depth the first answer put it at.
-      let s = 1;
-      for (let pass = 0; pass < 2; pass += 1) {
-        const f = frameAt(READ_DEPTH + (d.z * s) / 2, size.width, size.height);
-        s = Math.min((f.w * STAGE_W_FRAC) / d.x, (f.h * STAGE_H_FRAC) / d.y);
-      }
+      // The fit is solved against the frame at the RULE, which is where
+      // the near face sits, not at the object's centre. Solving at the
+      // centre sizes the object for a frame further away than its
+      // nearest surface, and the near surface is the one that fills the
+      // view: latent came out at 75.8 percent of the frame height with
+      // its top cut off. Solved here, the near face fills the stage
+      // exactly and everything behind it falls away inside the frame.
+      const f = frameAt(READ_DEPTH, size.width, size.height);
+      const s = Math.min((f.w * STAGE_W_FRAC) / d.x, (f.h * STAGE_H_FRAC) / d.y);
       o.scale.setScalar(s);
       o.position.set(
         railX(berthOf(id)) - ((box.min.x + box.max.x) / 2) * s,
