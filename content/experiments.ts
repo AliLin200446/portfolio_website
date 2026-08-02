@@ -35,6 +35,7 @@ export const experiments: Experiment[] = [
     line: "Ethereum block hash → I Ching hexagram",
     year: "2025", // DRAFT: 年份待你核
     tags: ["web3", "generative"],
+    shot: "/experiments/cyber-i-ching.webp",
     href: "https://iching.alilinlab.com/",
     featured: true,
     credit: "featured by Three.js", // DRAFT: 确证是本项目才留
@@ -44,6 +45,7 @@ export const experiments: Experiment[] = [
     line: "DRAFT: generative visual API", // ← 猜测非事实,上线前必须换
     year: "2025", // DRAFT
     tags: ["web", "generative"], // DRAFT
+    shot: "/experiments/aura-api.webp",
     // 子域拼写实测:arua-api 200 在线,aura-api 无 DNS: 保留 arua
     href: "https://arua-api.alilinlab.com/",
   },
@@ -52,6 +54,7 @@ export const experiments: Experiment[] = [
     line: "two ritual paths, water or fire, for letting a memory go",
     year: "2025", // DRAFT
     tags: ["web3", "emotion"],
+    shot: "/experiments/project-lethe.webp",
     href: "https://lethe-river.alilinlab.com/",
   },
   {
@@ -62,6 +65,13 @@ export const experiments: Experiment[] = [
     line: "a physical feedback interface for world model outputs",
     year: "2026", // DRAFT: 年份待你核
     tags: ["3d", "web"],
+    // NO shot on purpose. The capture taken for it carries
+    // "RESONANCE - AI VIDEO PHYSICS ENGINE" and a "GENERATION HEALTH"
+    // panel as visible pixels, which are two of the three claims this
+    // project retracted and which scripts/check-claims.mjs exists to
+    // stop. That guard reads source text; it cannot read an image. A
+    // replacement capture has to be taken with those panels out of
+    // frame or that state not on screen.
     // the one entry with a case page of its own: the card goes there,
     // and the case page carries the live link
     href: "/work/resonance",
@@ -72,6 +82,7 @@ export const experiments: Experiment[] = [
     line: "the market votes on a design first: only voted-for units get produced",
     year: "2026", // DRAFT: 年份待你核
     tags: ["web3", "3d"],
+    shot: "/experiments/consensus-couture.webp",
     href: "https://consensus-couture.alilinlab.com/",
   },
   // 填字模板(照抄,一条一分钟):

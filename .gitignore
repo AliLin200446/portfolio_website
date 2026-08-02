@@ -53,3 +53,8 @@ material_memory/demo.mov
 
 # stray screenshots dropped at the repo root
 /workbench.png
+
+# raw captures for /experiments. The derived 16:10 webp lives in
+# public/experiments; these are 11 MB of PNG and stay out of history,
+# the way photography originals should have.
+/experiments/

@@ -4,12 +4,40 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { TAGS, experiments, type Tag } from "@/content/experiments";
 
 /*
- * EXPERIMENTS-INDEX. One line per piece, filterable, data-driven.
- * Filtering is an ENHANCEMENT: no-JS renders every entry (SSR emits
- * the full list); ?tag= deep-links; active tag in copper, never
- * cinnabar. Entries without href AND repo never render. Pure text
- * nothing here may touch LCP.
+ * EXPERIMENTS-INDEX. Filterable, data-driven, two presentations of one
+ * list. Filtering is an ENHANCEMENT: no-JS renders every entry (SSR
+ * emits the full list); ?tag= deep-links; active tag in copper, never
+ * cinnabar. Entries without href AND repo never render.
+ *
+ * From 1024px up: a grid of cards that turn on hover or focus, name on
+ * the front, capture on the back. Below 1024px: the line-per-piece list
+ * exactly as it was. The breakpoint is the same one the 3D cabinet used
+ * before it was deleted, so the phone sees no change at all.
+ *
+ * The turn is CSS only, no JS anywhere near the animation: a rotateY on
+ * a preserve-3d parent, both faces backface-hidden. Under reduced
+ * motion the card is simply already turned, because the capture is the
+ * only path to it and switching animation off must not switch content
+ * off. The name is repeated on the back for the same reason: whoever
+ * never sees the front still has to be told what they are looking at.
  */
+
+/** Card back, when no capture has been taken yet. A rule and a label,
+ *  so it reads as a slot waiting to be filled and not as an image that
+ *  failed to load. */
+function EmptySlot() {
+  // top of the card, not the bottom: the name and the stack live along
+  // the bottom edge of every back face, and a slot marker down there
+  // lands on top of them
+  return (
+    <div className="p-5">
+      <div className="border-t border-line" />
+      <span className="mt-2 block font-mono text-[10px] uppercase tracking-widest text-muted">
+        no capture yet
+      </span>
+    </div>
+  );
+}
 
 export default function ExperimentsIndex() {
   const router = useRouter();
@@ -79,6 +107,88 @@ export default function ExperimentsIndex() {
     );
   };
 
+  const Card = ({ e }: { e: (typeof visible)[number] }) => {
+    const to = e.href ?? e.repo ?? "";
+    const away = !to.startsWith("/");
+    return (
+      <a
+        href={to}
+        target={away ? "_blank" : undefined}
+        rel={away ? "noreferrer" : undefined}
+        aria-label={e.name}
+        className="group block aspect-[16/10] outline-none [perspective:1100px]"
+      >
+        <div
+          className="relative h-full w-full transition-transform duration-[400ms] ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)] motion-reduce:transition-none motion-reduce:[transform:rotateY(180deg)]"
+        >
+          {/* front: the name and nothing else */}
+          <div
+            className="absolute inset-0 flex flex-col justify-end border border-line p-5 [backface-visibility:hidden]"
+            style={{ borderWidth: "0.5px" }}
+          >
+            <span className="font-serif text-2xl leading-tight">{e.name}</span>
+          </div>
+
+          {/* back: the capture, or the slot where it will go */}
+          <div
+            className="absolute inset-0 overflow-hidden border border-line [backface-visibility:hidden] [transform:rotateY(180deg)] group-hover:border-oxblood group-focus-visible:border-oxblood"
+            style={{ borderWidth: "0.5px" }}
+          >
+            {e.shot ? (
+              <>
+                {/* A CSS background, not an img.
+                    The grid is display:none below 1024, and an img
+                    inside a hidden container is fetched anyway: all
+                    four decoded at naturalWidth 1600 on a 390px screen,
+                    loading="lazy" and all. A background-image in a
+                    display:none subtree is never requested, which is
+                    what "the phone is left alone" has to mean. alt was
+                    empty regardless: the name sits next to it in text. */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${e.shot})` }}
+                />
+                {/* Weighted to the bottom, not flat. These captures
+                    are not one family: Lethe is near black and Aura is
+                    near white, and a flat scrim dark enough to carry
+                    paper-coloured type over the white one buries the
+                    black one. A gradient puts the density where the
+                    type is and leaves the rest of the frame legible. */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(to bottom, rgba(26,23,20,0.12) 0%, rgba(26,23,20,0.30) 45%, rgba(26,23,20,0.82) 100%)",
+                  }}
+                />
+              </>
+            ) : (
+              <EmptySlot />
+            )}
+            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5">
+              <span
+                className={`font-serif text-2xl leading-tight ${
+                  e.shot ? "text-paper" : "text-ink"
+                }`}
+              >
+                {e.name}
+              </span>
+              {e.stack && (
+                <span
+                  className={`font-mono text-[10px] uppercase tracking-widest ${
+                    e.shot ? "text-paper/75" : "text-muted"
+                  }`}
+                >
+                  {e.stack}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </a>
+    );
+  };
+
   if (visible.length === 0)
     return (
       <p className="border-t border-line py-14 font-mono text-sm text-muted">
@@ -117,18 +227,31 @@ export default function ExperimentsIndex() {
           </button>
         ))}
       </div>
-      {featured.length > 0 && (
-        <section aria-label="featured">
-          {featured.map((e) => (
-            <Row key={e.name} e={e} big />
+      {/* 1024 and up: the grid. Featured first, then the rest, which is
+          the order the list has always used. There is no overlap with
+          the home rail, so nothing here has a second opinion about
+          priority to disagree with. */}
+      <div className="hidden gap-5 pt-2 lg:grid lg:grid-cols-3">
+        {[...featured, ...rest].map((e) => (
+          <Card key={e.name} e={e} />
+        ))}
+      </div>
+
+      {/* below 1024: untouched */}
+      <div className="lg:hidden">
+        {featured.length > 0 && (
+          <section aria-label="featured">
+            {featured.map((e) => (
+              <Row key={e.name} e={e} big />
+            ))}
+          </section>
+        )}
+        <section>
+          {rest.map((e) => (
+            <Row key={e.name} e={e} />
           ))}
         </section>
-      )}
-      <section>
-        {rest.map((e) => (
-          <Row key={e.name} e={e} />
-        ))}
-      </section>
+      </div>
     </>
   );
 }
