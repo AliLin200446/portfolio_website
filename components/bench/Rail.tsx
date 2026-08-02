@@ -241,10 +241,13 @@ type RailPos = { x: number; target: number; raw: number };
 
 function Rig({
   pos,
+  pending,
   overlayEl,
   onCut,
 }: {
   pos: React.RefObject<RailPos>;
+  /** A hover that arrived before the rail stopped, waiting for it to. */
+  pending: React.RefObject<string | null>;
   overlayEl: React.RefObject<HTMLDivElement | null>;
   onCut: (id: string) => void;
 }) {
@@ -463,6 +466,27 @@ function Rig({
     // reduced motion gets the cut, not the travel
     p.x += reduced.current ? dx : dx * DAMPING;
 
+    // A hover that landed while the rail was still gliding in is held
+    // rather than dropped. Hover used to require the rail to already be
+    // still, and there was no retry, so the natural motion of sliding
+    // to an instrument and going straight to it lost the mechanism and
+    // you had to leave and come back. Only SKELETAL SILK and VESTIGE
+    // showed it: they are the only two whose hover runs through
+    // playMechanism and that you have to travel to, since LATENT is the
+    // berth you land on.
+    //
+    // This cannot strand: the loop stops at |target - x| <= 0.0008,
+    // which is tighter than SETTLE_EPS, so anything still pending is
+    // still being animated toward.
+    const want = pending.current;
+    if (want && Math.abs(p.x - railX(berthOf(want))) < SETTLE_EPS) {
+      pending.current = null;
+      const st = useBenchStore.getState();
+      // only if the pointer is still on it: a hover that has already
+      // moved on should not fire late
+      if (st.hovered === want && !st.transitionId) playMechanism(want);
+    }
+
     // the mount window follows the camera, not the snap: without this a
     // jump from one end to the other would fly over bare paper. It goes
     // to `passing`, never to `berth`. Writing it to `berth` puts the
@@ -652,8 +676,11 @@ function Instruments({ clothSelect }: { clothSelect: (dragged: boolean) => void 
 function PointerTargets({
   beginTransition,
   railSettled,
+  defer,
 }: {
   beginTransition: (id: string) => void;
+  /** Hold a mechanism until the rail stops, or clear a held one. */
+  defer: (id: string | null) => void;
   /** true only when the rail has stopped. A moving rail drags every hit
    *  box under a stationary cursor in turn, and each one fires its own
    *  pointerover, which is why travelling to a berth used to appear to
@@ -711,6 +738,7 @@ function PointerTargets({
             }}
             onPointerOut={() => {
               setHovered(null);
+              defer(null);
               document.body.style.cursor = "";
             }}
           >
@@ -894,6 +922,8 @@ export default function Rail() {
     raw: railX(HOME_BERTH),
   });
   const overlayEl = useRef<HTMLDivElement>(null);
+  /** The instrument a hover asked for while the rail was still moving. */
+  const pending = useRef<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -1044,8 +1074,11 @@ export default function Rail() {
         <PointerTargets
           beginTransition={beginTransition}
           railSettled={railSettled}
+          defer={(id) => {
+            pending.current = id;
+          }}
         />
-        <Rig pos={pos} overlayEl={overlayEl} onCut={onCut} />
+        <Rig pos={pos} pending={pending} overlayEl={overlayEl} onCut={onCut} />
       </Canvas>
       <RailCaption />
       <CutOverlay overlayEl={overlayEl} />
