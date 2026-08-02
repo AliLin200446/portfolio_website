@@ -39,9 +39,12 @@ import Seal from "./Seal";
  * drag mounts each instrument before it enters frame instead of
  * revealing an empty rail.
  *
- * HOVER (§决策C): pointer over the front instrument raises a one-line
- * Geist Mono DOM card, prefetches the case route, and plays that
- * instrument's own mechanism. Never fires for a neighbour.
+ * HOVER: pointer over the front instrument plays that instrument's own
+ * mechanism and prefetches its case route. It says nothing. The card
+ * that used to rise here was written when five objects shared a table
+ * and a visitor needed to be told which was which; one at a time,
+ * under its own name and description, it repeated what was already on
+ * screen an inch below. Never fires for a neighbour.
  *
  * TRANSITION (穿过表面进入): click → three beats, <=1.0s: the
  * instrument answers with its own mechanism, the camera dives along an
@@ -704,6 +707,7 @@ function PointerTargets({
   const berth = useBenchStore((s) => s.berth);
   const setBerth = useBenchStore((s) => s.setBerth);
   const setHovered = useBenchStore((s) => s.setHovered);
+  const router = useRouter();
   const { size } = useThree();
   const stage = stageOf(size.width, size.height);
 
@@ -739,7 +743,12 @@ function PointerTargets({
               // this object is the one on screen, and the rail is
               // standing still
               if (i !== berth) return;
+              // setHovered still matters with the card gone: Movement
+              // reads it to know it is the one being looked at, since
+              // its own hit box belongs to this group and not to it
               setHovered(id);
+              const st = STATIONS.find((x) => x.id === id);
+              if (st?.href && !st.external) router.prefetch(st.href);
               if (!useBenchStore.getState().transitionId && railSettled())
                 playMechanism(id);
             }}
@@ -760,51 +769,6 @@ function PointerTargets({
 }
 
 /* ── DOM layer ────────────────────────────────────────────────────── */
-
-/** §1 hover card: one Geist Mono line, no thumbnails, no adjectives.
- *  DOM above 3D; fade 0.2s; prefetches the internal case route. */
-function HoverCard() {
-  const hovered = useBenchStore((s) => s.hovered);
-  const router = useRouter();
-  const last = useRef<string | null>(null);
-  if (hovered) last.current = hovered;
-  const station = last.current
-    ? STATIONS.find((s) => s.id === last.current)
-    : undefined;
-
-  useEffect(() => {
-    if (!hovered) return;
-    const st = STATIONS.find((s) => s.id === hovered);
-    if (st?.href && !st.external) router.prefetch(st.href);
-  }, [hovered, router]);
-
-  if (!station?.hover) return null;
-  return (
-    <div
-      aria-hidden
-      className="hovercard pointer-events-none fixed left-1/2 z-10 font-mono"
-      style={{
-        top: `calc(${horizonFrac() * 100}% - 34px)`,
-        fontSize: 11,
-        letterSpacing: "0.08em",
-        color: "#1a1714",
-        background: "rgba(245,242,236,0.92)",
-        border: "0.5px solid #E3DED4",
-        padding: "6px 12px",
-        whiteSpace: "nowrap",
-        opacity: hovered ? 1 : 0,
-        transform: hovered
-          ? "translateX(-50%) translateY(0)"
-          : "translateX(-50%) translateY(4px)",
-        transition: hovered
-          ? "opacity 0.2s ease, transform 0.2s ease"
-          : "opacity 0.15s ease, transform 0.15s ease",
-      }}
-    >
-      {station.hover}
-    </div>
-  );
-}
 
 /** The horizon, the description, and the ticks. Everything below the
  *  instrument is DOM: it is typography, and the case pages set it in
@@ -1127,7 +1091,6 @@ export default function Rail() {
         />
       </Canvas>
       <RailCaption />
-      <HoverCard />
       <CutOverlay overlayEl={overlayEl} />
     </>
   );

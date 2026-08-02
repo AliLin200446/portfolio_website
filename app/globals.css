@@ -114,11 +114,6 @@ body {
   .np-glint { animation: none; }
 }
 
-/* hover card: reduced-motion shows/hides instantly */
-@media (prefers-reduced-motion: reduce) {
-  .hovercard { transition: none !important; transform: translateX(-50%) !important; }
-}
-
 /* enter → press feedback: 1px sink on press, no overshoot on release */
 .enter-press {
   display: inline-block;
