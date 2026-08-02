@@ -58,3 +58,6 @@ material_memory/demo.mov
 # public/experiments; these are 11 MB of PNG and stay out of history,
 # the way photography originals should have.
 /experiments/
+
+# stray copy of the brand source; the real one is logo/alilinlab-logo.png
+/logo.png
