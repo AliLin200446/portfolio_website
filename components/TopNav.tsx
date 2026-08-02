@@ -24,11 +24,26 @@ const PROJECTS: { label: string; slug: string }[] = [
 const navLink =
   "text-muted transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B] outline-none";
 
+/** Where you are, marked the same way the rail marks the instrument you
+ *  are looking at: a copper rule under it, never cinnabar. Colour alone
+ *  was doing this for two of the four and doing nothing for ABOUT, so
+ *  three of the site's five destinations gave no answer to "where am
+ *  I". A rule survives being read at a glance in a way a shift from
+ *  muted grey to ink does not. */
+const here = (on: boolean) =>
+  `${navLink} ${on ? "border-b border-bronze pb-0.5 text-ink" : ""}`;
+
 export default function TopNav() {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const path = usePathname();
+  // a case page IS a project, and so is the home rail: the five
+  // instruments are the catalogue, which is why the no-JS PROJECTS
+  // link points at "/". Leaving home unmarked would mean the one page
+  // most visitors land on answers "where am I" with nothing.
+  const onWork = path === "/" || (path?.startsWith("/work") ?? false);
+  const at = (href: string) => path === href || path?.startsWith(`${href}/`);
 
   useEffect(() => setMounted(true), []);
 
@@ -61,14 +76,19 @@ export default function TopNav() {
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
             onMouseEnter={() => setOpen(true)}
-            className={`${navLink} ${path?.startsWith("/work") ? "text-ink" : ""}`}
+            aria-current={onWork ? "page" : undefined}
+            className={here(onWork)}
           >
             PROJECTS
           </button>
         ) : (
           // no-JS degradation: Link still emits a plain SSR anchor —
           // the bench itself is the project catalogue
-          <Link href="/" className={navLink}>
+          <Link
+            href="/"
+            aria-current={onWork ? "page" : undefined}
+            className={here(onWork)}
+          >
             PROJECTS
           </Link>
         )}
@@ -79,15 +99,18 @@ export default function TopNav() {
             onMouseLeave={() => setOpen(false)}
           >
             {PROJECTS.map((p) => {
-              const here = path === `/work/${p.slug}`;
+              // `current`, not `here`: the module scope now has a
+              // here() helper, and a shadow that typechecks either way
+              // is the kind that gets found by a wrong render
+              const current = path === `/work/${p.slug}`;
               return (
                 <Link
                   key={p.slug}
                   href={`/work/${p.slug}`}
                   onClick={() => setOpen(false)}
-                  aria-current={here ? "page" : undefined}
+                  aria-current={current ? "page" : undefined}
                   className={`px-4 py-1.5 transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#FFB46B] outline-none ${
-                    here ? "text-bronze" : "text-muted"
+                    current ? "text-bronze" : "text-muted"
                   }`}
                 >
                   {p.label}
@@ -97,13 +120,25 @@ export default function TopNav() {
           </div>
         )}
       </div>
-      <Link href="/experiments" className={`${navLink} ${path === "/experiments" ? "text-ink" : ""}`}>
+      <Link
+        href="/experiments"
+        aria-current={at("/experiments") ? "page" : undefined}
+        className={here(at("/experiments"))}
+      >
         EXPERIMENTS
       </Link>
-      <Link href="/photography" className={`${navLink} ${path === "/photography" ? "text-ink" : ""}`}>
+      <Link
+        href="/photography"
+        aria-current={at("/photography") ? "page" : undefined}
+        className={here(at("/photography"))}
+      >
         PHOTOGRAPHY
       </Link>
-      <Link href="/about" className={navLink}>
+      <Link
+        href="/about"
+        aria-current={at("/about") ? "page" : undefined}
+        className={here(at("/about"))}
+      >
         ABOUT
       </Link>
     </nav>

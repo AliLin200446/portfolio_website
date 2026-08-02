@@ -104,6 +104,21 @@ const DRAG_K = BERTH_SPACING / DRAG_PER_BERTH;
  *
  * Frame width follows the window, so this is measured at runtime and
  * re-measured on resize. */
+/** How much of the stage each instrument takes. Judged by eye against
+ *  the rendered frame, which is the only way to judge it: the fit makes
+ *  five objects the same measured size, and measured-equal is not the
+ *  same as reading-equal. A solid dark block at the size of an open
+ *  wire movement looks like a claim about the work.
+ *
+ *  The cocoon is the one left at full stage: it is mostly air. */
+const TRIM: Record<string, number> = {
+  latent: 0.8,
+  teardown: 0.8,
+  "skeletal-silk": 1,
+  "material-memory": 0.8,
+  vestige: 0.8,
+};
+
 const STAGE_W_FRAC = 0.86;
 const STAGE_H_FRAC = 0.62;
 /** Perpendicular distance from the camera to the plane the instruments
@@ -557,18 +572,8 @@ function playMechanism(id: string) {
  *  instead of quietly changing how big it looks. Measured once: these
  *  are static resting shapes, and re-fitting the cloth every frame
  *  would make it breathe in and out as it swings. */
-function Fit({
-  id,
-  trim = 1,
-  children,
-}: {
-  id: string;
-  /** A deliberate step off the shared stage, for the one object that
-   *  reads too heavy at it. Not a scale factor for the model: the fit
-   *  is still measured, this only says how much of the stage to take. */
-  trim?: number;
-  children: React.ReactNode;
-}) {
+function Fit({ id, children }: { id: string; children: React.ReactNode }) {
+  const trim = TRIM[id] ?? 1;
   const g = useRef<THREE.Group>(null);
   const { invalidate, size } = useThree();
   useLayoutEffect(() => {
@@ -676,11 +681,7 @@ function Instruments({ clothSelect }: { clothSelect: (dragged: boolean) => void 
         </Fit>
       )}
       {near("vestige") && (
-        <Fit id="vestige" trim={0.8}>
-          {/* the seal is a solid dark block and the only instrument
-              that is nearly all mass. At the full stage it read as
-              heavier than the four before it, which is a claim about
-              the work rather than about the object. */}
+        <Fit id="vestige">
           <Seal position={[0, 0, 0]} />
         </Fit>
       )}
@@ -823,8 +824,8 @@ function RailCaption() {
     >
       {/* the horizon: the instruments stand on this */}
       <div className="border-t border-line" />
-      <div className="mx-auto flex h-full max-w-3xl flex-col justify-between px-6 pb-16 pt-5">
-        <div>
+      <div className="flex h-full flex-col justify-between pb-16 pt-5">
+        <div className="mx-auto w-full max-w-3xl px-6">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-bronze">
             {String(berth + 1).padStart(2, "0")} / {String(BERTH_ORDER.length).padStart(2, "0")}
             <span className="ml-3 text-muted">{station?.label}</span>
@@ -834,52 +835,57 @@ function RailCaption() {
           </p>
         </div>
 
-        {/* five rules, one per instrument. Not dots: the site draws
-            rules everywhere else and a dot would be a new vocabulary
-            for something the reader already knows how to read */}
-        <nav aria-label="Instruments" className="flex items-end gap-3">
-          {BERTH_ORDER.map((sid, i) => {
-            const on = i === berth;
-            const s = STATIONS.find((x) => x.id === sid);
-            return (
-              <button
-                key={sid}
-                type="button"
-                onClick={() => setBerth(i)}
-                aria-current={on ? "true" : undefined}
-                aria-label={s?.label ?? sid}
-                className="group grid w-14 gap-1.5 text-left"
-              >
-                <span
-                  className={`h-px w-full transition-colors ${
-                    on ? "bg-bronze" : "bg-line group-hover:bg-muted"
-                  }`}
-                />
-                <span
-                  className={`font-mono text-[10px] tracking-widest transition-colors ${
-                    on ? "text-bronze" : "text-muted group-hover:text-ink"
-                  }`}
+        {/* Five equal segments across four fifths of the window, on the
+            same centre line as the text above. Rules, not dots: the site
+            draws rules everywhere else, and a dot would be a new
+            vocabulary for something the reader already knows how to
+            read. Equal width is the point, so nothing outside the five
+            shares the row. */}
+        <nav aria-label="Instruments" className="mx-auto w-4/5">
+          <div className="flex gap-2">
+            {BERTH_ORDER.map((sid, i) => {
+              const on = i === berth;
+              const st = STATIONS.find((x) => x.id === sid);
+              return (
+                <button
+                  key={sid}
+                  type="button"
+                  onClick={() => setBerth(i)}
+                  aria-current={on ? "true" : undefined}
+                  aria-label={st?.label ?? sid}
+                  className="group grid flex-1 gap-1.5 text-left"
                 >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              </button>
-            );
-          })}
-          {/* the same destination the overscroll reaches. A gesture is
-              not a control: anyone on a keyboard, or anyone who never
-              thinks to shove the rail, needs the door to be visible. */}
-          {berth === last ? (
-            <Link
-              href="/experiments"
-              className="pb-0.5 font-mono text-[10px] tracking-widest text-bronze transition-colors hover:text-ink"
-            >
-              experiments {String.fromCharCode(8594)}
-            </Link>
-          ) : (
-            <span className="pb-0.5 font-mono text-[10px] tracking-widest text-muted">
-              {berth === 0 ? "start" : ""}
-            </span>
-          )}
+                  <span
+                    className={`h-px w-full transition-colors ${
+                      on ? "bg-bronze" : "bg-line group-hover:bg-muted"
+                    }`}
+                  />
+                  <span
+                    className={`font-mono text-[10px] tracking-widest transition-colors ${
+                      on ? "text-bronze" : "text-muted group-hover:text-ink"
+                    }`}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {/* the ends of the rail, on their own line so the five stay
+              equal. The right one is the same destination the overscroll
+              reaches: a gesture is not a control, and anyone on a
+              keyboard needs the door to be visible. */}
+          <div className="mt-2 flex h-4 items-baseline justify-between font-mono text-[10px] tracking-widest">
+            <span className="text-muted">{berth === 0 ? "start" : ""}</span>
+            {berth === last && (
+              <Link
+                href="/experiments"
+                className="text-bronze transition-colors hover:text-ink"
+              >
+                experiments {String.fromCharCode(8594)}
+              </Link>
+            )}
+          </div>
         </nav>
       </div>
     </div>
