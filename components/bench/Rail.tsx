@@ -111,11 +111,14 @@ const READ_DEPTH = CAM_Z * Math.cos(CAM_PITCH) - CAM_Y * Math.sin(CAM_PITCH);
 /** The frame at that distance, in world units. Height is fixed by the
  *  vertical fov; width follows the window, which is why the stage has
  *  to be measured at runtime rather than written down. */
-const frameH = 2 * READ_DEPTH * Math.tan(THREE.MathUtils.degToRad(FOV) / 2);
-const stageOf = (w: number, h: number) => ({
-  w: frameH * (w / h) * STAGE_W_FRAC,
-  h: frameH * STAGE_H_FRAC,
-});
+const frameAt = (depth: number, w: number, h: number) => {
+  const fh = 2 * depth * Math.tan(THREE.MathUtils.degToRad(FOV) / 2);
+  return { w: fh * (w / h), h: fh };
+};
+const stageOf = (w: number, h: number) => {
+  const f = frameAt(READ_DEPTH, w, h);
+  return { w: f.w * STAGE_W_FRAC, h: f.h * STAGE_H_FRAC };
+};
 
 const CUT_KEY = "bench-cut";
 
@@ -511,22 +514,69 @@ function Fit({ id, children }: { id: string; children: React.ReactNode }) {
   useLayoutEffect(() => {
     const o = g.current;
     if (!o) return;
-    o.scale.setScalar(1);
-    o.position.set(0, 0, 0);
-    o.updateMatrixWorld(true);
-    const b = new THREE.Box3().setFromObject(o);
-    const d = b.getSize(new THREE.Vector3());
-    if (d.x < 1e-4 || d.y < 1e-4) return;
-    const stage = stageOf(size.width, size.height);
-    const s = Math.min(stage.w / d.x, stage.h / d.y);
-    o.scale.setScalar(s);
-    // centred on its berth in x and z, standing on the floor in y
-    o.position.set(
-      railX(berthOf(id)) - ((b.min.x + b.max.x) / 2) * s,
-      -b.min.y * s,
-      -((b.min.z + b.max.z) / 2) * s
-    );
-    invalidate();
+    const box = new THREE.Box3();
+    const scratch = new THREE.Box3();
+
+    const fit = () => {
+      o.scale.setScalar(1);
+      o.position.set(0, 0, 0);
+      o.updateMatrixWorld(true);
+      // Box3 measures geometry, and geometry can lie about the
+      // silhouette: FilmRoll's leader is a full length ribbon that the
+      // shader reveals along its curve, so at rest two thirds of it is
+      // present and not drawn. Framing on it centres a strip nobody can
+      // see and pushes the canister off to the side. userData.noFrame
+      // marks that case at the source rather than special casing an
+      // instrument here.
+      box.makeEmpty();
+      o.traverse((c) => {
+        const m = c as THREE.Mesh;
+        if (!m.isMesh || m.userData.noFrame || !m.geometry) return;
+        // recomputed, never reused: the cloth is a PlaneGeometry whose
+        // vertices the Verlet sim rewrites every frame, and its cached
+        // box is the flat sheet it started as
+        m.geometry.computeBoundingBox();
+        if (!m.geometry.boundingBox) return;
+        scratch.copy(m.geometry.boundingBox).applyMatrix4(m.matrixWorld);
+        box.union(scratch);
+      });
+      if (box.isEmpty()) return;
+      const d = box.getSize(new THREE.Vector3());
+      if (d.x < 1e-4 || d.y < 1e-4) return;
+      // The horizon rule is drawn at the z = 0 plane, so an instrument
+      // centred on z pokes forward of it by half its depth: the
+      // movement is a wide disc and its near rim landed 15 percent of
+      // the screen below the line, straight through the description.
+      // Every instrument therefore stands with its FRONT face on z = 0
+      // and recedes backwards, which is also how a thing on a table
+      // reads.
+      //
+      // That pushes it further from the camera, so the fit is solved
+      // twice: once against the frame at the rule, then again against
+      // the frame at the depth the first answer put it at.
+      let s = 1;
+      for (let pass = 0; pass < 2; pass += 1) {
+        const f = frameAt(READ_DEPTH + (d.z * s) / 2, size.width, size.height);
+        s = Math.min((f.w * STAGE_W_FRAC) / d.x, (f.h * STAGE_H_FRAC) / d.y);
+      }
+      o.scale.setScalar(s);
+      o.position.set(
+        railX(berthOf(id)) - ((box.min.x + box.max.x) / 2) * s,
+        -box.min.y * s,
+        -box.max.z * s
+      );
+      invalidate();
+    };
+
+    fit();
+    // Once more when the live ones have stopped moving. MATERIAL
+    // MEMORY hangs a cloth that is still falling at mount, so its
+    // bounds at that instant are the sheet part way down; fitting to
+    // them left the hem eleven percent of the screen below the rule,
+    // through the description. A static instrument measures the same
+    // both times and this costs it one Box3.
+    const again = setTimeout(fit, 900);
+    return () => clearTimeout(again);
   }, [id, invalidate, size.width, size.height]);
   return <group ref={g}>{children}</group>;
 }

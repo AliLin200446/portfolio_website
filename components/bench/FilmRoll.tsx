@@ -393,7 +393,16 @@ export default function FilmRoll({
         </mesh>
 
         {/* the film: pre-bent ribbon, revealed along its curve */}
-        <mesh geometry={ribbonGeom} material={ribbonMat} />
+        {/* noFrame: the ribbon is modelled at full length and revealed
+            along its curve by the shader, so its bounding box is about
+            three times the silhouette anyone actually sees. The rail
+            fits an instrument to the frame from its bounds, and this
+            one would drag the canister off to the side. */}
+        <mesh
+          geometry={ribbonGeom}
+          material={ribbonMat}
+          userData={{ noFrame: true }}
+        />
 
       {/* No contact shadow. It sat on the wooden turntable, where a
           disc of ink read as the object touching the wood. The rail
