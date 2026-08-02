@@ -787,17 +787,29 @@ function RailCaption() {
   return (
     <div
       className="fixed inset-x-0 z-10"
-      style={{ top: `${horizonFrac() * 100}%`, bottom: 0 }}
+      // stops at the top of the footer, not at the bottom of the
+      // window. pb-16 was reserving 64px for a bar that measures 49,
+      // and on a 768 tall screen that waste is the difference between
+      // the ticks clearing the footer and sitting 14px under it
+      style={{ top: `${horizonFrac() * 100}%`, bottom: "3.0625rem" }}
     >
       {/* the horizon: the instruments stand on this */}
       <div className="border-t border-line" />
-      <div className="flex h-full flex-col justify-between pb-16 pt-5">
-        <div className="mx-auto w-full max-w-3xl px-6">
+      <div className="flex h-full flex-col justify-between pb-2 pt-4">
+        {/* Half the window, on the same centre line as the ticks below
+            at four fifths. The 60ch cap that used to sit inside this
+            block is gone with it: a measure inside a measure meant the
+            frame said one width and the text took another, and it was
+            the inner one that decided how many lines a description
+            broke into. One width, set here, is what makes five
+            descriptions of different lengths land on the same number
+            of lines. */}
+        <div className="mx-auto w-1/2">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-bronze">
             {String(berth + 1).padStart(2, "0")} / {String(BERTH_ORDER.length).padStart(2, "0")}
             <span className="ml-3 text-muted">{station?.label}</span>
           </p>
-          <p className="mt-2 max-w-[60ch] font-serif text-[17px] leading-snug text-ink">
+          <p className="mt-2 font-serif text-[17px] leading-snug text-ink">
             {station?.blurb}
           </p>
         </div>
