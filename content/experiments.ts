@@ -65,13 +65,16 @@ export const experiments: Experiment[] = [
     line: "a physical feedback interface for world model outputs",
     year: "2026", // DRAFT: 年份待你核
     tags: ["3d", "web"],
-    // NO shot on purpose. The capture taken for it carries
-    // "RESONANCE - AI VIDEO PHYSICS ENGINE" and a "GENERATION HEALTH"
-    // panel as visible pixels, which are two of the three claims this
-    // project retracted and which scripts/check-claims.mjs exists to
-    // stop. That guard reads source text; it cannot read an image. A
-    // replacement capture has to be taken with those panels out of
-    // frame or that state not on screen.
+    // Cropped from the top left, not centred like the other four. The
+    // full capture prints "RESONANCE - AI VIDEO PHYSICS ENGINE" along
+    // the bottom and carries a "GENERATION HEALTH" panel down the left
+    // column: two of the three claims this project retracted, and two
+    // of the three patterns scripts/check-claims.mjs exists to stop.
+    // That guard reads source text and cannot read an image, so it
+    // would have shipped them silently. The cut at 1300 of 1658px
+    // clears both and keeps the four sliders, which are the thing this
+    // entry actually describes.
+    shot: "/experiments/resonance.webp",
     // the one entry with a case page of its own: the card goes there,
     // and the case page carries the live link
     href: "/work/resonance",
