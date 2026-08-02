@@ -246,6 +246,14 @@ function Rig({
   // one exit per gesture: the check runs on every wheel tick and every
   // pointermove, and the route change is not instant
   const exited = useRef(false);
+  /** How far past the last berth this push has travelled. Kept apart
+   *  from `raw`, which the snap clamps back onto a berth 160ms after
+   *  the last input: a deliberate, unhurried shove against the wall
+   *  stalls for longer than that between events, and measuring the exit
+   *  off `raw` meant it only ever fired inside one uninterrupted burst.
+   *  This decays on its own instead. */
+  const pastEnd = useRef(0);
+  const pastEndTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tt = useRef(0); // transition time (s)
   const cutDone = useRef(false);
   const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -359,9 +367,19 @@ function Rig({
      *  push that keeps going after the wall lands there instead of
      *  bouncing forever. It has to clear EXIT_PUSH, so a bounce is
      *  still a bounce. */
-    const checkExit = () => {
+    const checkExit = (dx: number) => {
       if (exited.current || transiting()) return;
-      if (pos.current.raw <= BERTH_MAX + EXIT_PUSH) return;
+      // only travel that is both forward and already at the wall counts
+      if (dx <= 0 || pos.current.raw < BERTH_MAX) {
+        pastEnd.current = 0;
+        return;
+      }
+      pastEnd.current += dx;
+      if (pastEndTimer.current) clearTimeout(pastEndTimer.current);
+      pastEndTimer.current = setTimeout(() => {
+        pastEnd.current = 0;
+      }, 500);
+      if (pastEnd.current < EXIT_PUSH) return;
       exited.current = true;
       onPastEnd();
     };
@@ -381,7 +399,7 @@ function Rig({
       pos.current.raw += dx;
       pos.current.target = resist(pos.current.raw);
       track();
-      checkExit();
+      checkExit(dx);
       scheduleSnap();
       invalidate();
     };
@@ -405,10 +423,11 @@ function Rig({
       if (!dragging || clothDrag.active) return;
       // pull the rail right, travel left: the hand moves the objects,
       // not the camera
+      const was = pos.current.raw;
       pos.current.raw = startRaw - (e.clientX - startX) * DRAG_K;
       pos.current.target = resist(pos.current.raw);
       track();
-      checkExit();
+      checkExit(pos.current.raw - was);
       invalidate();
     };
     const onUp = () => {
@@ -459,6 +478,7 @@ function Rig({
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("keydown", onKey);
       if (snapTimer.current) clearTimeout(snapTimer.current);
+      if (pastEndTimer.current) clearTimeout(pastEndTimer.current);
     };
   }, [gl, invalidate, setBerth, pos, onPastEnd]);
 
