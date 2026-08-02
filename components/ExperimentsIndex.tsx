@@ -121,10 +121,16 @@ export default function ExperimentsIndex() {
         <div
           className="relative h-full w-full transition-transform duration-[400ms] ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)] motion-reduce:transition-none motion-reduce:[transform:rotateY(180deg)]"
         >
-          {/* front: the name and nothing else */}
+          {/* front: the name and nothing else, inside a bronze
+              hairline. Bronze rather than the usual line grey because
+              the front of a card is an invitation and the grey reads as
+              a container; it is held to 0.5px and 55 percent so five of
+              them together stay a texture rather than five frames
+              competing for the same attention. Cinnabar is still spoken
+              for: it belongs to the one card being turned. */}
           <div
-            className="absolute inset-0 flex flex-col justify-end border border-line p-5 [backface-visibility:hidden]"
-            style={{ borderWidth: "0.5px" }}
+            className="absolute inset-0 flex flex-col justify-end p-5 [backface-visibility:hidden]"
+            style={{ border: "0.5px solid color-mix(in srgb, var(--bronze) 55%, transparent)" }}
           >
             <span className="font-serif text-2xl leading-tight">{e.name}</span>
           </div>
