@@ -140,3 +140,14 @@ body {
    exempt: its scene is a fixed inset-0 canvas, not flowed content. */
 body { padding-top: 3.25rem; }
 body[data-index="true"] { padding-top: 0; }
+
+/* ABOUT VENN — the only things that move are stroke weight, opacity and
+   a fill. reduced-motion cuts the transition and the state still
+   changes, because the state IS the information here: the diagram is
+   the only route to six of the seven blocks. */
+.venn-part {
+  transition: stroke-width 0.25s ease, opacity 0.25s ease, fill 0.25s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .venn-part { transition: none; }
+}

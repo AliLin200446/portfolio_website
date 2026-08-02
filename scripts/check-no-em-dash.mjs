@@ -28,9 +28,16 @@ if(m==="line"){if(c==="\n"){m="code";o+=c;}else o+=" ";i++;continue;}
 if(m==="block"){if(c==="*"&&n==="/"){m="code";o+="  ";i+=2;continue;}o+=c==="\n"?c:" ";i++;continue;}
 const q=m==="s"?"'":m==="d"?'"':"`";if(c==="\\"){o+=c+(n??"");i+=2;continue;}if(c===q)m="code";o+=c;i++;}return o;}
 function walk(d,a=[]){for(const n of readdirSync(d)){if(SKIP.has(n))continue;const p=join(d,n);statSync(p).isDirectory()?walk(p,a):a.push(p);}return a;}
-const hits=[];
+const hits=[];const exempt=[];
 for(const r of ROOTS){let fs2;try{fs2=walk(r);}catch{continue;}
 for(const f of fs2){if(!EXTS.has(extname(f)))continue;const raw=readFileSync(f,"utf8");if(!raw.includes("—"))continue;
+// Per-file opt-out, declared in the file itself so it is greppable from
+// either end: `grep -rn em-dash-exempt app components content lib`.
+// The one case it exists for is copy an author supplied whole and
+// forbade anyone to rewrite. Two rules collided there and only one of
+// them was about someone else's words. It is not a licence to keep
+// writing em dashes: a file that opts out has to say why, above.
+if(raw.includes("em-dash-exempt")){exempt.push(f);continue;}
 const vis=extname(f)===".css"?raw.replace(/\/\*[\s\S]*?\*\//g,m=>m.replace(/[^\n]/g," ")):extname(f)===".md"?raw:strip(raw);
 vis.split("\n").forEach((l,i)=>{if(l.includes("—"))hits.push({f,line:i+1,n:(l.match(/—/g)||[]).length});});}}
 const byFile={};hits.forEach(h=>{byFile[h.f]=(byFile[h.f]||0)+h.n;});
@@ -43,4 +50,7 @@ if (total) {
   console.error("\nRewrite the sentence; do not swap the character.\n");
   process.exit(1);
 }
-console.log("Em dash guard passed: none in shipped copy.");
+console.log(
+  "Em dash guard passed: none in shipped copy." +
+    (exempt.length ? ` (${exempt.length} file(s) opted out: ${exempt.join(", ")})` : "")
+);
