@@ -23,11 +23,6 @@ type BenchState = {
   // B1 film roll (REV: click-to-feed toggle)
   b1FeedNonce: number;
   b1Feed: () => void;
-  // B2 tuning fork
-  b2Luma: number;
-  setB2Luma: (v: number) => void;
-  b2StrikeNonce: number;
-  b2Strike: () => void;
   // B3 cocoon (REV: strand-pull toggle)
   b3PullNonce: number;
   b3Pull: () => void;
@@ -59,10 +54,6 @@ export const useBenchStore = create<BenchState>((set) => ({
     set((s) => ({ bootTarget: Math.max(s.bootTarget, t), bootLabel: label })),
   b1FeedNonce: 0,
   b1Feed: () => set((s) => ({ b1FeedNonce: s.b1FeedNonce + 1 })),
-  b2Luma: 0,
-  setB2Luma: (v) => set({ b2Luma: v }),
-  b2StrikeNonce: 0,
-  b2Strike: () => set((s) => ({ b2StrikeNonce: s.b2StrikeNonce + 1 })),
   b3PullNonce: 0,
   b3Pull: () => set((s) => ({ b3PullNonce: s.b3PullNonce + 1 })),
   b5StampNonce: 0,

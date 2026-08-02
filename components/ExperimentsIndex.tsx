@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import SpecimenDrawer from "@/components/SpecimenDrawer";
 import { TAGS, experiments, type Tag } from "@/content/experiments";
 
 /*
@@ -30,11 +29,16 @@ export default function ExperimentsIndex() {
       scroll: false,
     });
 
-  const Row = ({ e, big }: { e: (typeof visible)[number]; big?: boolean }) => (
+  const Row = ({ e, big }: { e: (typeof visible)[number]; big?: boolean }) => {
+    const to = e.href ?? e.repo ?? "";
+    // Resonance points at its own case page. Sending an internal route
+    // to a new tab would strand the visitor outside their own history.
+    const away = !to.startsWith("/");
+    return (
     <a
-      href={e.href ?? e.repo}
-      target="_blank"
-      rel="noreferrer"
+      href={to}
+      target={away ? "_blank" : undefined}
+      rel={away ? "noreferrer" : undefined}
       className="group flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-line py-4 transition-colors hover:text-bronze"
       style={{ borderBottomWidth: "0.5px" }}
     >
@@ -68,9 +72,12 @@ export default function ExperimentsIndex() {
           {e.credit}
         </span>
       )}
-      <span aria-hidden className="ml-auto font-mono text-xs">↗</span>
+      <span aria-hidden className="ml-auto font-mono text-xs">
+        {away ? String.fromCharCode(8599) : String.fromCharCode(8594)}
+      </span>
     </a>
-  );
+    );
+  };
 
   if (visible.length === 0)
     return (
@@ -82,8 +89,6 @@ export default function ExperimentsIndex() {
 
   return (
     <>
-      {/* 3D 标本屉: enhancement layer, same ?tag= state as the text */}
-      <SpecimenDrawer active={active} />
       {/* tag 筛选行: counts are the only ornament */}
       <div className="flex flex-wrap gap-x-5 gap-y-1 border-t border-line py-4 font-mono text-xs" style={{ borderTopWidth: "0.5px" }}>
         <button

@@ -15,6 +15,14 @@ export type Experiment = {
   tags: Tag[];
   href?: string; // live demo 优先;无则 repo;两者皆无不上屏
   repo?: string;
+  /** Card back, Geist Mono. What it is built with, not what it is
+   *  about: `line` says the second thing and the front of the card
+   *  already carries the name. Absent means the label is absent, never
+   *  a guess. */
+  stack?: string;
+  /** Card back, /experiments/<id>.webp, 16:10. Absent renders a
+   *  labelled empty slot rather than a broken frame. */
+  shot?: string;
   featured?: boolean; // 置顶区
   credit?: string; // 可验证背书: 仅确证者可填
 };
@@ -54,7 +62,9 @@ export const experiments: Experiment[] = [
     line: "a physical feedback interface for world model outputs",
     year: "2026", // DRAFT: 年份待你核
     tags: ["3d", "web"],
-    href: "https://resonance.alilinlab.com/",
+    // the one entry with a case page of its own: the card goes there,
+    // and the case page carries the live link
+    href: "/work/resonance",
   },
   {
     name: "Consensus Couture",
