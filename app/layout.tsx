@@ -68,7 +68,6 @@ export default function RootLayout({
             <Link href="/" className="flex items-center gap-3 font-mono text-xs">
               <LogoMark />
               <span className="text-ink">ALI LIN</span>
-              <span className="text-muted">{": design engineer"}</span>
             </Link>
             <TopNav />
           </div>

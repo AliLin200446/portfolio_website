@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
 import {
   BERTH_MAX,
@@ -186,6 +187,14 @@ const clampRail = (x: number) => Math.max(0, Math.min(BERTH_MAX, x));
 const berthAt = (x: number) =>
   Math.max(0, Math.min(BERTH_ORDER.length - 1, Math.round(x / BERTH_SPACING)));
 
+/** How far past the last berth a push has to travel before it stops
+ *  being a bounce and becomes a way out. Just over three quarters of a
+ *  berth: about 200px of drag or one firm trackpad throw, which is more
+ *  than anyone does by accident and less than a wrestle. Nothing
+ *  equivalent guards the left end, because there is nothing before the
+ *  first instrument to arrive at. */
+const EXIT_PUSH = BERTH_SPACING * 0.8;
+
 /** Past either end, only EDGE_RESIST of the push lands. */
 const resist = (x: number) => {
   if (x < 0) return x * EDGE_RESIST;
@@ -220,10 +229,12 @@ function Rig({
   pos,
   overlayEl,
   onCut,
+  onPastEnd,
 }: {
   pos: React.RefObject<RailPos>;
   overlayEl: React.RefObject<HTMLDivElement | null>;
   onCut: (id: string) => void;
+  onPastEnd: () => void;
 }) {
   const { camera, invalidate, gl } = useThree();
   const berth = useBenchStore((s) => s.berth);
@@ -232,6 +243,9 @@ function Rig({
   // a drag moves the camera directly, so the caption and the ticks
   // follow the target rather than waiting for the snap
   const dragBerth = useRef(-1);
+  // one exit per gesture: the check runs on every wheel tick and every
+  // pointermove, and the route change is not instant
+  const exited = useRef(false);
   const tt = useRef(0); // transition time (s)
   const cutDone = useRef(false);
   const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -340,6 +354,18 @@ function Rig({
       }, SNAP_DELAY_MS);
     };
 
+    /** Past the end of the rail is not nothing. The last instrument is
+     *  the last case, and what follows the cases is the cabinet, so a
+     *  push that keeps going after the wall lands there instead of
+     *  bouncing forever. It has to clear EXIT_PUSH, so a bounce is
+     *  still a bounce. */
+    const checkExit = () => {
+      if (exited.current || transiting()) return;
+      if (pos.current.raw <= BERTH_MAX + EXIT_PUSH) return;
+      exited.current = true;
+      onPastEnd();
+    };
+
     /** direct manipulation: the target is the hand, and `berth` follows
      *  it so the description under the instrument changes as it arrives
      *  rather than after the snap lands. */
@@ -355,6 +381,7 @@ function Rig({
       pos.current.raw += dx;
       pos.current.target = resist(pos.current.raw);
       track();
+      checkExit();
       scheduleSnap();
       invalidate();
     };
@@ -381,6 +408,7 @@ function Rig({
       pos.current.raw = startRaw - (e.clientX - startX) * DRAG_K;
       pos.current.target = resist(pos.current.raw);
       track();
+      checkExit();
       invalidate();
     };
     const onUp = () => {
@@ -432,7 +460,7 @@ function Rig({
       window.removeEventListener("keydown", onKey);
       if (snapTimer.current) clearTimeout(snapTimer.current);
     };
-  }, [gl, invalidate, setBerth, pos]);
+  }, [gl, invalidate, setBerth, pos, onPastEnd]);
 
   useFrame((_, delta) => {
     const p = pos.current;
@@ -509,7 +537,18 @@ function playMechanism(id: string) {
  *  instead of quietly changing how big it looks. Measured once: these
  *  are static resting shapes, and re-fitting the cloth every frame
  *  would make it breathe in and out as it swings. */
-function Fit({ id, children }: { id: string; children: React.ReactNode }) {
+function Fit({
+  id,
+  trim = 1,
+  children,
+}: {
+  id: string;
+  /** A deliberate step off the shared stage, for the one object that
+   *  reads too heavy at it. Not a scale factor for the model: the fit
+   *  is still measured, this only says how much of the stage to take. */
+  trim?: number;
+  children: React.ReactNode;
+}) {
   const g = useRef<THREE.Group>(null);
   const { invalidate, size } = useThree();
   useLayoutEffect(() => {
@@ -560,7 +599,8 @@ function Fit({ id, children }: { id: string; children: React.ReactNode }) {
       // its top cut off. Solved here, the near face fills the stage
       // exactly and everything behind it falls away inside the frame.
       const f = frameAt(READ_DEPTH, size.width, size.height);
-      const s = Math.min((f.w * STAGE_W_FRAC) / d.x, (f.h * STAGE_H_FRAC) / d.y);
+      const s =
+        Math.min((f.w * STAGE_W_FRAC) / d.x, (f.h * STAGE_H_FRAC) / d.y) * trim;
       o.scale.setScalar(s);
       o.position.set(
         railX(berthOf(id)) - ((box.min.x + box.max.x) / 2) * s,
@@ -579,7 +619,7 @@ function Fit({ id, children }: { id: string; children: React.ReactNode }) {
     // both times and this costs it one Box3.
     const again = setTimeout(fit, 900);
     return () => clearTimeout(again);
-  }, [id, invalidate, size.width, size.height]);
+  }, [id, trim, invalidate, size.width, size.height]);
   return <group ref={g}>{children}</group>;
 }
 
@@ -616,7 +656,11 @@ function Instruments({ clothSelect }: { clothSelect: (dragged: boolean) => void 
         </Fit>
       )}
       {near("vestige") && (
-        <Fit id="vestige">
+        <Fit id="vestige" trim={0.8}>
+          {/* the seal is a solid dark block and the only instrument
+              that is nearly all mass. At the full stage it read as
+              heavier than the four before it, which is a claim about
+              the work rather than about the object. */}
           <Seal position={[0, 0, 0]} />
         </Fit>
       )}
@@ -801,10 +845,21 @@ function RailCaption() {
               </button>
             );
           })}
-          <span className="pb-0.5 font-mono text-[10px] tracking-widest text-muted">
-            {berth === 0 && "start"}
-            {berth === last && "end"}
-          </span>
+          {/* the same destination the overscroll reaches. A gesture is
+              not a control: anyone on a keyboard, or anyone who never
+              thinks to shove the rail, needs the door to be visible. */}
+          {berth === last ? (
+            <Link
+              href="/experiments"
+              className="pb-0.5 font-mono text-[10px] tracking-widest text-bronze transition-colors hover:text-ink"
+            >
+              experiments {String.fromCharCode(8594)}
+            </Link>
+          ) : (
+            <span className="pb-0.5 font-mono text-[10px] tracking-widest text-muted">
+              {berth === 0 ? "start" : ""}
+            </span>
+          )}
         </nav>
       </div>
     </div>
@@ -891,7 +946,13 @@ export default function Rail() {
 
   useEffect(() => {
     useBenchStore.getState().setBoot(35, "three runtime");
-  }, []);
+    // the way out of the rail, ready before anyone pushes at it
+    router.prefetch("/experiments");
+  }, [router]);
+
+  const onPastEnd = useCallback(() => {
+    router.push("/experiments");
+  }, [router]);
 
   /** Is the rail standing still at berth i? The ONE definition.
    *
@@ -1032,7 +1093,12 @@ export default function Rail() {
           beginTransition={beginTransition}
           railSettled={railSettled}
         />
-        <Rig pos={pos} overlayEl={overlayEl} onCut={onCut} />
+        <Rig
+          pos={pos}
+          overlayEl={overlayEl}
+          onCut={onCut}
+          onPastEnd={onPastEnd}
+        />
       </Canvas>
       <RailCaption />
       <HoverCard />

@@ -52,7 +52,11 @@ export function getWeaveURL() {
 const COLS = 32;
 const ROWS = 40;
 const CLOTH_W = 0.4;
-const CLOTH_H = 0.5;
+/** Hanging length. The sheet is pinned along its top row at the rod,
+ *  so this is the drop, and shortening it shortens the drop rather than
+ *  moving the cloth: geometry, rest lengths and the sag correction all
+ *  derive from it. */
+const CLOTH_H = 0.35;
 const ROD_Y = 0.64;
 const GRAVITY = -1.6;
 const DT = 1 / 60;
