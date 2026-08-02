@@ -141,6 +141,9 @@ const stageOf = (w: number, h: number) => {
 
 
 const CUT_KEY = "bench-cut";
+/** Read by BenchLoader to skip the boot readout on a return trip.
+ *  Duplicated there on purpose: see the note beside it. */
+const READY_KEY = "bench-ready";
 
 /* Transition timeline: ONE 1.0s grammar, answer ~0.2 / dive to 0.85 /
  * handover at 0.85. Reverse runs the same curve at 1.5x. */
@@ -1069,7 +1072,13 @@ export default function Rail() {
             if ((o as THREE.Mesh).isMesh) meshes += 1;
           });
           setBoot(70, `shader compile · ${meshes} meshes`);
-          const done = () => setBoot(100, "ready");
+          const done = () => {
+            setBoot(100, "ready");
+            // this session has now paid for the runtime; a second visit
+            // to the home page should not be shown a load that is not
+            // happening
+            sessionStorage.setItem(READY_KEY, "1");
+          };
           gl.compileAsync(scene, camera).then(done).catch(done);
         }}
         aria-hidden

@@ -18,6 +18,10 @@ import { useBenchStore } from "@/lib/benchStore";
  */
 
 const LERP = 0.1;
+/** Set by the rail once the scene is compiled. The string is shared
+ *  with Rail.tsx by value, not by import: this overlay is deliberately
+ *  plain DOM and must not pull the 3D module into the first paint. */
+const READY_KEY = "bench-ready";
 
 function cleanLabel(url: string) {
   const base = url.split("/").pop() ?? url;
@@ -31,13 +35,17 @@ export default function BenchLoader() {
 
   const [phase, setPhase] = useState<"boot" | "fade" | "gone">("boot");
 
-  // CASE-NAV §3: within a session that already reached the reading
-  // pose, ANY return to the home page skips the boot theater — the
-  // runtime is cached, honesty means not replaying a load that isn't
-  // happening. First visits keep the full honest readout.
+  // CASE-NAV §3: within a session that already booted once, ANY return
+  // to the home page skips the boot theater. The runtime is cached, and
+  // honesty means not replaying a load that is not happening. First
+  // visits keep the full honest readout.
+  //
+  // The rail writes this key when boot reaches 100. It used to be
+  // written by the turntable's overhead-to-reading descent, which the
+  // rail does not have, so for a while nothing wrote it at all and the
+  // loader replayed on every trip back from a case page.
   useEffect(() => {
-    if (sessionStorage.getItem("bench-carousel-arrived") === "1")
-      setPhase("gone");
+    if (sessionStorage.getItem(READY_KEY) === "1") setPhase("gone");
   }, []);
   const shown = useRef(0);
   const numRef = useRef<HTMLSpanElement>(null);
@@ -111,9 +119,6 @@ export default function BenchLoader() {
           transition: phase === "fade" ? "opacity 1.2s ease" : undefined,
         }}
       >
-        <div style={{ fontSize: 10, letterSpacing: "0.3em", color: "#6b6459" }}>
-          BENCH · booting
-        </div>
         <div style={{ fontSize: 64, lineHeight: 1.2, fontVariantNumeric: "tabular-nums" }}>
           <span ref={numRef}>0</span>
         </div>
