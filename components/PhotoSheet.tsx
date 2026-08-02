@@ -49,8 +49,19 @@ export default function PhotoSheet() {
       </p>
     );
 
+  /** Roll metadata that is still a placeholder does not reach the page.
+   *  content/photography.ts marks unfilled fields with a DRAFT prefix
+   *  so they are obvious in the file; here they are simply absent,
+   *  because a caption reading DRAFT: camera tells a visitor nothing
+   *  except that nobody finished. Filling a field in the data makes it
+   *  appear on its own; no code is waiting on it. */
+  const facts = (r: Roll) =>
+    [r.camera, r.stock, r.place, r.year].filter(
+      (v) => v && !/^\s*DRAFT/i.test(v)
+    );
+
   const alt = (r: Roll, f: Roll["frames"][number]) =>
-    f.note ?? `${r.camera} · ${r.stock} · ${r.place} · ${r.year}`;
+    f.note ?? [...facts(r), `frame ${f.n}`].join(" · ");
 
   return (
     <>
@@ -67,9 +78,11 @@ export default function PhotoSheet() {
 
       {shown.map((r) => (
         <section key={r.id} className="border-t border-line py-8" style={{ borderTopWidth: "0.5px" }}>
-          <h2 className="mb-4 font-mono text-xs tracking-wide text-muted">
-            {r.camera} · {r.stock} · {r.place} · {r.year}
-          </h2>
+          {facts(r).length > 0 && (
+            <h2 className="mb-4 font-mono text-xs tracking-wide text-muted">
+              {facts(r).join(" · ")}
+            </h2>
+          )}
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
             {r.frames.map((f, i) => (
               <a
@@ -110,8 +123,13 @@ export default function PhotoSheet() {
             />
           </div>
           <p className="mt-4 font-mono text-xs text-muted">
-            {loupe.roll.frames[loupe.i].n} · {loupe.roll.camera} · {loupe.roll.stock} · {loupe.roll.place} · {loupe.roll.year}
-            {loupe.roll.frames[loupe.i].note ? ` · ${loupe.roll.frames[loupe.i].note}` : ""}
+            {[
+              loupe.roll.frames[loupe.i].n,
+              ...facts(loupe.roll),
+              loupe.roll.frames[loupe.i].note,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
           <div className="mt-2 flex gap-6 font-mono text-xs">
             <button type="button" onClick={() => setLoupe((l) => l && { roll: l.roll, i: (l.i + l.roll.frames.length - 1) % l.roll.frames.length })} className="text-muted hover:text-bronze">←</button>
