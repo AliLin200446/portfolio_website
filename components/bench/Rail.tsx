@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
 import {
   BERTH_MAX,
@@ -31,8 +30,10 @@ import Seal from "./Seal";
  * along X and never rotates or orbits; the scene does not move.
  *
  * ENDS ARE HARD. Past either end the target is resisted at 0.35 and
- * springs back on release. No wrap: the sequence is the argument, and
- * looping it would say every position is interchangeable.
+ * springs back on release. No wrap and no exit: the sequence is the
+ * argument, looping it would say every position is interchangeable,
+ * and a shove that leaves for another page turns an overscroll into
+ * navigation nobody asked for.
  *
  * MOUNTING. Only |i - berth| <= 1 carries geometry. The berth index
  * follows the camera continuously rather than only on snap, so a long
@@ -208,14 +209,6 @@ const clampRail = (x: number) => Math.max(0, Math.min(BERTH_MAX, x));
 const berthAt = (x: number) =>
   Math.max(0, Math.min(BERTH_ORDER.length - 1, Math.round(x / BERTH_SPACING)));
 
-/** How far past the last berth a push has to travel before it stops
- *  being a bounce and becomes a way out. Just over three quarters of a
- *  berth: about 200px of drag or one firm trackpad throw, which is more
- *  than anyone does by accident and less than a wrestle. Nothing
- *  equivalent guards the left end, because there is nothing before the
- *  first instrument to arrive at. */
-const EXIT_PUSH = BERTH_SPACING * 0.8;
-
 /** Past either end, only EDGE_RESIST of the push lands. */
 const resist = (x: number) => {
   if (x < 0) return x * EDGE_RESIST;
@@ -250,31 +243,15 @@ function Rig({
   pos,
   overlayEl,
   onCut,
-  onPastEnd,
 }: {
   pos: React.RefObject<RailPos>;
   overlayEl: React.RefObject<HTMLDivElement | null>;
   onCut: (id: string) => void;
-  onPastEnd: () => void;
 }) {
   const { camera, invalidate, gl } = useThree();
   const berth = useBenchStore((s) => s.berth);
   const setBerth = useBenchStore((s) => s.setBerth);
   const transitionId = useBenchStore((s) => s.transitionId);
-  // a drag moves the camera directly, so the caption and the ticks
-  // follow the target rather than waiting for the snap
-  const dragBerth = useRef(-1);
-  // one exit per gesture: the check runs on every wheel tick and every
-  // pointermove, and the route change is not instant
-  const exited = useRef(false);
-  /** How far past the last berth this push has travelled. Kept apart
-   *  from `raw`, which the snap clamps back onto a berth 160ms after
-   *  the last input: a deliberate, unhurried shove against the wall
-   *  stalls for longer than that between events, and measuring the exit
-   *  off `raw` meant it only ever fired inside one uninterrupted burst.
-   *  This decays on its own instead. */
-  const pastEnd = useRef(0);
-  const pastEndTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tt = useRef(0); // transition time (s)
   const cutDone = useRef(false);
   const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -282,6 +259,9 @@ function Rig({
     typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
+  // a drag moves the camera directly, so the caption and the ticks
+  // follow the target rather than waiting for the snap
+  const dragBerth = useRef(-1);
 
   const scratch = useRef({ pos: new THREE.Vector3(), pitch: 0, roll: 0 });
 
@@ -383,28 +363,6 @@ function Rig({
       }, SNAP_DELAY_MS);
     };
 
-    /** Past the end of the rail is not nothing. The last instrument is
-     *  the last case, and what follows the cases is the cabinet, so a
-     *  push that keeps going after the wall lands there instead of
-     *  bouncing forever. It has to clear EXIT_PUSH, so a bounce is
-     *  still a bounce. */
-    const checkExit = (dx: number) => {
-      if (exited.current || transiting()) return;
-      // only travel that is both forward and already at the wall counts
-      if (dx <= 0 || pos.current.raw < BERTH_MAX) {
-        pastEnd.current = 0;
-        return;
-      }
-      pastEnd.current += dx;
-      if (pastEndTimer.current) clearTimeout(pastEndTimer.current);
-      pastEndTimer.current = setTimeout(() => {
-        pastEnd.current = 0;
-      }, 500);
-      if (pastEnd.current < EXIT_PUSH) return;
-      exited.current = true;
-      onPastEnd();
-    };
-
     /** direct manipulation: the target is the hand, and `berth` follows
      *  it so the description under the instrument changes as it arrives
      *  rather than after the snap lands. */
@@ -420,7 +378,6 @@ function Rig({
       pos.current.raw += dx;
       pos.current.target = resist(pos.current.raw);
       track();
-      checkExit(dx);
       scheduleSnap();
       invalidate();
     };
@@ -444,11 +401,9 @@ function Rig({
       if (!dragging || clothDrag.active) return;
       // pull the rail right, travel left: the hand moves the objects,
       // not the camera
-      const was = pos.current.raw;
       pos.current.raw = startRaw - (e.clientX - startX) * DRAG_K;
       pos.current.target = resist(pos.current.raw);
       track();
-      checkExit(pos.current.raw - was);
       invalidate();
     };
     const onUp = () => {
@@ -499,9 +454,8 @@ function Rig({
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("keydown", onKey);
       if (snapTimer.current) clearTimeout(snapTimer.current);
-      if (pastEndTimer.current) clearTimeout(pastEndTimer.current);
     };
-  }, [gl, invalidate, setBerth, pos, onPastEnd]);
+  }, [gl, invalidate, setBerth, pos]);
 
   useFrame((_, delta) => {
     const p = pos.current;
@@ -851,19 +805,12 @@ function RailCaption() {
             })}
           </div>
           {/* the ends of the rail, on their own line so the five stay
-              equal. The right one is the same destination the overscroll
-              reaches: a gesture is not a control, and anyone on a
-              keyboard needs the door to be visible. */}
-          <div className="mt-2 flex h-4 items-baseline justify-between font-mono text-[10px] tracking-widest">
-            <span className="text-muted">{berth === 0 ? "start" : ""}</span>
-            {berth === last && (
-              <Link
-                href="/experiments"
-                className="text-bronze transition-colors hover:text-ink"
-              >
-                experiments {String.fromCharCode(8594)}
-              </Link>
-            )}
+              equal. Both ends are hard stops and say so; getting to
+              the experiments cabinet is the top nav's job, which is
+              where a visitor already looks for it. */}
+          <div className="mt-2 flex h-4 items-baseline justify-between font-mono text-[10px] tracking-widest text-muted">
+            <span>{berth === 0 ? "start" : ""}</span>
+            <span>{berth === last ? "end" : ""}</span>
           </div>
         </nav>
       </div>
@@ -951,13 +898,7 @@ export default function Rail() {
 
   useEffect(() => {
     useBenchStore.getState().setBoot(35, "three runtime");
-    // the way out of the rail, ready before anyone pushes at it
-    router.prefetch("/experiments");
-  }, [router]);
-
-  const onPastEnd = useCallback(() => {
-    router.push("/experiments");
-  }, [router]);
+  }, []);
 
   /** Is the rail standing still at berth i? The ONE definition.
    *
@@ -1104,12 +1045,7 @@ export default function Rail() {
           beginTransition={beginTransition}
           railSettled={railSettled}
         />
-        <Rig
-          pos={pos}
-          overlayEl={overlayEl}
-          onCut={onCut}
-          onPastEnd={onPastEnd}
-        />
+        <Rig pos={pos} overlayEl={overlayEl} onCut={onCut} />
       </Canvas>
       <RailCaption />
       <CutOverlay overlayEl={overlayEl} />
