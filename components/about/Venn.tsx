@@ -50,11 +50,23 @@ import {
  * The three `in` points are the corners of the centre.
  */
 const R = 115;
+/* Each circle carries a colour from the site palette, and its label
+ * takes the same one, so the coding is legible without a key.
+ *
+ * Chosen against measured contrast on paper, not by eye: ink 15.97,
+ * wood 8.42, bronze-text 4.87, all clear of 4.5:1 so the labels pass
+ * as text and not merely as graphics. Cinnabar is not among them and
+ * neither is the brand sun at 4.79, which sits close enough to
+ * cinnabar to blur the one-per-screen rule. The middle keeps it. */
 const CIRCLES = [
-  { key: "A", cx: 340, cy: 155 },
-  { key: "B", cx: 295, cy: 235 },
-  { key: "C", cx: 385, cy: 235 },
+  { key: "A", cx: 340, cy: 155, color: "#866339" }, // eye, copper
+  { key: "B", cx: 295, cy: 235, color: "#3a4a3f" }, // hand, wood
+  { key: "C", cx: 385, cy: 235, color: "#1a1714" }, // instrument, ink
 ] as const;
+const COLOR = Object.fromEntries(CIRCLES.map((c) => [c.key, c.color])) as Record<
+  "A" | "B" | "C",
+  string
+>;
 
 /** Which circles a region is inside. Drives both the stroke weight and
  *  which circles fade, so the two can never disagree. */
@@ -120,8 +132,8 @@ function Diagram({
       aria-labelledby={labelledBy}
     >
       <title id={labelledBy}>
-        Three overlapping circles: eye, hand and instrument. Design
-        engineer sits where all three meet.
+        Three overlapping circles: eye, hand and instrument. Ali Lin
+        sits where all three meet.
       </title>
 
       {CIRCLES.map((c) => (
@@ -131,7 +143,7 @@ function Diagram({
           cy={c.cy}
           r={R}
           fill="none"
-          stroke={INK}
+          stroke={c.color}
           strokeWidth={active && lit(c.key) ? 2.5 : 1.5}
           opacity={active && !lit(c.key) ? 0.35 : 1}
           className="venn-part"
@@ -139,15 +151,14 @@ function Diagram({
       ))}
 
       <g
-        fill={INK}
         fontFamily="var(--font-geist-mono), ui-monospace, monospace"
         fontSize="11"
         letterSpacing="0.08em"
         textAnchor="middle"
       >
-        <text x={340} y={92}>EYE</text>
-        <text x={240} y={294}>HAND</text>
-        <text x={444} y={294}>INSTRUMENT</text>
+        <text x={340} y={92} fill={COLOR.A}>EYE</text>
+        <text x={240} y={294} fill={COLOR.B}>HAND</text>
+        <text x={444} y={294} fill={COLOR.C}>INSTRUMENT</text>
       </g>
 
       <g
@@ -157,8 +168,7 @@ function Diagram({
         fill={active === "center" ? OXBLOOD : INK}
         className="venn-part"
       >
-        <text x={340} y={200}>Design</text>
-        <text x={340} y={220}>engineer</text>
+        <text x={340} y={210}>Ali Lin</text>
       </g>
 
       {/* the hit layer. Transparent, never `none`: a path with no fill

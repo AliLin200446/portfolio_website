@@ -21,11 +21,11 @@ export const viewport: Viewport = { themeColor: "#F5F2EC" };
 export const metadata: Metadata = {
   metadataBase: new URL("https://alilinlab.com"),
   title: {
-    default: "Ali Lin, Design Engineer",
+    default: "Ali Lin",
     template: "%s, Ali Lin",
   },
   description:
-    "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
+    "Building digital experience and AI-driven visual systems.",
   manifest: "/brand/site.webmanifest",
   icons: {
     icon: [
@@ -38,17 +38,17 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: "Ali Lin",
     type: "website",
-    title: "Ali Lin: Design Engineer",
+    title: "Ali Lin",
     description:
-      "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
+      "Building digital experience and AI-driven visual systems.",
     images: [{ url: "/brand/og.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     images: ["/brand/og.png"],
-    title: "Ali Lin: Design Engineer",
+    title: "Ali Lin",
     description:
-      "Design Engineer and Creative Technologist building digital experience and AI-driven visual systems.",
+      "Building digital experience and AI-driven visual systems.",
   },
 };
 
