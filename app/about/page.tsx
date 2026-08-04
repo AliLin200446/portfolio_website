@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { FOOTNOTE } from "@/content/about";
 import Venn from "@/components/about/Venn";
 import { FolioBar } from "@/components/folio/FolioChrome";
 
@@ -37,37 +36,29 @@ export default function AboutPage() {
 
       <Venn />
 
-      {/* the footnote: where the disposition came from, once, at the
-          bottom, in the smaller face. It is context, not a claim. */}
+      {/* addresses, one per line and labelled. A bare row of URLs makes
+          the reader work out which is which from the domain. */}
       <section
-        className="mt-16 border-t border-line pt-8"
+        className="mt-16 border-t border-line pt-6"
         style={{ borderTopWidth: "0.5px" }}
       >
-        <p className="max-w-[68ch] text-[13px] leading-relaxed text-ink/70">
-          {FOOTNOTE}
-        </p>
-      </section>
-
-      <section
-        className="mt-10 border-t border-line pt-6"
-        style={{ borderTopWidth: "0.5px" }}
-      >
-        <nav
-          aria-label="Contact"
-          className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-muted"
-        >
+        <dl className="font-mono text-[13px]">
           {CONTACT.map((c) => (
-            <a
-              key={c.label}
-              href={c.href}
-              target={c.away ? "_blank" : undefined}
-              rel={c.away ? "noreferrer" : undefined}
-              className="transition-colors hover:text-bronze-text"
-            >
-              {c.text}
-            </a>
+            <div key={c.label} className="flex gap-2 py-1">
+              <dt className="text-muted">{c.label}:</dt>
+              <dd>
+                <a
+                  href={c.href}
+                  target={c.away ? "_blank" : undefined}
+                  rel={c.away ? "noreferrer" : undefined}
+                  className="border-b border-line pb-px transition-colors hover:text-bronze-text"
+                >
+                  {c.text}
+                </a>
+              </dd>
+            </div>
           ))}
-        </nav>
+        </dl>
       </section>
 
       <div className="pb-24" />

@@ -66,6 +66,3 @@ export const PANELS: Record<RegionKey, Panel> = {
     body: "Turning judgment into something measurable. Latent's film stocks are calibrated against scans of negatives I shot myself, so \"filmic\" stops being an opinion. This is the rarest of the three overlaps, and the one I would defend hardest.",
   },
 };
-
-export const FOOTNOTE =
-  "Where this comes from: I grew up between a traditional Chinese medicine practice and a darkroom, and now work in New York. Both are bodies of knowledge that live in the hands and die undocumented. Structuring that kind of knowledge — my father's acupuncture archive, a film stock's response curve, a supply chain's provenance — is the thread under all of it.";
