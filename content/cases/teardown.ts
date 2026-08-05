@@ -39,7 +39,7 @@ const teardown: CaseData = {
   },
   sections: {
     what: "AI image APIs ship faster than anyone measures them.",
-    why: "Latency claims are marketing, parameter documentation is partial, and the numbers that matter to a production integrator: where the milliseconds live, what a knob actually buys, whether the same call returns the same bytes: are published nowhere. The result is not a benchmark. Benchmarks answer \"which is better.\" A teardown answers \"what is actually happening inside\", and what the API knows but does not send.",
+    why: "Latency claims are marketing, parameter documentation is partial, and the numbers that matter to a production integrator: where the milliseconds live, what a knob actually buys, whether the same call returns the same bytes: are published nowhere. The result is not a benchmark. Benchmarks answer \"which is better.\" A teardown answers \"what is actually happening inside\", and what the API knows but does not send. Instrument-building over tool-using: the harness, the pixel-diff tooling, and the verification pipeline are all first-party.",
     how: {
       summary: [
         "I spent 48 hours instrumenting one model, fal-ai/flux/dev, through its synchronous endpoint: 47 structured calls across five experiments, every measurement logged to disk, every claim traceable to a source file and line.",
@@ -97,7 +97,7 @@ const teardown: CaseData = {
   },
   what: [
     "AI image APIs ship faster than anyone measures them. Latency claims are marketing, parameter documentation is partial, and the numbers that matter to a production integrator: where the milliseconds live, what a knob actually buys, whether the same call returns the same bytes: are published nowhere.",
-    "I spent 48 hours instrumenting one model, fal-ai/flux/dev, through its synchronous endpoint: 47 structured calls across five experiments, every measurement logged to disk, every claim traceable to a source file and line. The result is not a benchmark. Benchmarks answer \"which is better.\" A teardown answers \"what is actually happening inside\", and what the API knows but does not send.",
+    "I spent 48 hours instrumenting one model, fal-ai/flux/dev, through its synchronous endpoint: 47 structured calls across five experiments, every measurement logged to disk, every claim traceable to a source file and line. The result is not a benchmark. Benchmarks answer \"which is better.\" A teardown answers \"what is actually happening inside\", and what the API knows but does not send. Instrument-building over tool-using: the harness, the pixel-diff tooling, and the verification pipeline are all first-party.",
     "Three questions an integrator cannot answer from the docs:",
     "WHERE DOES THE TIME GO. The response body returns one timing field, inference. Queue time, the segment between sending a request and the model starting work, is not returned and must be derived client-side.",
     "WHAT DOES A PARAMETER BUY. num_inference_steps documents a default of 28 and no range. Nothing states what an additional step changes, or costs.",
@@ -195,13 +195,8 @@ const teardown: CaseData = {
       "Each finding closes with a build note on the page: cache on the parameter tuple, budget steps before anything else, size timeouts from the segment you have to time yourself.",
     ],
   },
-  context:
-    "The report is laid out as an engineering desktop: a ruled notebook ground, opaque paper surfaces, and the API itself rendered as a node graph: inputs wired into the model, the model wired into its results. The teardown convention is literal: every part pulled out, labelled, and measured, with the latency anatomy drawn inside the model node where the call actually happens.",
-  contextParas: [
-    "The report is laid out as an engineering desktop: a ruled notebook ground, opaque paper surfaces, and the API itself rendered as a node graph: inputs wired into the model, the model wired into its results. The teardown convention is literal: every part pulled out, labelled, and measured, with the latency anatomy drawn inside the model node where the call actually happens.",
-    "Instrument-building over tool-using: the harness, the pixel-diff tooling, and the verification pipeline are all first-party. Claims survive audit: every number on the site carries its source file, line, sample size, and threshold, and the raw files ship with the report. Limits are stated by the author, not discovered by the reader: N=1 per rung, single region, single day, no residual-to-reference series, so no convergence claim is made.",
-    "TEARDOWN № 1 is the first in a series. The method, sweep and diff and time and log and publish with sources, ports to any inference API. The findings do not: they are one model, measured.",
-  ],
+  coda: "TEARDOWN \u2116 1 is the first in a series. The method, sweep and diff and time and log and publish with sources, ports to any inference API. The findings do not: they are one model, measured.",
+  context: "",
   byline: "Ali Lin",
   next: { label: "VESTIGE", href: "/work/vestige" },
 };

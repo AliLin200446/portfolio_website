@@ -61,7 +61,7 @@ const latent: CaseData = {
         {
           title: "Phase 2 · The pipeline",
           body: [
-            "The pipeline is six GLSL passes on WebGL2. All of it runs on your GPU. No server. No upload. No API key. Video export uses WebCodecs, also local. Your footage never leaves your machine.",
+            "The pipeline is five GLSL passes on WebGL2. All of it runs on your GPU. No server. No upload. No API key. Video export uses WebCodecs, also local. Your footage never leaves your machine.",
             "That is not only a privacy stance. It means the tool has no running cost, no queue, and no quota. The only limit is your graphics card.",
             "You upload your footage. It goes through a pipeline that models real film chemistry. Halation grows out of the clipped highlights already in your frame. Grain refreshes every frame with the statistics of real film. Gate weave shifts the frame the way a real projector does. Nothing is pasted on top.",
             "Five GL passes: highlight threshold at quarter resolution, a separable gaussian run N times, composite where the halation glow is screened back in linear light, film colour response, then grain. Gate weave is applied where the source is first sampled, so the whole chain sees the same weaved frame. Linearize and encode are not passes. Every shader decodes and re-encodes sRGB inline.",
@@ -113,7 +113,7 @@ const latent: CaseData = {
   build: [
     {
       heading: "CLIENT SIDE ONLY",
-      body: "The pipeline is six GLSL passes on WebGL2. All of it runs on your GPU. No server. No upload. No API key. Video export uses WebCodecs, also local. Your footage never leaves your machine.",
+      body: "The pipeline is five GLSL passes on WebGL2. All of it runs on your GPU. No server. No upload. No API key. Video export uses WebCodecs, also local. Your footage never leaves your machine.",
       body2:
         "That is not only a privacy stance. It means the tool has no running cost, no queue, and no quota. The only limit is your graphics card.",
     },
@@ -191,18 +191,8 @@ const latent: CaseData = {
       "One stock, calibrated by one person, from one shoot. The method ports to other film stocks; these numbers do not.",
     ],
     },
-  context:
-    "AI video output is exploding. But the frames all share one look. Too clean. No optical root.",
-  contextParas: [
-    "AI video output is exploding. But the frames all share one look. Too clean. No optical root.",
-    "At the same time people want film texture more than ever. On one side there is a flood of images with no physical basis. On the other side there is real demand for physical texture. There is no bridge between them.",
-    "The current options cannot be that bridge. A LUT cannot model a spatial effect, by design. A filter is a sticker. A pro plugin has a workflow cost. So Latent is not a better filter. It is a new category. A film physics layer that is checkable and runs natively in the browser.",
-    "THE MOAT IS IN TWO PLACES. The calibration data: the parameters come from real negatives measured under controlled conditions. That requires film shooting, a scanning chain, and modeling, all in one person. That overlap is small. To copy these numbers you have to go shoot, scan, and measure them yourself.",
-    "Verifiability as a position. Every tool in this market says cinematic and film grade. A tool that publishes its calibration date, its source data, and what each parameter actually means is standing somewhere nobody else is standing. The price of standing there is agreeing to be checked, and marketing language exists to avoid being checked.",
-    "This position gets more valuable as the market matures. The more your users know, the more it is worth to be checkable.",
-    "FOR ME PERSONALLY. Latent is also proof. It proves that four years of editorial photography is not a decorative line on a resume. It is a measuring skill that converts directly into engineering parameters. It proves you can go from seeing that something is wrong, to measuring why it is wrong, to building something that is right.",
-    "That path is observe, measure, build, then let the thing be checked. Latent taught me to work that way. It is now how I work on everything.",
-  ],
+  coda: "Latent is also proof. It proves that four years of editorial photography is not a decorative line on a resume. It is a measuring skill that converts directly into engineering parameters. That path is observe, measure, build, then let the thing be checked. It is now how I work on everything.",
+  context: "",
   byline: "Ali Lin",
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },
 };

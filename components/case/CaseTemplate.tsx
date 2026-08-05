@@ -442,6 +442,13 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
           data file rather than being deleted: it is the author's copy
           and no decision has been taken about where it goes. */}
       <section id="more" className="scroll-mt-8 border-t border-line py-14">
+        {/* the closing note: a rule and a short paragraph, no heading.
+            Same shape on all five pages. */}
+        {data.coda && (
+          <p className="max-w-[68ch] text-[15px] leading-relaxed text-ink/70">
+            {data.coda}
+          </p>
+        )}
         {!data.sections && (
           <>
             <p className={LABEL}>MORE</p>

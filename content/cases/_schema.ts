@@ -172,6 +172,15 @@ export type CaseData = {
       phases: Phase[];
     };
   };
+  /** The closing note under the new structure: one short unfolded
+   *  paragraph beneath a rule, no heading, three or four lines.
+   *
+   *  The test for what belongs is whether only this author could have
+   *  written it. Market sizing, moats and category positioning are
+   *  things any competent person can argue, so they go. Why it was
+   *  this person who built it, and whether the work continues, cannot
+   *  be borrowed, so they stay. */
+  coda?: string;
   /** ⑦ one paragraph of placement */
   context: string;
   byline?: string;
