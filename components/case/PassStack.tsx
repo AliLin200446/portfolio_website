@@ -178,9 +178,16 @@ export default function PassStack() {
   const active = sel >= 0 ? sel : hover;
 
   return (
-    <div className="grid gap-7 lg:grid-cols-[1fr_320px]">
+    /* minmax(0,1fr), not 1fr. A bare 1fr is minmax(auto,1fr), and the
+       auto floor is the track's min-content width. A canvas has an
+       intrinsic width, so that floor was the canvas itself: the track
+       refused to shrink, the two columns totalled 1375px inside a
+       976px measure, and the pass list ran off the right of the page.
+       min-w-0 on the cell says the same thing a second time, because
+       a grid item's own min-width: auto would put the floor back. */
+    <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div
-        className="relative aspect-[4/3] cursor-grab border border-line active:cursor-grabbing"
+        className="relative aspect-[4/3] min-w-0 cursor-grab border border-line active:cursor-grabbing"
         style={{ touchAction: "none" }}
         onPointerDown={(e) => {
           drag.current = { x: e.clientX, y: e.clientY, moved: 0 };
