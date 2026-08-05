@@ -97,6 +97,30 @@ export type Proof = Pending & {
   figure?: Figure;
 };
 
+/** One stage of HOW: a titled step that folds.
+ *
+ *  The title row is always visible. The body and its evidence are
+ *  always IN THE DOM, folded by a details element alone, never
+ *  conditionally rendered and never fetched on open. Three things
+ *  depend on that: find-in-page, search engines, and
+ *  scripts/check-claims.mjs, which reads this file as text and would
+ *  be blind to anything that only existed after a click.
+ *
+ *  Phases are the physical stages a reader already understands, not
+ *  the pass numbers the code uses. */
+export type Phase = {
+  /** the one line on the summary row, always visible */
+  title: string;
+  /** always rendered into the DOM, folded or not */
+  body: string[];
+  figure?: Figure;
+  /** measured lines belonging to this stage, mono */
+  data?: string[];
+  /** open on load. Exactly one phase should set it, so a reader can
+   *  see that the rows contain something. */
+  open?: boolean;
+};
+
 export type CaseData = {
   slug: string;
   /** ① masthead */
@@ -125,6 +149,24 @@ export type CaseData = {
     intro?: string[];
     items: Proof[];
     limits: string[];
+  };
+  /** THE NEW STRUCTURE: WHAT / WHY / HOW / PROOF / LIMITS.
+   *
+   *  Present means the page renders this and ignores `what`, `build`,
+   *  `context` and `contextParas`. Absent means the original six
+   *  section order, unchanged. Both paths ship until all five cases
+   *  have moved, so a pilot cannot break the other four. */
+  sections?: {
+    /** one line: what the problem is */
+    what: string;
+    /** one line: why the existing answers fall short, and where this
+     *  one sits */
+    why: string;
+    how: {
+      /** two or three lines before the phases open */
+      summary: string[];
+      phases: Phase[];
+    };
   };
   /** ⑦ one paragraph of placement */
   context: string;

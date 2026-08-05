@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
+import PhaseRow from "./PhaseRow";
 import CaseIndex from "@/components/folio/CaseIndex";
 import PassStackFacade from "./PassStackFacade";
 import ExperimentSpaceFacade from "./ExperimentSpaceFacade";
@@ -162,13 +163,21 @@ function Fig({ figure }: { figure: Figure }) {
 
 export default function CaseTemplate({ data }: { data: CaseData }) {
   const berth = berthOf(data.slug);
-  const items = [
-    { id: "claim", label: "CLAIM" },
-    { id: "what", label: "WHAT" },
-    { id: "build", label: data.buildLabel ?? "BUILD" },
-    { id: "proof", label: data.proofLabel ?? "PROOF" },
-    { id: "more", label: "MORE" },
-  ];
+  const items = data.sections
+    ? [
+        { id: "what", label: "WHAT" },
+        { id: "why", label: "WHY" },
+        { id: "how", label: "HOW" },
+        { id: "proof", label: data.proofLabel ?? "PROOF" },
+        { id: "limits", label: "LIMITS" },
+      ]
+    : [
+        { id: "claim", label: "CLAIM" },
+        { id: "what", label: "WHAT" },
+        { id: "build", label: data.buildLabel ?? "BUILD" },
+        { id: "proof", label: data.proofLabel ?? "PROOF" },
+        { id: "more", label: "MORE" },
+      ];
 
   return (
     <main className="mx-auto max-w-5xl px-6">
@@ -260,7 +269,63 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         <Fig figure={data.hero} />
       </section>
 
+      {/* WHAT / WHY / HOW. The new structure. Every phase body is in
+          the DOM whether the row is open or not: a details element
+          folds, it does not unmount. Find-in-page, crawlers and
+          check-claims all need to reach the sentences inside. */}
+      {data.sections && (
+        <>
+          <section id="what" className="scroll-mt-8 border-t border-line py-14">
+            <p className={LABEL}>WHAT</p>
+            <p className={`${PROSE} mt-8`}>{data.sections.what}</p>
+          </section>
+
+          <section id="why" className="scroll-mt-8 border-t border-line py-14">
+            <p className={LABEL}>WHY</p>
+            <p className={`${PROSE} mt-8`}>{data.sections.why}</p>
+          </section>
+
+          <section id="how" className="scroll-mt-8 border-t border-line py-14">
+            <p className={LABEL}>HOW</p>
+            {data.sections.how.summary.map((para, i) => (
+              <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
+                {para}
+              </p>
+            ))}
+            <div className="mt-10">
+              {data.sections.how.phases.map((ph) => (
+                <PhaseRow
+                  key={ph.title}
+                  title={ph.title}
+                  defaultOpen={ph.open}
+                >
+                  {ph.body.map((para, i) => (
+                    <p
+                      key={para}
+                      className={`${PROSE} ${i === 0 ? "mt-2" : "mt-5"}`}
+                    >
+                      {para}
+                    </p>
+                  ))}
+                  {ph.data?.map((d) => (
+                    <p
+                      key={d}
+                      className="mt-5 font-mono text-[13px] leading-relaxed tracking-wide text-muted"
+                    >
+                      {d}
+                    </p>
+                  ))}
+                  {ph.figure && <Fig figure={ph.figure} />}
+                </PhaseRow>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+
       {/* ④ WHAT IT IS */}
+      {!data.sections && (
+      <>
       <section id="what" className="scroll-mt-8 border-t border-line py-14">
         <p className={LABEL}>WHAT</p>
         <div className="mt-8">
@@ -301,6 +366,9 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
           ))}
         </div>
       </section>
+
+      </>
+      )}
 
       {/* ⑥ WHY IT HOLDS: evidence, then limits */}
       <section id="proof" className="scroll-mt-8 border-t border-line py-14">
@@ -344,7 +412,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
           ))}
         </ul>
         {data.proof.limits.length > 0 && (
-          <div className="mt-10">
+          <div id="limits" className="mt-10 scroll-mt-8">
             <p className="font-mono text-xs uppercase tracking-widest text-muted">
               LIMITS
             </p>
@@ -359,14 +427,21 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         )}
       </section>
 
-      {/* ⑦ CONTEXT */}
+      {/* ⑦ CONTEXT. The new structure has no MORE section, so a page
+          that opted in does not render one. contextParas stays in the
+          data file rather than being deleted: it is the author's copy
+          and no decision has been taken about where it goes. */}
       <section id="more" className="scroll-mt-8 border-t border-line py-14">
-        <p className={LABEL}>MORE</p>
-        {(data.contextParas ?? [data.context]).map((para, i) => (
-          <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
-            {para}
-          </p>
-        ))}
+        {!data.sections && (
+          <>
+            <p className={LABEL}>MORE</p>
+            {(data.contextParas ?? [data.context]).map((para, i) => (
+              <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
+                {para}
+              </p>
+            ))}
+          </>
+        )}
         {/* the ending is an action, not a conclusion: on a page whose
             subject is a working tool, the last thing the reader meets is
             the door to it: larger than the byline, ahead of the nav */}
