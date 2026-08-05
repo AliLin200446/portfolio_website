@@ -12,6 +12,7 @@
 
 # raw demo masters; public/case-assets holds the transcodes
 /latent/
+/teardown/
 /SS/
 /material_memory/
 *.mov

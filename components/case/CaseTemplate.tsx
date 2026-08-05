@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
 import CaseIndex from "@/components/folio/CaseIndex";
-import InstrumentFacade from "./InstrumentFacade";
 import PassStackFacade from "./PassStackFacade";
 import ExperimentSpaceFacade from "./ExperimentSpaceFacade";
 import SilkControl from "./SilkControl";
@@ -237,16 +236,22 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         </p>
       </section>
 
-      {/* TEST, teardown only: the instrument you arrived through, close
-          up. Facade by default: Three is behind a dynamic import fired
-          by the click, so an unclicked page carries none of it. */}
+      {/* TEST, teardown only. This was a 3D close-up of the instrument
+          you arrived through, which showed the object but not the
+          thing the page is about. The recording shows the instrument
+          being used, with the same numbers the page argues from. It
+          goes through Fig so it inherits the poster-then-click bargain
+          rather than restating it. */}
       {data.slug === "teardown" && (
         <section className="pt-10">
-          <InstrumentFacade label="the movement · click to inspect it in three dimensions" />
-          <p className="mt-3 font-mono text-[13px] leading-relaxed tracking-wide text-muted">
-            the instrument from the index, in detail · drag to lean around it,
-            click to run the gears · loads on click
-          </p>
+          <Fig
+            figure={{
+              kind: "video",
+              src: "/case-assets/teardown/teardown-demo.mp4",
+              poster: "/case-assets/teardown/teardown-demo-poster.webp",
+              caption: "the instrument running, 25.2s · click to play",
+            }}
+          />
         </section>
       )}
 

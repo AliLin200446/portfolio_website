@@ -61,3 +61,6 @@ material_memory/demo.mov
 
 # stray copy of the brand source; the real one is logo/alilinlab-logo.png
 /logo.png
+
+# raw demo master; public/case-assets/teardown holds the transcode
+/teardown/
