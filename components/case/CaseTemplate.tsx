@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
-import PhaseRow from "./PhaseRow";
 import CaseIndex from "@/components/folio/CaseIndex";
 import PassStackFacade from "./PassStackFacade";
 import ExperimentSpaceFacade from "./ExperimentSpaceFacade";
@@ -294,29 +293,40 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
             ))}
             <div className="mt-10">
               {data.sections.how.phases.map((ph) => (
-                <PhaseRow
+                <details
                   key={ph.title}
-                  title={ph.title}
-                  defaultOpen={ph.open}
+                  className="group border-t border-line last:border-b"
+                  style={{ borderTopWidth: "0.5px" }}
                 >
-                  {ph.body.map((para, i) => (
-                    <p
-                      key={para}
-                      className={`${PROSE} ${i === 0 ? "mt-2" : "mt-5"}`}
-                    >
-                      {para}
-                    </p>
-                  ))}
-                  {ph.data?.map((d) => (
-                    <p
-                      key={d}
-                      className="mt-5 font-mono text-[13px] leading-relaxed tracking-wide text-muted"
-                    >
-                      {d}
-                    </p>
-                  ))}
-                  {ph.figure && <Fig figure={ph.figure} />}
-                </PhaseRow>
+                  <summary className="flex cursor-pointer list-none items-baseline gap-3 py-5 font-mono text-sm uppercase tracking-widest text-ink outline-none [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]">
+                    <span aria-hidden className="text-bronze-text">
+                      <span className="group-open:hidden">+</span>
+                      <span className="hidden group-open:inline">
+                        {String.fromCharCode(8211)}
+                      </span>
+                    </span>
+                    {ph.title}
+                  </summary>
+                  <div className="pb-10">
+                    {ph.body.map((para, i) => (
+                      <p
+                        key={para}
+                        className={`${PROSE} ${i === 0 ? "mt-2" : "mt-5"}`}
+                      >
+                        {para}
+                      </p>
+                    ))}
+                    {ph.data?.map((d) => (
+                      <p
+                        key={d}
+                        className="mt-5 font-mono text-[13px] leading-relaxed tracking-wide text-muted"
+                      >
+                        {d}
+                      </p>
+                    ))}
+                    {ph.figure && <Fig figure={ph.figure} />}
+                  </div>
+                </details>
               ))}
             </div>
           </section>

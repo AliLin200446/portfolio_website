@@ -42,7 +42,6 @@ const latent: CaseData = {
       phases: [
         {
           title: "Phase 1 · The physical mechanism",
-          open: true,
           body: [
             "Light passes through the emulsion, hits the back of the film base, reflects, and exposes the layer a second time. The red sensitive layer sits closest to the base, so it catches the most of that returning light. This is why halation appears only around clipped sources, and why it is red.",
             "CineStill 800T is Vision3 500T with the remjet removed. Remjet is the antihalation backing. Strip it so the stock can run C-41, and nothing stops the light from coming back.",
@@ -204,7 +203,7 @@ const latent: CaseData = {
     "FOR ME PERSONALLY. Latent is also proof. It proves that four years of editorial photography is not a decorative line on a resume. It is a measuring skill that converts directly into engineering parameters. It proves you can go from seeing that something is wrong, to measuring why it is wrong, to building something that is right.",
     "That path is observe, measure, build, then let the thing be checked. Latent taught me to work that way. It is now how I work on everything.",
   ],
-  byline: "Ali Lin, design engineer",
+  byline: "Ali Lin",
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },
 };
 export default latent;

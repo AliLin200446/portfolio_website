@@ -7,9 +7,8 @@ export const metadata: Metadata = { title: "About" };
 /*
  * ABOUT — three circles, and the middle one is the job.
  *
- * The page makes one argument: design engineer is not design plus
- * engineering, it is the intersection of judgment, build and
- * measurement. So the diagram is the argument rather than an
+ * The page makes one argument: the job is not one discipline plus
+ * another, it is the intersection of judgment, build and measurement. So the diagram is the argument rather than an
  * illustration beside it, and every one of the seven regions has
  * something to say.
  *

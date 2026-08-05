@@ -116,10 +116,14 @@ export type Phase = {
   figure?: Figure;
   /** measured lines belonging to this stage, mono */
   data?: string[];
-  /** open on load. Exactly one phase should set it, so a reader can
-   *  see that the rows contain something. */
-  open?: boolean;
 };
+
+/* No phase opens on load, and there is deliberately no field to ask
+ * for one. React 19 strips a server-rendered `open` attribute during
+ * hydration and suppressHydrationWarning does not stop it, so honouring
+ * such a field would need a client component to hold the state. A flag
+ * that quietly does nothing is worse than no flag: if a phase should
+ * ever open by default, that decision comes back with its own fix. */
 
 export type CaseData = {
   slug: string;

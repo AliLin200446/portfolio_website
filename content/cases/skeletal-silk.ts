@@ -123,7 +123,7 @@ cotton and knit differ only in color.`,
   },
   context:
     "Skeletal Silk is the portfolio's one tool rather than one instrument. Latent and Teardown measure; Vestige proves; this one is meant to be used. The through-line is the same, take an AI capability and make it controllable, but here the control is the point: a vision model's loose reading, pinned to four numbers you can drive and carry away.",
-  byline: "Ali Lin, design engineer",
+  byline: "Ali Lin",
   cta: {
     label: "the case is the tool → try it",
     href: "https://skeletal-silk.alilinlab.com",
