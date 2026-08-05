@@ -24,7 +24,7 @@ export const STATIONS: Station[] = [
     href: "/work/latent",
     line: "Dehancer assumes you've shot something. We assume you haven't.",
     blurb:
-      "A film physics engine in a browser tab. Halation, grain, and film response, calibrated against my own negatives rather than a preset.",
+      "A film physics engine that gives AI generated video real halation and grain, in a browser tab.",
   },
   {
     id: "skeletal-silk",
@@ -32,14 +32,14 @@ export const STATIONS: Station[] = [
     href: "/work/skeletal-silk",
     line: "AI as material interpreter, not image generator.",
     blurb:
-      "A vision model reads four material parameters out of a fabric photo and drives a live shader. I ran a blank control to find out what it actually resolves.",
+      "Reads a fabric photo with a vision model, drives a live shader from it.",
   },
   {
     id: "teardown",
     label: "TEARDOWN",
     href: "/work/teardown", // LINK-WIRE: enter → case page; 外站唯一入口在 case HERO open live ↗
     blurb:
-      "47 structured calls into a hosted diffusion API. The segment carrying nearly all the latency variance is the one the API does not return.",
+      "A published measurement study that turns \"it feels fast\" into numbers.",
   },
   {
     id: "vestige",
@@ -47,7 +47,7 @@ export const STATIONS: Station[] = [
     href: "/work/vestige",
     line: "A digital product passport built to outlast the first sale.",
     blurb:
-      "One cryptographic commitment, three levels of disclosure. A regulator proves a verdict, a brand a category, a consumer neither.",
+      "One cryptographic commitment. A regulator, a brand, and a customer each verify a different amount.",
   },
   {
     id: "material-memory",
@@ -55,7 +55,7 @@ export const STATIONS: Station[] = [
     href: "/work/material-memory", // CASE-NAV: 器物点击/揭帛 hook 有目的地
     line: "hand-written cloth physics",
     blurb:
-      "Hand written Verlet cloth. You cannot see how fabric moves from a photograph, so the physics runs instead of being described.",
+      "Real time cloth simulation. A photograph cannot show you how fabric moves.",
   },
 ];
 
