@@ -33,6 +33,63 @@ const vestige: CaseData = {
     caption:
       "a live mock-up of the consumer passport, the renderer that ages with the object · click to run the real thing",
   },
+  sections: {
+    what: "For luxury, the very facts that prove compliance are the ones a brand can't reveal.",
+    why: "Coming EU regulation will require luxury and textile brands to publish a digital product passport: verifiable provenance, materials, sustainability. But a passport forces a bad trade: disclose enough raw supply-chain data to satisfy regulators, or withhold it to protect suppliers, recipes, and cost. Vestige removes the trade.",
+    how: {
+      summary: [
+        "From a single cryptographic commitment, it generates role-differentiated zero-knowledge proofs: the same hidden field is proven to a regulator as a compliance verdict, shown to a brand partner as a category, and withheld from the consumer entirely, with an inference firewall that stops multiple proofs from being combined to reconstruct what no single role may see.",
+      ],
+      phases: [
+        {
+          title: "Phase 1 \u00b7 One commitment, three readings",
+          body: [
+            "A product is one canonical commitment root, partitioned into static identity, compliance state, dynamic ownership, and bio-material lineage. From that one root, separate proof circuits answer to separate policies, one each for regulator, brand and consumer, each disclosing a field as an exact value, a bucket, a predicate-only check, or nothing. A verifier can confirm a proof follows an authorized policy, not an ad-hoc selection by the prover.",
+            "SELECTIVE DISCLOSURE, NOT ALL-OR-NOTHING. A regulator sees a compliance verdict; a brand partner sees an approved-source category; a consumer sees a curated provenance story and certification badges. The raw supplier identity, cost, recipe, and exact emissions stay hidden from all of them: proven, not shown.",
+          ],
+          figure: {
+            kind: "code",
+            code: `one commitment root
+  \u251c\u2500\u2500 static identity
+  \u251c\u2500\u2500 compliance state
+  \u251c\u2500\u2500 dynamic ownership
+  \u2514\u2500\u2500 bio-material lineage
+        \u2502
+        \u251c\u2500\u2500 policy circuit \u2192 regulator   compliance verdict
+        \u251c\u2500\u2500 policy circuit \u2192 brand       approved-source category
+        \u2514\u2500\u2500 policy circuit \u2192 consumer    withheld
+                                          \u2191 inference firewall:
+                                            proofs cannot be combined`,
+            caption:
+              "role-differentiated proof architecture \u00b7 concept redraw. The construction stays in the filed provisional",
+          },
+        },
+        {
+          title: "Phase 2 \u00b7 Provenance that starts before manufacture",
+          body: [
+            "For bio-materials such as mycelium leather and algae textile, the environmentally significant phase happens before cutting. Vestige carries time-windowed cultivation sensor data into a batch commitment inherited by every downstream item: a seed-to-sale history, cryptographically linked.",
+          ],
+        },
+        {
+          title: "Phase 3 \u00b7 The tap that changes state",
+          body: [
+            "An NFC tap (NTAG 424 DNA) isn't just an authenticity check. A verified tap becomes a presence receipt that updates the commitment, and in the same atomic transaction the smart contract routes the resale royalty, transfers ownership, advances the lifecycle state, and steps the renderer forward. Physical presence, payment, and provenance move together, closing the loop ordinary NFC authentication leaves open.",
+          ],
+          figure: {
+            kind: "code",
+            code: `NFC tap (NTAG 424 DNA)
+  \u2192 verified presence receipt
+  \u2192 commitment updated
+  \u2192 one atomic transaction:
+       royalty routed \u00b7 ownership transferred
+       lifecycle advanced \u00b7 renderer stepped`,
+            caption:
+              "physical-authentication sequence \u00b7 concept redraw. No construction detail",
+          },
+        },
+      ],
+    },
+  },
   what: [
     "Coming EU regulation will require luxury and textile brands to publish a digital product passport: verifiable provenance, materials, sustainability. But a passport forces a bad trade: disclose enough raw supply-chain data to satisfy regulators, or withhold it to protect suppliers, recipes, and cost. For luxury, the very facts that prove compliance are the ones a brand can't reveal.",
     "Vestige removes the trade. From a single cryptographic commitment, it generates role-differentiated zero-knowledge proofs: the same hidden field is proven to a regulator as a compliance verdict, shown to a brand partner as a category, and withheld from the consumer entirely, with an inference firewall that stops multiple proofs from being combined to reconstruct what no single role may see.",
@@ -81,14 +138,6 @@ const vestige: CaseData = {
     items: [
       {
         claim:
-          "SELECTIVE DISCLOSURE, NOT ALL-OR-NOTHING. A regulator sees a compliance verdict; a brand partner sees an approved-source category; a consumer sees a curated provenance story and certification badges. The raw supplier identity, cost, recipe, and exact emissions stay hidden from all of them: proven, not shown.",
-      },
-      {
-        claim:
-          "PROVENANCE THAT STARTS BEFORE MANUFACTURE. For bio-materials such as mycelium leather and algae textile, the environmentally significant phase happens before cutting. Vestige carries time-windowed cultivation sensor data into a batch commitment inherited by every downstream item: a seed-to-sale history, cryptographically linked.",
-      },
-      {
-        claim:
           "PRESENTED TO INDUSTRY LEADS. The system was presented to leads at PwC, JPMorgan, and Tapestry. The cryptographic construction is covered in a filed provisional; this page describes the architecture, not the circuits.",
         source:
           "coming EU digital product passport requirement for textiles · rollout 2027+",
@@ -98,8 +147,8 @@ const vestige: CaseData = {
       "A filed provisional and a live mock-up, not a production deployment. The consumer passport at vestige.alilinlab.com demonstrates the renderer and the disclosure model; the full multi-circuit prover is specified, not yet shipped end to end.",
     ],
   },
-  context:
-    "Vestige is where the practice meets a market. Latent and Teardown instrument what generative systems do; Vestige instruments trust itself. It turns a regulatory burden into something a brand can use, without surrendering the secrets that make it a brand. The seal, the provenance, the object that remembers who owned it. It is the same instinct as a maker's mark, rebuilt in zero knowledge.",
+  coda: "Vestige is where the practice meets a market. It turns a regulatory burden into something a brand can use, without surrendering the secrets that make it a brand. The seal, the provenance, the object that remembers who owned it. It is the same instinct as a maker's mark, rebuilt in zero knowledge.",
+  context: "",
   byline: "Ali Lin",
   prev: { label: "TEARDOWN № 1", href: "/work/teardown" },
   next: { label: "MATERIAL MEMORY", href: "/work/material-memory" },

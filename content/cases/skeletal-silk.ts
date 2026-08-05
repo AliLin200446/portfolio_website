@@ -36,6 +36,69 @@ const skeletalSilk: CaseData = {
     caption:
       "upload a material · Claude Vision reads four properties · they drive the shader in real time: try it",
   },
+  sections: {
+    what: "A vision model's native output is language: descriptive, unbounded, useless as a shader input on its own.",
+    why: "A technical artist who wants a specific material, a real fabric's exact drape and sheen, either hand-tunes shader parameters or settles for a preset. Skeletal Silk is a third path: photograph the material, and a vision model reads it into the numbers that drive the shader. The hard part isn't the render. The design problem is turning that reading into four bounded material parameters a GLSL material can actually consume in real time.",
+    how: {
+      summary: [
+        "There is one fixed GLSL shader. The model writes uniforms, never GLSL. The mapping from an open-ended vision output to a fixed parameter set is the tool's core.",
+      ],
+      phases: [
+        {
+          title: "Phase 1 \u00b7 What the model returns",
+          body: [
+            "The model isn't asked to describe the fabric. It's constrained to measure it and return four material parameters, one of them a colour triple, not prose. That constraint is the work: a paragraph cannot drive a shader, four material parameters can.",
+          ],
+          figure: {
+            kind: "code",
+            lang: "json",
+            code: `{ "rigidity": 0.48, "flow": 0.38,
+  "specular": 0.12,
+  "color": [0.8627450980392157,
+            0.8431372549019608,
+            0.8823529411764706] }
+
+  rigidity  ->  uRigidity
+  flow      ->  uFlow
+  specular  ->  uSpecular
+  color     ->  uColor
+
+  cotton.jpg, second run, values as returned`,
+            caption:
+              "the model's reading, wired straight to the shader's uniforms. These are the endpoint's own key names: specular, not specularity, and color as three normalised channels",
+            sourceHref: "https://alilinlab.com/case-assets/skeletal-silk/raw-responses.json",
+            sourceLabel: "raw-responses.json",
+          },
+        },
+        {
+          title: "Phase 2 \u00b7 The pipeline",
+          body: [
+            "The four parameters feed a single GLSL material shader as uniforms: rigidity, flow, specular and a colour triple drive its behaviour in real time. Two different photos don't produce two shaders; they drive the same shader to two genuinely different materials.",
+          ],
+        },
+        {
+          title: "Phase 3 \u00b7 The control",
+          body: [
+            "The read is what changes: a forest photo and a fabric close-up return rigidity 0.20 and 0.75, flow 0.90 and 0.35, and the material responds accordingly.",
+          ],
+          figure: {
+            kind: "code",
+            code: `INPUT      RIGIDITY   FLOW   SPECULAR   COLOR
+flat         0.45     0.40     0.15     [0.5882352941176471, 0.5882352941176471, 0.5647058823529412]
+cotton       0.48     0.38     0.12     [0.8627450980392157, 0.8431372549019608, 0.8823529411764706]
+knit         0.48     0.38     0.12     [0.13725490196078433, 0.13725490196078433, 0.1568627450980392]
+brocade      0.78     0.22     0.52     [0.5686274509803921, 0.45098039215686275, 0.37254901960784315]
+
+flat is a neutral grey square, the control, not a material.
+cotton and knit differ only in color.`,
+            caption: "tested on, second run, values as returned",
+            sourceHref: "https://alilinlab.com/case-assets/skeletal-silk/raw-responses.json",
+            sourceLabel: "raw-responses.json",
+          },
+        },
+      ],
+    },
+  },
   what: [
     "A technical artist who wants a specific material, a real fabric's exact drape and sheen, either hand-tunes shader parameters or settles for a preset. Skeletal Silk is a third path: photograph the material, and a vision model reads it into the numbers that drive the shader.",
     "The hard part isn't the render. A vision model's native output is language: descriptive, unbounded, useless as a shader input on its own. The design problem is turning that reading into four bounded material parameters a GLSL material can actually consume in real time.",
@@ -121,8 +184,8 @@ cotton and knit differ only in color.`,
       "Colour is returned as three normalised channels, not one number. The page calls these four material parameters, which is four fields, not four scalars.",
     ],
   },
-  context:
-    "Skeletal Silk is the portfolio's one tool rather than one instrument. Latent and Teardown measure; Vestige proves; this one is meant to be used. The through-line is the same, take an AI capability and make it controllable, but here the control is the point: a vision model's loose reading, pinned to four numbers you can drive and carry away.",
+  coda: "Skeletal Silk is the portfolio's one tool rather than one instrument. Latent and Teardown measure; Vestige proves; this one is meant to be used. The control is the point: a vision model's loose reading, pinned to four numbers you can drive and carry away.",
+  context: "",
   byline: "Ali Lin",
   cta: {
     label: "the case is the tool → try it",

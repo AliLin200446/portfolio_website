@@ -168,7 +168,11 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         { id: "why", label: "WHY" },
         { id: "how", label: "HOW" },
         { id: "proof", label: data.proofLabel ?? "PROOF" },
-        { id: "limits", label: "LIMITS" },
+        // only when the page has any. An index entry pointing at an
+        // anchor that was never rendered is a link that does nothing.
+        ...(data.proof.limits.length > 0
+          ? [{ id: "limits", label: "LIMITS" }]
+          : []),
       ]
     : [
         { id: "claim", label: "CLAIM" },

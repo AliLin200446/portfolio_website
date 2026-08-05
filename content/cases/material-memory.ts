@@ -29,6 +29,35 @@ const materialMemory: CaseData = {
     caption:
       "the shipping simulator · the FOLD test, looping · push, drop and drag it yourself: click to run live",
   },
+  sections: {
+    what: "Luxury returns run high because a product page shows a still image. Drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph.",
+    why: "About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025\u201326). Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought. One engine, two readings. For the shopper it ends the guessing. For the brand it ends the returning.",
+    how: {
+      summary: [
+        "The same simulation that answers \u201chow does this move\u201d is the thing that keeps it from coming back.",
+      ],
+      phases: [
+        {
+          title: "Phase 1 \u00b7 Cloth that drapes, not a loop of frames",
+          body: [
+            "The fabric runs on Verlet cloth physics. A mass-spring mesh under distance constraints, integrated per frame in Three.js and GLSL, so the cloth holds together while it drapes, swings, and settles. Real-time, driven by the user's push and drag, not a pre-baked animation.",
+          ],
+        },
+        {
+          title: "Phase 2 \u00b7 The material feel, judged by eye",
+          body: [
+            "The material feel, drape and weight and sheen and how light rolls across a fold, I tuned by hand, iterating against how real cloth falls. Not measured off a reference; judged by eye, the way you judge whether a fabric hangs right. Latent measures; this one is felt.",
+          ],
+          figure: {
+            kind: "live",
+            url: "https://material-memory.alilinlab.com",
+            caption:
+              "the cloth under a user's hand \u00b7 real-time Verlet simulation \u00b7 click to run the real thing",
+          },
+        },
+      ],
+    },
+  },
   what: [
     "Luxury returns run high because a product page shows a still image. Drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph. About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025–26). Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought.",
     "One engine, two readings. For the shopper it ends the guessing. For the brand it ends the returning. The same simulation that answers “how does this move” is the thing that keeps it from coming back.",
@@ -64,15 +93,11 @@ const materialMemory: CaseData = {
           "THE GAP IS SPECIFICALLY TACTILE. Over half of all e-commerce returns come from clothing, and the recurring reason a product page can't fix is that a still image shows what fabric looks like, never how it moves. That is the exact gap Material Memory closes.",
         source: "clothing = 56%+ of e-commerce returns (industry benchmarks)",
       },
-      {
-        claim:
-          "BUILT AROUND THE DOMINANT SHOPPER. Maya, 27, is the shopper a product page cannot reach. She can't feel the fabric, so she guesses, and the guess is wrong often enough to drive the category's return rate. Material Memory isn't a feature for some shoppers; it's infrastructure for the default one.",
-      },
     ],
     limits: [],
   },
-  context:
-    "Material Memory is the product-facing end of the same practice: Latent and Teardown measure what generative systems do; this one takes a hand-built physics engine and points it at a business number returns can't otherwise reach. Where those instruments prove rigor, this one proves the rigor aims at something someone pays for.",
+  coda: "Material Memory is the product-facing end of the same practice: Latent and Teardown measure what generative systems do; this one takes a hand-built physics engine and points it at a business number returns can't otherwise reach.",
+  context: "",
   byline: "Ali Lin",
   prev: { label: "LATENT", href: "/work/latent" },
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },
