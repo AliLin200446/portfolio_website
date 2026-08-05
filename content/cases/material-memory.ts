@@ -58,28 +58,6 @@ const materialMemory: CaseData = {
       ],
     },
   },
-  what: [
-    "Luxury returns run high because a product page shows a still image. Drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph. About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025–26). Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought.",
-    "One engine, two readings. For the shopper it ends the guessing. For the brand it ends the returning. The same simulation that answers “how does this move” is the thing that keeps it from coming back.",
-  ],
-  build: [
-    {
-      heading: "CLOTH THAT DRAPES, NOT A LOOP OF FRAMES",
-      body: "The fabric runs on Verlet cloth physics. A mass-spring mesh under distance constraints, integrated per frame in Three.js and GLSL, so the cloth holds together while it drapes, swings, and settles. Real-time, driven by the user's push and drag, not a pre-baked animation.",
-      body2:
-        "The material feel, drape and weight and sheen and how light rolls across a fold, I tuned by hand, iterating against how real cloth falls. Not measured off a reference; judged by eye, the way you judge whether a fabric hangs right. Latent measures; this one is felt.",
-      /* A recording was ruled out: the demo is high-motion cloth, which
-       * compresses badly. A soft 480p loop undersells the material it
-       * exists to show. The figure runs the real engine instead, mounted
-       * only on click, with a still poster once one is exported. */
-      figure: {
-        kind: "live",
-        url: "https://material-memory.alilinlab.com",
-        caption:
-          "the cloth under a user's hand · real-time Verlet simulation · click to run the real thing",
-      },
-    },
-  ],
   proof: {
     items: [
       {
@@ -94,10 +72,14 @@ const materialMemory: CaseData = {
         source: "clothing = 56%+ of e-commerce returns (industry benchmarks)",
       },
     ],
-    limits: [],
+    limits: [
+      "The cloth never computes normals. Lighting in the fragment shader is derived procedurally from wrinkle and uv values, so what looks like a surface responding to light is a pattern that happens to read as one.",
+      "Depth range is narrow. Across a fold, z spans roughly three to eight percent of the frame width. The cloth reads as fabric mostly because of motion, not because of relief.",
+      "The settle relaxation that keeps the cloth from tearing also pulls vertices back toward the grid in x and y. Wrinkles therefore live almost entirely in z. There is no silhouette deformation and the sheet never occludes itself.",
+      "Everything here was tuned by hand and judged by eye. Latent has calibration files. This one has my opinion.",
+    ],
   },
   coda: "Material Memory is the product-facing end of the same practice: Latent and Teardown measure what generative systems do; this one takes a hand-built physics engine and points it at a business number returns can't otherwise reach.",
-  context: "",
   byline: "Ali Lin",
   prev: { label: "LATENT", href: "/work/latent" },
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },

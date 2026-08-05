@@ -162,8 +162,7 @@ function Fig({ figure }: { figure: Figure }) {
 
 export default function CaseTemplate({ data }: { data: CaseData }) {
   const berth = berthOf(data.slug);
-  const items = data.sections
-    ? [
+  const items = [
         { id: "what", label: "WHAT" },
         { id: "why", label: "WHY" },
         { id: "how", label: "HOW" },
@@ -173,14 +172,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
         ...(data.proof.limits.length > 0
           ? [{ id: "limits", label: "LIMITS" }]
           : []),
-      ]
-    : [
-        { id: "claim", label: "CLAIM" },
-        { id: "what", label: "WHAT" },
-        { id: "build", label: data.buildLabel ?? "BUILD" },
-        { id: "proof", label: data.proofLabel ?? "PROOF" },
-        { id: "more", label: "MORE" },
-      ];
+  ];
 
   return (
     <main className="mx-auto max-w-5xl px-6">
@@ -276,8 +268,7 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
           the DOM whether the row is open or not: a details element
           folds, it does not unmount. Find-in-page, crawlers and
           check-claims all need to reach the sentences inside. */}
-      {data.sections && (
-        <>
+      <>
           <section id="what" className="scroll-mt-8 border-t border-line py-14">
             <p className={LABEL}>WHAT</p>
             <p className={`${PROSE} mt-8`}>{data.sections.what}</p>
@@ -335,54 +326,6 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
             </div>
           </section>
         </>
-      )}
-
-      {/* ④ WHAT IT IS */}
-      {!data.sections && (
-      <>
-      <section id="what" className="scroll-mt-8 border-t border-line py-14">
-        <p className={LABEL}>WHAT</p>
-        <div className="mt-8">
-          {data.what.map((para) => (
-            <p key={para} className={`${PROSE} mb-5`}>
-              {para}
-            </p>
-          ))}
-          {data.whatFigure && <Fig figure={data.whatFigure} />}
-        </div>
-      </section>
-
-      {/* ⑤ HOW I BUILT IT. One decision per subsection */}
-      <section id="build" className="scroll-mt-8 border-t border-line py-14">
-        <p className={LABEL}>{data.buildLabel ?? "BUILD"}</p>
-        <div className="mt-8 space-y-14">
-          {data.build.map((d) => (
-            <div key={d.heading}>
-              <h2 className="font-mono text-sm uppercase tracking-widest text-ink">
-                {d.heading}
-              </h2>
-              <p className={`${PROSE} mt-4`}>{d.body}</p>
-              {d.body2 && <p className={`${PROSE} mt-4`}>{d.body2}</p>}
-              {d.data && (
-                <p className="mt-5 max-w-[68ch] font-mono text-[13px] leading-relaxed text-ink">
-                  {d.data}
-                  {d.dataPending && <Pending what={d.dataPending} ip />}
-                  {d.dataTail}
-                </p>
-              )}
-              {d.note && (
-                <p className="mt-3 max-w-[68ch] font-mono text-[10px] leading-relaxed text-muted">
-                  {d.note}
-                </p>
-              )}
-              {d.figure && <Fig figure={d.figure} />}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      </>
-      )}
 
       {/* ⑥ WHY IT HOLDS: evidence, then limits */}
       <section id="proof" className="scroll-mt-8 border-t border-line py-14">
@@ -452,16 +395,6 @@ export default function CaseTemplate({ data }: { data: CaseData }) {
           <p className="max-w-[68ch] text-[15px] leading-relaxed text-ink/70">
             {data.coda}
           </p>
-        )}
-        {!data.sections && (
-          <>
-            <p className={LABEL}>MORE</p>
-            {(data.contextParas ?? [data.context]).map((para, i) => (
-              <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
-                {para}
-              </p>
-            ))}
-          </>
         )}
         {/* the ending is an action, not a conclusion: on a page whose
             subject is a working tool, the last thing the reader meets is

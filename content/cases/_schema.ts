@@ -65,26 +65,6 @@ export type Figure = Pending &
     | { kind: "pending"; note: string; caption: string }
   );
 
-/** ⑤ BUILD: one decision per subsection — what I hit, what I chose,
- *  why. Never a feature list. */
-export type Decision = {
-  /** Geist Mono subheading naming the decision */
-  heading: string;
-  /** one serif paragraph: the problem, the choice, the tradeoff */
-  body: string;
-  /** a second paragraph where the decision needed one */
-  body2?: string;
-  /** the measured line, Geist Mono */
-  data?: string;
-  /** a value inside the data line that is NOT cleared: rendered as a
-   *  PENDING-IP chip between `data` and `dataTail`, never as text */
-  dataPending?: string;
-  dataTail?: string;
-  /** method caveat, mono, quieter than the data line */
-  note?: string;
-  figure?: Figure;
-};
-
 /** ⑥ PROOF: evidence a skeptic would demand. */
 export type Proof = Pending & {
   /** short caps label; the sentence that follows stays in normal case.
@@ -137,30 +117,21 @@ export type CaseData = {
   claim: string | string[];
   /** ③ the strongest single visual */
   hero: Figure;
-  /** ④ two short paragraphs, followable by a smart non-specialist */
-  what: string[];
-  whatFigure?: Figure;
-  /** ⑤ 2–4 decisions */
-  build: Decision[];
   /** ⑥ evidence + limits; the section label may be renamed per page */
   proofLabel?: string;
-  buildLabel?: string;
   /** findings sit beside their figure instead of above it */
   proofSplit?: boolean;
-  contextParas?: string[];
   proof: {
     /** prose that sets up the evidence, before the itemised claims */
     intro?: string[];
     items: Proof[];
     limits: string[];
   };
-  /** THE NEW STRUCTURE: WHAT / WHY / HOW / PROOF / LIMITS.
-   *
-   *  Present means the page renders this and ignores `what`, `build`,
-   *  `context` and `contextParas`. Absent means the original six
-   *  section order, unchanged. Both paths ship until all five cases
-   *  have moved, so a pilot cannot break the other four. */
-  sections?: {
+  /** WHAT / WHY / HOW / PROOF / LIMITS. Required: all five cases are
+   *  on it and the older six-section path is gone. It was kept behind
+   *  an optional field only long enough to pilot one page without
+   *  breaking the other four. */
+  sections: {
     /** one line: what the problem is */
     what: string;
     /** one line: why the existing answers fall short, and where this
@@ -181,8 +152,6 @@ export type CaseData = {
    *  this person who built it, and whether the work continues, cannot
    *  be borrowed, so they stay. */
   coda?: string;
-  /** ⑦ one paragraph of placement */
-  context: string;
   byline?: string;
   /** the page's closing move. Present only when the work itself is the
    *  argument and the reader should go use it rather than read on. */

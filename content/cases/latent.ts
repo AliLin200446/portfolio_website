@@ -105,63 +105,6 @@ const latent: CaseData = {
       ],
     },
   },
-  what: [
-    "If you want to add film texture to AI video, you have three options today: LUTs, filters, or film emulation inside professional color software. The last is hard to learn, complex, and slow.",
-    "Latent sits between the cheap filter and the pro plugin. It is a film physics engine that runs in your browser.",
-    "You upload your footage. It goes through a pipeline that models real film chemistry. Halation grows out of the clipped highlights already in your frame. Grain refreshes every frame with the statistics of real film. Gate weave shifts the frame the way a real projector does. Nothing is pasted on top.",
-  ],
-  build: [
-    {
-      heading: "CLIENT SIDE ONLY",
-      body: "The pipeline is five GLSL passes on WebGL2. All of it runs on your GPU. No server. No upload. No API key. Video export uses WebCodecs, also local. Your footage never leaves your machine.",
-      body2:
-        "That is not only a privacy stance. It means the tool has no running cost, no queue, and no quota. The only limit is your graphics card.",
-    },
-    {
-      heading: "PARAMETERS COME FROM MEASUREMENT, NOT TASTE",
-      body: "The CineStill 800T values in the engine are halation threshold 0.55, radius 4.9, tint [1.2, 0.03, 0.03], intensity 1.01. I did not tune those until they looked good. I got them by calibrating against 800T negatives I shot and scanned myself.",
-      data: "calibration date 2026-07-10, stored with the source data",
-    },
-    {
-      heading: "IT CAN BE PROVEN WRONG",
-      body: "Every parameter points to a source file, which is a measurement of my own film. That means it can be wrong. A tool you cannot check is a toy.",
-    },
-    {
-      heading: "ARCHITECTURE",
-      body: "Five GL passes: highlight threshold at quarter resolution, a separable gaussian run N times, composite where the halation glow is screened back in linear light, film colour response, then grain. Gate weave is applied where the source is first sampled, so the whole chain sees the same weaved frame. Linearize and encode are not passes. Every shader decodes and re-encodes sRGB inline.",
-      body2:
-        "Grain is last because it is the developed crystal structure, not an exposure effect.",
-      figure: {
-        kind: "instrument",
-        component: "passstack",
-        caption:
-          "the five passes as six planes · drag to turn the stack, select a pass to isolate it · the source plane carries the gate weave, which is why it is the one thing moving at rest",
-      },
-    },
-    {
-      heading: "HALATION",
-      body: "In physics this is a wide, soft spread of light. A large gaussian blur is too expensive for a real time pipeline. So Latent maps the radius parameter to an iteration count instead.",
-      body2:
-        "The radius resolves through N = round(radius squared / 4) into N separable gaussian passes. Each pass runs at quarter resolution. Sigma stacks with each pass. Radius 4.9 resolves to 6 passes, which is about sigma 30 in full resolution pixels.",
-      figure: {
-        kind: "image",
-        src: "/case-assets/latent/exhibit-01-halation.png",
-        caption:
-          "halation on a clipped highlight, engine output against the negative it was calibrated to",
-        width: 1379,
-        height: 844,
-        selfCaptioned: true,
-        attribution:
-          "EXHIBIT 01 · halation measured off my own 800T negatives, not fitted to a curve",
-      },
-    },
-    {
-      heading: "GRAIN",
-      body: "Generated with a PCG3D hash and reseeded on every rendered frame. A fresh noise field each time, so there is no fixed pattern anywhere in the image. A still source still boils, the way film does.",
-      body2:
-        "On its own this detail is tiny. Stacked with the others it becomes the thing you cannot name but can feel.",
-    },
-  ],
   proofLabel: "CALIBRATION",
   proof: {
     intro: [
@@ -192,7 +135,6 @@ const latent: CaseData = {
     ],
     },
   coda: "Latent is also proof. It proves that four years of editorial photography is not a decorative line on a resume. It is a measuring skill that converts directly into engineering parameters. That path is observe, measure, build, then let the thing be checked. It is now how I work on everything.",
-  context: "",
   byline: "Ali Lin",
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },
 };
