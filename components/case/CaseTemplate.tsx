@@ -77,9 +77,16 @@ function Fig({ figure }: { figure: Figure }) {
         return <HalationHero />;
       case "video":
         return (
+          /* controls, because without them this element had no way to
+             start: no autoplay, no controls and preload="none" render
+             a poster that never becomes a video. preload stays none so
+             a 20 MB hero costs nothing until somebody asks for it,
+             which is the same bargain the 3D facades on this page
+             already make. */
           <video
             src={figure.src}
             poster={figure.poster}
+            controls
             muted
             loop
             playsInline

@@ -26,10 +26,11 @@ const latent: CaseData = {
     "The grain does not follow chemistry.",
   ],
   hero: {
-    kind: "instrument",
-    component: "halation",
+    kind: "video",
+    src: "/case-assets/latent/latent-demo.mp4",
+    poster: "/case-assets/latent/latent-demo-poster.webp",
     caption:
-      "the halation comparator, live · drag to change the blur radius",
+      "the engine running, 19.5s · click to play",
   },
   what: [
     "If you want to add film texture to AI video, you have three options today: LUTs, filters, or film emulation inside professional color software. The last is hard to learn, complex, and slow.",
