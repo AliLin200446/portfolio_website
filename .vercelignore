@@ -1,0 +1,26 @@
+# Vercel uploads the working tree, not the git index, so .gitignore
+# does not protect it. Without this the deploy carried every raw
+# source directory in the repo: 409 MB of photography originals, 147
+# MB of latent masters, 129 MB of silk plates, plus a local
+# production build. It only surfaced when one master crossed the
+# 100 MB per-file ceiling and the deploy was rejected outright.
+#
+# Everything here has a derived, committed counterpart under public/.
+
+# raw photography; public/photography holds the derived WebP
+/photography/
+
+# raw demo masters; public/case-assets holds the transcodes
+/latent/
+/SS/
+/material_memory/
+*.mov
+
+# raw captures; public/experiments holds the derived 16:10 WebP
+/experiments/
+
+# brand source; public/brand holds every derived asset
+/logo/
+
+# local production build, separate from the .next Vercel makes itself
+/.next-build/
