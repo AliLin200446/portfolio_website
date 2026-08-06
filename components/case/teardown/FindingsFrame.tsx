@@ -210,7 +210,7 @@ function GuidanceDeltas() {
 
       <line x1={LEFT} x2={W - RIGHT} y1={BASE} y2={BASE} stroke={AXIS} strokeWidth="1" />
       <text x={LEFT} y={H - 16} fontSize="7" fill={MUTED} fontFamily="var(--font-mono)">
-        pixels changed, \u0394&gt;32 \u00b7 no pair falls below the floor \u00b7 the last rung still moves 57.591%
+        {"pixels changed, \u0394>32 \u00b7 no pair falls below the floor \u00b7 the last rung still moves 57.591%"}
       </text>
       <text x={LEFT} y={H - 4} fontSize="7" fill="var(--bronze-text)" fontFamily="var(--font-mono)">
         _tools/adjacent-diffs.txt:12-18
