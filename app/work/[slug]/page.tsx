@@ -15,6 +15,7 @@ import materialMemoryHero from "@/content/heroes/material-memory";
 import vestigeHero from "@/content/heroes/vestige";
 import type { CaseHero as CaseHeroData } from "@/content/heroes/_schema";
 import PassBreakdown from "@/components/case/latent/PassBreakdown";
+import FindingsFrame from "@/components/case/teardown/FindingsFrame";
 
 /*
  * Hero registry. All five slugs now carry the first screen. The map is
@@ -83,6 +84,7 @@ export default async function WorkPage({
           pipeline, so it is mounted by slug rather than added to the
           shared template. */}
       {slug === "latent" ? <PassBreakdown /> : null}
+      {slug === "teardown" ? <FindingsFrame /> : null}
       <CaseTemplate data={c} />
     </>
   );
