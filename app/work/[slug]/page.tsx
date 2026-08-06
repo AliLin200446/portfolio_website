@@ -14,6 +14,7 @@ import skeletalSilkHero from "@/content/heroes/skeletal-silk";
 import materialMemoryHero from "@/content/heroes/material-memory";
 import vestigeHero from "@/content/heroes/vestige";
 import type { CaseHero as CaseHeroData } from "@/content/heroes/_schema";
+import PassBreakdown from "@/components/case/latent/PassBreakdown";
 
 /*
  * Hero registry. All five slugs now carry the first screen. The map is
@@ -78,6 +79,10 @@ export default async function WorkPage({
   return (
     <>
       {hero ? <CaseHero data={hero} /> : null}
+      {/* LATENT only. The five-pass breakdown is specific to that
+          pipeline, so it is mounted by slug rather than added to the
+          shared template. */}
+      {slug === "latent" ? <PassBreakdown /> : null}
       <CaseTemplate data={c} />
     </>
   );
