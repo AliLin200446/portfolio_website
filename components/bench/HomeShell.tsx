@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BERTH_ORDER, STATIONS, berthOf } from "@/lib/bench";
-import { useBenchStore } from "@/lib/benchStore";
+import { BERTH_ORDER, STATIONS } from "@/lib/bench";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
 import dynamic from "next/dynamic";
@@ -44,29 +43,6 @@ function StationLink({
     <Link href={station.href} className={className}>
       {children}
     </Link>
-  );
-}
-
-/** Nav entry in 3D mode: click springs the rail to the station's berth.
- *  Current berth carries a copper marker — never cinnabar. */
-function NavJump({ station }: { station: (typeof STATIONS)[number] }) {
-  const berth = useBenchStore((s) => s.berth);
-  const setBerth = useBenchStore((s) => s.setBerth);
-  const mine = berthOf(station.id);
-  const current = berth === mine;
-  return (
-    <button
-      type="button"
-      onClick={() => setBerth(mine)}
-      aria-current={current ? "true" : undefined}
-      className={`transition-colors hover:text-bronze ${
-        current
-          ? "border-b border-bronze text-ink"
-          : "text-muted"
-      }`}
-    >
-      {station.label}
-    </button>
   );
 }
 

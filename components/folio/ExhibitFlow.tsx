@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Exhibit } from "@/lib/labfolio";
-import { SectionNo } from "./FolioChrome";
 
 /*
  * EXHIBIT FLOW (§2, the core) — split-screen scrollytelling: left
