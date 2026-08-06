@@ -97,14 +97,15 @@ export default function PassBreakdown() {
 
   return (
     <section
-      aria-labelledby="latent-passes"
+      id="latent-passes"
+      aria-labelledby="latent-passes-heading"
       style={
         {
           "--hero-hair": "color-mix(in srgb, var(--ink) 14%, transparent)",
           "--hero-slate": "#4E5B54",
         } as React.CSSProperties
       }
-      className="bg-paper px-5 sm:pl-10 sm:pr-8 xl:pl-[132px]"
+      className="scroll-mt-8 bg-paper px-5 sm:pl-10 sm:pr-8 xl:pl-[132px]"
     >
       {/* Explicit column and row placement rather than `order`, because a
           single heading has to sit in two different places: above the
@@ -113,7 +114,7 @@ export default function PassBreakdown() {
           diagram, rows, which is exactly the phone reading order. */}
       <div className="grid grid-cols-1 lg:grid-cols-12">
         <h2
-          id="latent-passes"
+          id="latent-passes-heading"
           className="pb-8 pt-10 font-serif text-5xl font-semibold uppercase leading-[0.92] tracking-tight text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:pr-[38px]"
         >
           Five GL Passes

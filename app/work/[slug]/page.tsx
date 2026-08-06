@@ -14,8 +14,29 @@ import skeletalSilkHero from "@/content/heroes/skeletal-silk";
 import materialMemoryHero from "@/content/heroes/material-memory";
 import vestigeHero from "@/content/heroes/vestige";
 import type { CaseHero as CaseHeroData } from "@/content/heroes/_schema";
+import type { IndexItem } from "@/components/folio/CaseIndex";
 import PassBreakdown from "@/components/case/latent/PassBreakdown";
 import FindingsFrame from "@/components/case/teardown/FindingsFrame";
+
+/*
+ * Full-bleed sections mounted ABOVE CaseTemplate, keyed by slug. One
+ * registry rather than a chain of per-slug ternaries: adding a
+ * bespoke section is a row here, and the anchor travels with it so the
+ * rail cannot drift out of step with what actually renders.
+ */
+const leadingSections: Record<
+  string,
+  { Section: React.ComponentType; indexItem: IndexItem }
+> = {
+  latent: {
+    Section: PassBreakdown,
+    indexItem: { id: "latent-passes", label: "PASSES" },
+  },
+  teardown: {
+    Section: FindingsFrame,
+    indexItem: { id: "teardown-findings", label: "FINDINGS" },
+  },
+};
 
 /*
  * Hero registry. All five slugs now carry the first screen. The map is
@@ -77,15 +98,12 @@ export default async function WorkPage({
   const c = cases[slug];
   if (!c) notFound();
   const hero = heroes[slug];
+  const leading = leadingSections[slug];
   return (
     <>
       {hero ? <CaseHero data={hero} /> : null}
-      {/* LATENT only. The five-pass breakdown is specific to that
-          pipeline, so it is mounted by slug rather than added to the
-          shared template. */}
-      {slug === "latent" ? <PassBreakdown /> : null}
-      {slug === "teardown" ? <FindingsFrame /> : null}
-      <CaseTemplate data={c} />
+      {leading && <leading.Section />}
+      <CaseTemplate data={c} leadingIndexItems={leading && [leading.indexItem]} />
     </>
   );
 }

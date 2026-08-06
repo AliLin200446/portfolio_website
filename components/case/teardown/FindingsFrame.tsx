@@ -245,7 +245,8 @@ export default function FindingsFrame() {
 
   return (
     <section
-      aria-labelledby="teardown-findings"
+      id="teardown-findings"
+      aria-labelledby="teardown-findings-heading"
       style={
         {
           "--hero-hair": "color-mix(in srgb, var(--ink) 14%, transparent)",
@@ -253,13 +254,13 @@ export default function FindingsFrame() {
           "--frame-dim": "color-mix(in srgb, var(--ink) 40%, transparent)",
         } as React.CSSProperties
       }
-      className="bg-paper px-5 pb-12 sm:pl-10 sm:pr-8 xl:pl-[132px]"
+      className="scroll-mt-8 bg-paper px-5 pb-12 sm:pl-10 sm:pr-8 xl:pl-[132px]"
     >
       {/* Explicit placement, not order, so one h2 sits above the frame on
           one column and beside it on two. */}
       <div className="grid grid-cols-1 lg:grid-cols-12">
         <h2
-          id="teardown-findings"
+          id="teardown-findings-heading"
           className="pb-8 pt-10 font-serif text-5xl font-semibold uppercase leading-[0.92] tracking-tight text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:pr-[38px]"
         >
           Findings

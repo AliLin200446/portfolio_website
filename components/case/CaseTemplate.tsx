@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
-import CaseIndex from "@/components/folio/CaseIndex";
+import CaseIndex, { type IndexItem } from "@/components/folio/CaseIndex";
 import PassStackFacade from "./PassStackFacade";
 import ExperimentSpaceFacade from "./ExperimentSpaceFacade";
 import SilkControl from "./SilkControl";
@@ -160,9 +160,20 @@ function Fig({ figure }: { figure: Figure }) {
   );
 }
 
-export default function CaseTemplate({ data }: { data: CaseData }) {
+export default function CaseTemplate({
+  data,
+  leadingIndexItems,
+}: {
+  data: CaseData;
+  /* Anchors for full-bleed sections mounted ABOVE this template by the
+     route. The template cannot see them, so it is told about them
+     rather than guessing; they go first because they sit above WHAT on
+     the page and the rail reads in document order. */
+  leadingIndexItems?: IndexItem[];
+}) {
   const berth = berthOf(data.slug);
-  const items = [
+  const items: IndexItem[] = [
+        ...(leadingIndexItems ?? []),
         { id: "what", label: "WHAT" },
         { id: "why", label: "WHY" },
         { id: "how", label: "HOW" },
