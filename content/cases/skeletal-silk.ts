@@ -63,7 +63,7 @@ const skeletalSilk: CaseData = {
   specular  ->  uSpecular
   color     ->  uColor
 
-  cotton.jpg, second run, values as returned`,
+  cotton.jpg, values as returned`,
             caption:
               "the model's reading, wired straight to the shader's uniforms. These are the endpoint's own key names: specular, not specularity, and color as three normalised channels",
             sourceHref: "https://alilinlab.com/case-assets/skeletal-silk/raw-responses.json",
@@ -91,7 +91,7 @@ brocade      0.78     0.22     0.52     [0.5686274509803921, 0.45098039215686275
 
 flat is a neutral grey square, the control, not a material.
 cotton and knit differ only in color.`,
-            caption: "tested on, second run, values as returned",
+            caption: "tested on, values as returned",
             sourceHref: "https://alilinlab.com/case-assets/skeletal-silk/raw-responses.json",
             sourceLabel: "raw-responses.json",
           },
@@ -102,21 +102,33 @@ cotton and knit differ only in color.`,
   proof: {
     items: [
       {
-        label: "THE SAME FOUR IMAGES, TWICE",
+        label: "NOTHING HERE IS RETYPED",
         claim:
-          "Two independent runs, two minutes apart, both at temperature 0. All twelve scalar axes came back identical. So the numbers on this page are not one lucky sample, and the identical cotton and knit rows below are a property of what the tool returns rather than measurement jitter.",
-        source: "raw-responses.json, second run",
+          "Four images, one call each, every response logged with its timestamp and HTTP status. The bodies are published exactly as the endpoint returned them, unedited and unreordered, so all twelve scalar axes on this page can be read back off the file instead of taken on trust.",
+        /* Rewritten. The old claim was about two runs agreeing; the
+           published file is one run, so a reader following the citation
+           found no comparison to check. What the file does establish is
+           provenance: its own _note states the bodies are unmodified,
+           and records[0..3] carry the twelve axes with timestamps and
+           HTTP 200s. */
+        source: "raw-responses.json, _note and records[0..3]",
       },
       {
         label: "A BLANK CONTROL",
         claim:
           "A neutral grey square with no texture and no hue returned 0.45 / 0.40 / 0.15. Cotton and knit landed within 0.03 of that on every axis. Brocade separated on all three. The control is what makes the brocade row believable instead of self-reported.",
-        source: "raw-responses.json, flat.png",
+        /* The claim compares four inputs, so it cites four records.
+           flat.png alone carried only the control's own numbers and
+           none of the three comparisons the claim rests on. Verified:
+           cotton and knit sit within 0.03 of the control on all three
+           scalar axes, brocade at 0.33 / 0.18 / 0.37. */
+        source:
+          "raw-responses.json, records[0..3]: brocade.jpg, knit.jpg, cotton.jpg, flat.png",
         figure: {
           kind: "instrument",
           component: "silkcontrol",
           caption:
-            "measured against the live endpoint, second run, values as returned. The three rules are the control's own numbers: cotton and knit sit on them, brocade does not",
+            "measured against the live endpoint, values as returned. The three rules are the control's own numbers: cotton and knit sit on them, brocade does not",
           sourceHref: "https://alilinlab.com/case-assets/skeletal-silk/raw-responses.json",
           sourceLabel: "raw-responses.json",
         },
@@ -132,7 +144,7 @@ cotton and knit differ only in color.`,
       "Four properties, one shader, best on woven textiles. It doesn't segment the image, doesn't handle multi-material inputs, and assumes what you give it is a material to begin with.",
       "The endpoint's system prompt contains a written table of expected ranges by material type. The readings are vision plus a set of priors, not pure measurement. I have not isolated how much each contributes.",
       "On an earlier session I recorded knit rigidity at 0.52 and the control at 0.50. I did not keep those responses, and the images were recompressed between then and now, so I cannot tell whether that was model variance or different input bytes. Every number on this page comes from runs I kept.",
-      "Two runs two minutes apart is a weak test of stability. It does not rule out caching, and it says nothing about whether the same image returns the same values a week later.",
+      "There is no stability test here at all. Each image was called once and only those four responses were kept, so nothing on this page shows whether the same image returns the same values twice. Repeating the four calls and publishing both sets would close it.",
       "Colour is returned as three normalised channels, not one number. The page calls these four material parameters, which is four fields, not four scalars.",
     ],
   },

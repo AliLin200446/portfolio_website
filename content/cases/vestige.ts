@@ -95,8 +95,11 @@ const vestige: CaseData = {
       {
         claim:
           "PRESENTED TO INDUSTRY LEADS. The system was presented to leads at PwC, JPMorgan, and Tapestry. The cryptographic construction is covered in a filed provisional; this page describes the architecture, not the circuits.",
-        source:
-          "coming EU digital product passport requirement for textiles · rollout 2027+",
+        /* No source. The field held a duplicate of the EU regulation
+           line, which `why` already carries more fully; it cited a fact
+           the claim never makes. Presenting to leads at three firms has
+           no artefact in this repo, so the claim stands uncited rather
+           than dressed in a citation for something else. */
       },
     ],
     limits: [

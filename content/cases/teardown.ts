@@ -95,7 +95,7 @@ const teardown: CaseData = {
       ],
     },
   },
-  proofLabel: "FINDINGS",
+  proofLabel: "EVIDENCE",
   proofSplit: true,
   proof: {
     items: [
@@ -103,7 +103,13 @@ const teardown: CaseData = {
         label: "THE HIDDEN SEGMENT",
         claim:
           "The variance lives in the segment the API does not return. inference_ms is linear from the mid rungs up: 19.52 ms/step, R² = 0.9978 across ten rungs, though the low rungs scatter and the global fit smooths that over. Std is 9.9 ms across N=20. Queue std is 277.0 ms, and queue is the one segment absent from the response body. A client measuring total time cannot attribute its own spread.",
-        source: "e4-latency/stats.md:11-13, 20-22",
+        /* Widened. The old 11-13, 20-22 carried the two std figures,
+           the slope and R2 but not: N=20 (line 3), the queue_ms
+           derivation that makes "absent from the response body" true
+           (line 6), or the measured-vs-fitted table the scatter caveat
+           rests on (24-35). 18-35 is one line wider than FIG B's 20-35
+           so the fit's own N and data source come with it. */
+        source: "e4-latency/stats.md:3-13, 18-35",
         figure: {
           kind: "instrument",
           component: "latency",
@@ -117,7 +123,12 @@ const teardown: CaseData = {
         label: "IDENTICAL BYTES",
         claim:
           "Three identical calls, identical bytes. Same parameters, three runs, three distinct inference times (545 / 547 / 550 ms, real recomputation rather than a cache), one sha256. 0 of 262,144 pixels differ. Output is addressable by parameter tuple.",
-        source: "raw-calls.json[18..20].fal_timings.inference",
+        /* The timings array carries the three durations and nothing
+           else. The sha256 and the 0/262,144 figure are both on line 4
+           of the seed report, which figure.sourceHref already points
+           at; the claim beneath now cites it too. */
+        source:
+          "raw-calls.json[18..20].fal_timings.inference \u00b7 e3-seed/report.txt:4 for the sha256 and the pixel diff",
         figure: {
           kind: "instrument",
           component: "seed",
@@ -130,8 +141,13 @@ const teardown: CaseData = {
       {
         label: "PAST 28",
         claim:
-          "Past 28, eight steps buy what one step already delivered. S20→S28 and S28→S36 each span 8 steps and 156 ms. The first moves 7.655% of pixels (Δ>32); the second, 1.488%. A single step, S28→S29, already moves 1.291% at the same threshold.",
-        source: "_tools/adjacent-diffs.txt:8-9 · _tools/steps-28-29-diff.txt:8",
+          "Past 28, eight steps buy what one step already delivered. S20\u2192S28 and S28\u2192S36 each span 8 steps; the fit puts both at 156 ms, but measured they are 151.4 and 191.4, so the spans are equal only on the line. The first moves 7.655% of pixels (\u0394>32); the second, 1.488%. A single step, S28\u2192S29, already moves 1.291% at the same threshold.",
+        /* 156 ms is in no evidence file as a literal: it is 8 x the
+           19.52 ms/step slope. The claim now states the measured spans
+           and names the fitted one as the fit, so the citation points
+           at both columns of the same three rows. */
+        source:
+          "_tools/adjacent-diffs.txt:8-9 \u00b7 _tools/steps-28-29-diff.txt:8 \u00b7 e4-latency/stats.md:32-34 measured, :20 fitted",
         figure: {
           kind: "instrument",
           component: "stepdelta",
@@ -145,7 +161,12 @@ const teardown: CaseData = {
         label: "NO RESTING POINT",
         claim:
           "Guidance has no resting point. Across G1→G20 no adjacent pair falls below 17.167% changed pixels (Δ>32); the last rung still moves 57.591%. The default of 3.5 is a choice, not a convergence point.",
-        source: "_tools/adjacent-diffs.txt:14, 18",
+        /* The claim is a universal quantifier over every adjacent
+           guidance pair, so it needs every row, not the two it quotes.
+           :14 and :18 give the minimum and the last rung but cannot
+           establish that nothing is lower. 12-18 is the whole G range,
+           and is what the FindingsFrame chart already cites. */
+        source: "_tools/adjacent-diffs.txt:12-18",
       },
     ],
     limits: [
