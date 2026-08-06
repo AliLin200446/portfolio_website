@@ -64,3 +64,10 @@ material_memory/demo.mov
 
 # raw demo master; public/case-assets/teardown holds the transcode
 /teardown/
+
+# Hero source captures. The webp derivatives under public/case-assets/ are
+# what the site loads; these originals are 3800px monitor-profile PNGs and
+# are 5.3MB together. Kept on disk, out of history.
+/SS/assets/front_pic/
+/Vestige/
+/material_memory/assets/MM_front_pic/

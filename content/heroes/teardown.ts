@@ -1,0 +1,43 @@
+import { indexOf, validateHero, type CaseHero } from "./_schema";
+
+/*
+ * TEARDOWN hero. Every sentence is lifted from content/cases/teardown.ts;
+ * the source line for each is in the sourcing table in the report.
+ *
+ * The 47 calls and five experiments are the case file's own numbers, not
+ * recounted here. Nothing in this file introduces a figure that is not
+ * already published on the case page below it.
+ */
+const teardownHero: CaseHero = validateHero({
+  index: indexOf("teardown"),
+  slug: "teardown",
+  title: "Teardown No 1",
+  meta: { left: "Ali Lin Lab", center: "Case Study", right: "2026" },
+  brief:
+    "An API's documentation tells you what it returns. Only measurement tells you what it withholds.",
+  media: {
+    src: "/case-assets/teardown/teardown-demo-poster.webp",
+    type: "image",
+    alt: "The Teardown harness cropped to its middle 60 percent, showing the prompt, seed and guidance controls down the left, a timing readout for fal-ai/flux/dev in the centre, and two generated garment images on the right.",
+  },
+  quadrants: [
+    {
+      label: "Problem",
+      body: "AI image APIs ship faster than anyone measures them.",
+    },
+    {
+      label: "Solution",
+      body: "This is an instrumented teardown of a generative image API.",
+    },
+    {
+      label: "Methods",
+      body: "I made 47 structured calls across five experiments and logged every measurement to disk.",
+    },
+    {
+      label: "Next Step",
+      body: "The method ports to any inference API, but the findings do not.",
+    },
+  ],
+});
+
+export default teardownHero;

@@ -151,3 +151,94 @@ body[data-index="true"] { padding-top: 0; }
 @media (prefers-reduced-motion: reduce) {
   .venn-part { transition: none; }
 }
+
+/* CASE HERO mount sequence. Title wipes up from its own bottom edge,
+   quadrants rise 3px on a 70ms stagger starting 200ms in, media fades
+   only. Delays are set inline per quadrant; everything here is off
+   under reduced motion, and nothing animates a hairline. */
+@keyframes hero-title-wipe {
+  from { clip-path: inset(100% 0 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+@keyframes hero-quadrant-rise {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes hero-media-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.hero-wipe {
+  animation: hero-title-wipe 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* BACKWARDS, not BOTH. `both` retains the `to` frame after the run, and a
+   CSS animation outranks a normal declaration, so a retained
+   `transform: none` / `opacity: 1` silently beat the hover rules that set
+   scale and blur. `backwards` still applies the `from` frame through the
+   delay, and releases the element to its normal style once finished. The
+   resting values are identical either way, so nothing flashes. */
+.hero-rise {
+  animation: hero-quadrant-rise 620ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.hero-fade {
+  animation: hero-media-fade 620ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-wipe, .hero-rise, .hero-fade {
+    animation: none;
+    opacity: 1;
+    clip-path: none;
+    transform: none;
+  }
+}
+
+/* CASE HERO quadrant hover. Pure CSS, no client component: :has() on the
+   grid container tells the three non-hovered cells to recede.
+
+   Two deliberate splits:
+   - transform + z-index go on the CELL, so the hovered one lifts above
+     its neighbours and above the hairlines.
+   - filter + opacity go on the INNER wrapper, never the cell. The cell
+     carries the 1px rules that draw the cross, and a filter on that
+     element blurs the rules along with the text.
+   Nothing here transitions a border, so the cross never animates.
+
+   Gated on a real pointer: a touch device has no hover, and without the
+   gate the first tap would leave a cell stuck scaled and its siblings
+   stuck blurred with no way to clear it. */
+@media (hover: hover) and (pointer: fine) {
+  .hero-quads .hero-quad {
+    transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hero-quads .hero-quad-inner {
+    transition:
+      filter 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hero-quads:has(.hero-quad:hover) .hero-quad:not(:hover) .hero-quad-inner {
+    filter: blur(2px);
+    opacity: 0.45;
+  }
+  .hero-quads .hero-quad:hover {
+    transform: scale(1.06);
+    transform-origin: center;
+    z-index: 10;
+  }
+}
+
+/* Reduced motion: no transition, no scale, and no blur. Opacity alone
+   still answers "which one am I on" without moving or defocusing
+   anything. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .hero-quads .hero-quad,
+  .hero-quads .hero-quad-inner {
+    transition: none;
+  }
+  .hero-quads .hero-quad:hover {
+    transform: none;
+  }
+  .hero-quads:has(.hero-quad:hover) .hero-quad:not(:hover) .hero-quad-inner {
+    filter: none;
+    opacity: 0.45;
+  }
+}

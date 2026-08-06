@@ -7,6 +7,27 @@ import vestige from "@/content/cases/vestige";
 import teardown from "@/content/cases/teardown";
 import skeletalSilk from "@/content/cases/skeletal-silk";
 import type { CaseData } from "@/content/cases/_schema";
+import CaseHero from "@/components/case/CaseHero";
+import latentHero from "@/content/heroes/latent";
+import teardownHero from "@/content/heroes/teardown";
+import skeletalSilkHero from "@/content/heroes/skeletal-silk";
+import materialMemoryHero from "@/content/heroes/material-memory";
+import vestigeHero from "@/content/heroes/vestige";
+import type { CaseHero as CaseHeroData } from "@/content/heroes/_schema";
+
+/*
+ * Hero registry. All five slugs now carry the first screen. The map is
+ * kept rather than folded into CaseData because the hero is a separate
+ * concern with its own length rules, and because a slug can be pulled
+ * out of it without touching the case content.
+ */
+const heroes: Record<string, CaseHeroData> = {
+  latent: latentHero,
+  teardown: teardownHero,
+  "skeletal-silk": skeletalSilkHero,
+  "material-memory": materialMemoryHero,
+  vestige: vestigeHero,
+};
 
 /*
  * One dispatch, one registry. Every case slug resolves through
@@ -53,5 +74,11 @@ export default async function WorkPage({
   const slug = (await params).slug;
   const c = cases[slug];
   if (!c) notFound();
-  return <CaseTemplate data={c} />;
+  const hero = heroes[slug];
+  return (
+    <>
+      {hero ? <CaseHero data={hero} /> : null}
+      <CaseTemplate data={c} />
+    </>
+  );
 }
