@@ -114,7 +114,7 @@ export default function BenchLoader() {
         style={{
           fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
           color: "#1A1A1A",
-          textAlign: "left",
+          textAlign: "center",
           opacity: phase === "fade" ? 0 : 1,
           transition: phase === "fade" ? "opacity 1.2s ease" : undefined,
         }}
@@ -122,9 +122,24 @@ export default function BenchLoader() {
         <div style={{ fontSize: 64, lineHeight: 1.2, fontVariantNumeric: "tabular-nums" }}>
           <span ref={numRef}>0</span>
         </div>
+        {/* Sits between the count and the bar, at half the count's size.
+            whiteSpace nowrap so it never breaks into two lines and
+            shifts the bar down mid-load. */}
+        <div
+          style={{
+            fontSize: 32,
+            lineHeight: 1.3,
+            marginTop: 18,
+            whiteSpace: "nowrap",
+          }}
+        >
+          I build bodies for things that are disappearing.
+        </div>
         <div
           style={{
             width: 280,
+            marginLeft: "auto",
+            marginRight: "auto",
             border: "0.5px solid rgba(26,26,26,0.25)",
             height: 3,
             marginTop: 10,
