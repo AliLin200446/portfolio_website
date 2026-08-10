@@ -38,16 +38,16 @@ const skeletalSilk: CaseData = {
   },
   sections: {
     what: "A vision model's native output is language: descriptive, unbounded, useless as a shader input on its own.",
-    why: "A technical artist who wants a specific material, a real fabric's exact drape and sheen, either hand-tunes shader parameters or settles for a preset. Skeletal Silk is a third path: photograph the material, and a vision model reads it into the numbers that drive the shader. The hard part isn't the render. The design problem is turning that reading into four bounded material parameters a GLSL material can actually consume in real time.",
+    why: "Wanting a real fabric's drape and sheen means hand-tuning shader parameters or taking a preset. The problem is turning an unbounded reading into four bounded parameters.",
     how: {
       summary: [
-        "There is one fixed GLSL shader. The model writes uniforms, never GLSL. The mapping from an open-ended vision output to a fixed parameter set is the tool's core.",
+        "One fixed GLSL shader; the model writes uniforms, never GLSL. Mapping an open-ended vision output onto a fixed parameter set is the tool's core.",
       ],
       phases: [
         {
           title: "Phase 1 \u00b7 What the model returns",
           body: [
-            "The model isn't asked to describe the fabric. It's constrained to measure it and return four material parameters, one of them a colour triple, not prose. That constraint is the work: a paragraph cannot drive a shader, four material parameters can.",
+            "The model returns four material parameters, one a colour triple, not prose. A paragraph cannot drive a shader; four parameters can.",
           ],
           figure: {
             kind: "code",
@@ -73,7 +73,7 @@ const skeletalSilk: CaseData = {
         {
           title: "Phase 2 \u00b7 The pipeline",
           body: [
-            "The four parameters feed a single GLSL material shader as uniforms: rigidity, flow, specular and a colour triple drive its behaviour in real time. Two different photos don't produce two shaders; they drive the same shader to two genuinely different materials.",
+            "Rigidity, flow, specular and a colour triple feed one shader as uniforms. Two photos do not make two shaders, only two materials.",
           ],
         },
         {
@@ -148,7 +148,7 @@ cotton and knit differ only in color.`,
       "Colour is returned as three normalised channels, not one number. The page calls these four material parameters, which is four fields, not four scalars.",
     ],
   },
-  coda: "Skeletal Silk is the portfolio's one tool rather than one instrument. Latent and Teardown measure; Vestige proves; this one is meant to be used. The control is the point: a vision model's loose reading, pinned to four numbers you can drive and carry away.",
+  coda: "A vision model's loose reading, pinned to four numbers you can drive and carry away.",
   byline: "Ali Lin",
   cta: {
     label: "the case is the tool → try it",

@@ -35,17 +35,28 @@ const vestige: CaseData = {
   },
   sections: {
     what: "For luxury, the very facts that prove compliance are the ones a brand can't reveal.",
-    why: "Coming EU regulation will require luxury and textile brands to publish a digital product passport: verifiable provenance, materials, sustainability. But a passport forces a bad trade: disclose enough raw supply-chain data to satisfy regulators, or withhold it to protect suppliers, recipes, and cost. Vestige removes the trade.",
+    why: "Coming EU regulation will require a digital product passport. That forces a trade: disclose raw supply-chain data, or withhold it and fail compliance.",
     how: {
       summary: [
-        "From a single cryptographic commitment, it generates role-differentiated zero-knowledge proofs: the same hidden field is proven to a regulator as a compliance verdict, shown to a brand partner as a category, and withheld from the consumer entirely, with an inference firewall that stops multiple proofs from being combined to reconstruct what no single role may see.",
+        "One cryptographic commitment generates role-differentiated zero-knowledge proofs, with an inference firewall so proofs cannot be combined.",
       ],
       phases: [
         {
           title: "Phase 1 \u00b7 One commitment, three readings",
           body: [
-            "A product is one canonical commitment root, partitioned into static identity, compliance state, dynamic ownership, and bio-material lineage. From that one root, separate proof circuits answer to separate policies, one each for regulator, brand and consumer, each disclosing a field as an exact value, a bucket, a predicate-only check, or nothing. A verifier can confirm a proof follows an authorized policy, not an ad-hoc selection by the prover.",
-            "SELECTIVE DISCLOSURE, NOT ALL-OR-NOTHING. A regulator sees a compliance verdict; a brand partner sees an approved-source category; a consumer sees a curated provenance story and certification badges. The raw supplier identity, cost, recipe, and exact emissions stay hidden from all of them: proven, not shown.",
+            "A regulator sees a verdict, a brand partner a category, a consumer a story.",
+            "Supplier identity, cost and recipe stay hidden from all three: proven, not shown.",
+          ],
+          /* The four partitions and the four disclosure modes, kept as
+             an enumeration. This phase's figure slot holds the
+             commitment tree, so these are mono lines rather than an
+             aligned block, following the Latent precedent. */
+          data: [
+            "partition | disclosure modes available",
+            "static identity | exact value, bucket, predicate only, nothing",
+            "compliance state | exact value, bucket, predicate only, nothing",
+            "dynamic ownership | exact value, bucket, predicate only, nothing",
+            "bio-material lineage | exact value, bucket, predicate only, nothing",
           ],
           figure: {
             kind: "code",
@@ -67,13 +78,13 @@ const vestige: CaseData = {
         {
           title: "Phase 2 \u00b7 Provenance that starts before manufacture",
           body: [
-            "For bio-materials such as mycelium leather and algae textile, the environmentally significant phase happens before cutting. Vestige carries time-windowed cultivation sensor data into a batch commitment inherited by every downstream item: a seed-to-sale history, cryptographically linked.",
+            "For mycelium leather and algae textile the significant phase is before cutting. Cultivation data enters a batch commitment every item inherits.",
           ],
         },
         {
           title: "Phase 3 \u00b7 The tap that changes state",
           body: [
-            "An NFC tap (NTAG 424 DNA) isn't just an authenticity check. A verified tap becomes a presence receipt that updates the commitment, and in the same atomic transaction the smart contract routes the resale royalty, transfers ownership, advances the lifecycle state, and steps the renderer forward. Physical presence, payment, and provenance move together, closing the loop ordinary NFC authentication leaves open.",
+            "A verified NFC tap (NTAG 424 DNA) becomes a presence receipt, and one atomic transaction carries the rest.",
           ],
           figure: {
             kind: "code",
@@ -106,7 +117,7 @@ const vestige: CaseData = {
       "A filed provisional and a live mock-up, not a production deployment. The consumer passport at vestige.alilinlab.com demonstrates the renderer and the disclosure model; the full multi-circuit prover is specified, not yet shipped end to end.",
     ],
   },
-  coda: "Vestige is where the practice meets a market. It turns a regulatory burden into something a brand can use, without surrendering the secrets that make it a brand. The seal, the provenance, the object that remembers who owned it. It is the same instinct as a maker's mark, rebuilt in zero knowledge.",
+  coda: "It turns a regulatory burden into something a brand can use without surrendering what makes it a brand. The same instinct as a maker's mark, rebuilt in zero knowledge.",
   byline: "Ali Lin",
   prev: { label: "TEARDOWN № 1", href: "/work/teardown" },
   next: { label: "MATERIAL MEMORY", href: "/work/material-memory" },

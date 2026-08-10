@@ -39,32 +39,50 @@ const teardown: CaseData = {
   },
   sections: {
     what: "AI image APIs ship faster than anyone measures them.",
-    why: "Latency claims are marketing, parameter documentation is partial, and the numbers that matter to a production integrator: where the milliseconds live, what a knob actually buys, whether the same call returns the same bytes: are published nowhere. The result is not a benchmark. Benchmarks answer \"which is better.\" A teardown answers \"what is actually happening inside\", and what the API knows but does not send. Instrument-building over tool-using: the harness, the pixel-diff tooling, and the verification pipeline are all first-party.",
+    why: "Latency claims are marketing and parameter docs are partial. A benchmark answers which is better; a teardown answers what the API withholds.",
     how: {
       summary: [
-        "I spent 48 hours instrumenting one model, fal-ai/flux/dev, through its synchronous endpoint: 47 structured calls across five experiments, every measurement logged to disk, every claim traceable to a source file and line.",
+        "48 hours on one model, fal-ai/flux/dev: 47 calls across five experiments, every measurement logged and traceable to a file and line.",
       ],
       phases: [
         {
           title: "Phase 1 \u00b7 What the docs do not answer",
           body: [
-            "Three questions an integrator cannot answer from the docs:",
-            "WHERE DOES THE TIME GO. The response body returns one timing field, inference. Queue time, the segment between sending a request and the model starting work, is not returned and must be derived client-side.",
-            "WHAT DOES A PARAMETER BUY. num_inference_steps documents a default of 28 and no range. Nothing states what an additional step changes, or costs.",
-            "IS THE SAME CALL THE SAME IMAGE. Determinism is assumed, never stated. Caching and reproduction strategies depend on it.",
+            "Three questions an integrator cannot answer from the docs.",
           ],
+          figure: {
+            kind: "code",
+            code: `QUESTION      WHAT THE DOCS SAY             WHAT MEASUREMENT SHOWED
+time          one timing field, inference   queue, from request sent to model
+                                            start, is derived client-side
+steps         default 28, no range          past 28 a step buys almost nothing
+determinism   assumed, never stated         one sha256, 0 of 262,144 pixels`,
+            caption:
+              "the three questions, and what the wire answered \u00b7 the rows map onto findings 1, 3 and 2",
+          },
         },
         {
           title: "Phase 2 \u00b7 The harness",
           body: [
-            "A browser-based harness making live calls through a proxy, timing each with performance.now() split into queue / inference / network, logging every call to a structured record. Image comparison by per-channel pixel diff at two declared thresholds, any \u0394 and \u0394>32 of 255, because \"how many pixels changed\" and \"how many changed visibly\" are different questions with different answers.",
+            "A browser harness makes live calls and logs every one to a structured record.",
+            "Pixel diff runs at two thresholds, any \u0394 and \u0394>32 of 255, because how many pixels changed and how many changed visibly are different questions.",
           ],
         },
         {
           title: "Phase 3 \u00b7 The five experiments",
           body: [
-            "Five experiments: a steps sweep (10 rungs, 1\u219245), a guidance sweep (8 rungs, 1\u219220), a seed determinism run (3 identical calls, byte comparison), a latency series (N=20 at fixed parameters), and a friction log of every gap between the documentation and the wire.",
-            "The docs and the wire disagree. The timings field is typed as Timings; the type is not defined. The steps ceiling of 50 is discoverable only by sending 999 and reading the error body. Validation and gateway errors arrive in two different shapes.",
+            "The docs and the wire disagree: Timings is typed but never defined, and the steps ceiling of 50 is found only by sending 999.",
+          ],
+          /* Five rows. The expspace figure holds this phase's figure
+             slot, so these are mono lines rather than an aligned block,
+             following the Latent precedent. */
+          data: [
+            "experiment | what varied | N | observable",
+            "steps sweep | steps 1 to 45 | 10 rungs | pixels changed per rung",
+            "guidance sweep | guidance 1 to 20 | 8 rungs | pixels changed per rung",
+            "seed determinism | nothing | 3 identical calls | byte comparison",
+            "latency series | nothing | N=20 | queue, inference, network",
+            "friction log | the documentation | every gap | docs against the wire",
           ],
           figure: {
             kind: "instrument",

@@ -30,8 +30,8 @@ const materialMemory: CaseData = {
       "the shipping simulator · the FOLD test, looping · push, drop and drag it yourself: click to run live",
   },
   sections: {
-    what: "Luxury returns run high because a product page shows a still image. Drape, weight, sheen, the way cloth catches light when it moves, none of it survives a photograph.",
-    why: "About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025\u201326). Material Memory closes that gap: a WebGL cloth simulation you can push, drop, and drag, so a garment behaves before it's bought. One engine, two readings. For the shopper it ends the guessing. For the brand it ends the returning.",
+    what: "Luxury returns run high because a product page shows a still image. Drape, weight and sheen do not survive a photograph.",
+    why: "About half of apparel returns cite fit and material mismatch (NRF / Statista, 2025\u201326). A cloth simulation you can push and drag lets a garment behave before it is bought.",
     how: {
       summary: [
         "The same simulation that answers \u201chow does this move\u201d is the thing that keeps it from coming back.",
@@ -40,13 +40,14 @@ const materialMemory: CaseData = {
         {
           title: "Phase 1 \u00b7 Cloth that drapes, not a loop of frames",
           body: [
-            "The fabric runs on Verlet cloth physics. A mass-spring mesh under distance constraints, integrated per frame in Three.js and GLSL, so the cloth holds together while it drapes, swings, and settles. Real-time, driven by the user's push and drag, not a pre-baked animation.",
+            "Verlet cloth physics: a mass-spring mesh under distance constraints.",
+            "Integrated per frame in Three.js and GLSL, driven by your push, not pre-baked.",
           ],
         },
         {
           title: "Phase 2 \u00b7 The material feel, judged by eye",
           body: [
-            "The material feel, drape and weight and sheen and how light rolls across a fold, I tuned by hand, iterating against how real cloth falls. Not measured off a reference; judged by eye, the way you judge whether a fabric hangs right. Latent measures; this one is felt.",
+            "Drape, weight, sheen and how light rolls across a fold, tuned by hand against how real cloth falls. Judged by eye, not measured off a reference.",
           ],
           figure: {
             kind: "live",
@@ -79,7 +80,7 @@ const materialMemory: CaseData = {
       "Everything here was tuned by hand and judged by eye. Latent has calibration files. This one has my opinion.",
     ],
   },
-  coda: "Material Memory is the product-facing end of the same practice: Latent and Teardown measure what generative systems do; this one takes a hand-built physics engine and points it at a business number returns can't otherwise reach.",
+  coda: "A hand-built physics engine pointed at a business number that returns cannot otherwise reach.",
   byline: "Ali Lin",
   prev: { label: "LATENT", href: "/work/latent" },
   next: { label: "TEARDOWN № 1", href: "/work/teardown" },
