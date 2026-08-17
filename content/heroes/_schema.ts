@@ -1,10 +1,10 @@
-import { BERTH_ORDER } from "@/lib/bench";
+import { CASE_ORDER } from "@/lib/bench";
 
 /*
  * CASE HERO: the first screen of a project page. One component, one
  * data entry per project, no per-project CSS.
  *
- * The total is derived from BERTH_ORDER.length, never written as a
+ * The total is derived from CASE_ORDER.length, never written as a
  * literal. lib/bench.ts already carries the scar from a hardcoded 6
  * that survived the ring dropping to five; the page indicator is the
  * same class of number and gets the same treatment.
@@ -12,7 +12,7 @@ import { BERTH_ORDER } from "@/lib/bench";
 export type Quadrant = { label: string; body: string };
 
 export type CaseHero = {
-  /** "01" upward. Position in BERTH_ORDER, not a free-form label. */
+  /** "01" upward. Position in CASE_ORDER, not a free-form label. */
   index: string;
   slug: string;
   /** Rendered uppercase by the component. Store it as written. */
@@ -32,12 +32,17 @@ export type CaseHero = {
 };
 
 /** Total case count, as the page indicator prints it. */
-export const CASE_TOTAL = String(BERTH_ORDER.length).padStart(2, "0");
+export const CASE_TOTAL = String(CASE_ORDER.length).padStart(2, "0");
 
 /** Position of a slug in the canonical order, as "01", "02" and so on. */
 export function indexOf(slug: string): string {
-  const i = BERTH_ORDER.indexOf(slug as (typeof BERTH_ORDER)[number]);
-  if (i < 0) throw new Error(`case hero: ${slug} is not in BERTH_ORDER`);
+  const i = CASE_ORDER.indexOf(slug as (typeof CASE_ORDER)[number]);
+  if (i < 0)
+    throw new Error(
+      `case hero: "${slug}" is not in CASE_ORDER. Every case page needs a ` +
+        `number, so add it there. CASE_ORDER is not BERTH_ORDER: a case can ` +
+        `exist without appearing on the home rail.`
+    );
   return String(i + 1).padStart(2, "0");
 }
 
@@ -80,7 +85,7 @@ export function validateHero(hero: CaseHero): CaseHero {
   }
   if (hero.index !== indexOf(hero.slug)) {
     console.warn(
-      `case hero ${hero.slug}: index ${hero.index} disagrees with BERTH_ORDER`
+      `case hero ${hero.slug}: index ${hero.index} disagrees with CASE_ORDER`
     );
   }
   return hero;

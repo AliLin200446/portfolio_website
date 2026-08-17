@@ -77,6 +77,30 @@ export const BERTH_ORDER = [
 ] as const;
 
 export const berthOf = (id: string) => BERTH_ORDER.indexOf(id as (typeof BERTH_ORDER)[number]);
+
+/* CASE_ORDER answers a different question from BERTH_ORDER, and the two
+ * must not be merged back together.
+ *
+ *   BERTH_ORDER  which instruments the home rail shows, and in what
+ *                order. A curatorial choice that changes when the
+ *                front page changes.
+ *   CASE_ORDER   how many case pages exist and how they are numbered.
+ *                A fact about the body of work.
+ *
+ * They were identical until Material Memory and Vestige moved off the
+ * rail to /experiments. Their case pages still exist and still need a
+ * number, so `01 / 05` stayed correct while the rail dropped to three.
+ * Reading the case count off BERTH_ORDER made `indexOf` throw for both
+ * slugs the moment they left, which would have 500'd two live pages.
+ * That is the reason for the split; do not collapse it because the two
+ * arrays happen to overlap again later. */
+export const CASE_ORDER = [
+  "latent",
+  "teardown",
+  "skeletal-silk",
+  "material-memory",
+  "vestige",
+] as const;
 /** Landing berth: the first step of the argument, not a middle. */
 export const HOME_BERTH = berthOf("latent");
 
