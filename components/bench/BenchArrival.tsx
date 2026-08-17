@@ -17,9 +17,7 @@ import { useEffect, useState } from "react";
 const CUT_BG: Record<string, string> = {
   latent: "#14100d",
   "skeletal-silk": "#FBF5E8",
-  vestige: "#F5F2EC",
   teardown: "#241C15", // LOG surface carries into the folio page
-  "material-memory": "#F5F2EC", // 揭帛 pending: generic paper crossfade
 };
 
 /** silk holds its warm white a touch longer, then falls off */

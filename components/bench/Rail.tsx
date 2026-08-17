@@ -14,11 +14,9 @@ import {
   railX,
 } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
-import Cloth, { clothDrag, getWeaveURL } from "./Cloth";
 import Cocoon from "./Cocoon";
 import FilmRoll from "./FilmRoll";
 import Movement from "./Movement";
-import Seal from "./Seal";
 
 /*
  * THE RAIL. Five instruments on one straight line, one on screen at a
@@ -119,8 +117,6 @@ const TRIM: Record<string, number> = {
   latent: 0.8,
   teardown: 0.8,
   "skeletal-silk": 1,
-  "material-memory": 0.8,
-  vestige: 0.8,
 };
 
 /** World size of each instrument AFTER it has been fitted, written by
@@ -195,9 +191,6 @@ const DIVES: Record<string, DivePose> = {
   latent: { y: 0.5, z: 1.0, pitch: -6 },
   "skeletal-silk": { y: 0.56, z: 0.95, pitch: -2 },
   teardown: { y: 0.85, z: 0.7, pitch: -38 },
-  vestige: { y: 0.5, z: 1.0, pitch: -18 },
-  // TRANSITION: 揭帛 pending,另轮实装: 现走通用覆面 crossfade,无答礼拍
-  "material-memory": { y: 0.55, z: 1.1, pitch: -8 },
 };
 
 /** The surface each cut hands to the case page. Colors match
@@ -206,8 +199,6 @@ const CUT_SURFACE: Record<string, { bg: string; label?: string }> = {
   latent: { bg: "#14100d" },
   "skeletal-silk": { bg: "#FBF5E8" },
   teardown: { bg: "#241C15", label: "LOG #: " },
-  vestige: { bg: "#F5F2EC" },
-  "material-memory": { bg: "#F5F2EC" }, // 揭帛 pending: paper crossfade
 };
 
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
@@ -397,7 +388,7 @@ function Rig({
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      if (transiting() || clothDrag.active) return;
+      if (transiting()) return;
       push((e.deltaX + e.deltaY) * WHEEL_K);
     };
 
@@ -405,13 +396,13 @@ function Rig({
     let startX = 0;
     let startRaw = 0;
     const onDown = (e: PointerEvent) => {
-      if (transiting() || clothDrag.active) return;
+      if (transiting()) return;
       dragging = true;
       startX = e.clientX;
       startRaw = pos.current.raw;
     };
     const onMove = (e: PointerEvent) => {
-      if (!dragging || clothDrag.active) return;
+      if (!dragging) return;
       // pull the rail right, travel left: the hand moves the objects,
       // not the camera
       pos.current.raw = startRaw - (e.clientX - startX) * DRAG_K;
@@ -547,18 +538,13 @@ function playMechanism(id: string) {
   const s = useBenchStore.getState();
   if (id === "latent") s.b1Feed();
   if (id === "skeletal-silk") s.b3Pull();
-  if (id === "vestige") s.b5Stamp();
 }
 
 /** Only the instrument in front and its two neighbours carry geometry.
  *
- *  Unmounting Cloth resets its Verlet state, so sliding away from
- *  MATERIAL MEMORY and back gives you a fresh sheet rather than the one
- *  you left mid-swing. That is deliberate, not a bug: keeping the sim
- *  alive off screen means running it every frame for something nobody
- *  is looking at, which is the exact cost the mount window exists to
- *  avoid. A returning visitor gets cloth at rest, which is also the
- *  better first frame. */
+ *  With three on the rail the window covers all of them, so nothing
+ *  unmounts today. It is kept because it is the reason a fourth
+ *  instrument can be added without the frame cost growing with it. */
 /** Stands one instrument on its berth at stage size.
  *
  *  The fit is measured from the model at mount rather than written down
@@ -654,13 +640,7 @@ function Fit({
   return <group ref={g}>{children}</group>;
 }
 
-function Instruments({
-  clothSelect,
-  onFit,
-}: {
-  clothSelect: (dragged: boolean) => void;
-  onFit: () => void;
-}) {
+function Instruments({ onFit }: { onFit: () => void }) {
   const berth = useBenchStore((s) => s.berth);
   const passing = useBenchStore((s) => s.passing);
   // both windows: `berth` so the destination is already standing there
@@ -685,16 +665,6 @@ function Instruments({
       {near("skeletal-silk") && (
         <Fit id="skeletal-silk" onFit={onFit}>
           <Cocoon position={[0, 0, 0]} />
-        </Fit>
-      )}
-      {near("material-memory") && (
-        <Fit id="material-memory" onFit={onFit}>
-          <Cloth position={[0, 0, 0]} onSelect={clothSelect} />
-        </Fit>
-      )}
-      {near("vestige") && (
-        <Fit id="vestige" onFit={onFit}>
-          <Seal position={[0, 0, 0]} />
         </Fit>
       )}
     </>
@@ -739,10 +709,7 @@ function PointerTargets({
   return (
     <>
       {BERTH_ORDER.map((id, i) =>
-        // MATERIAL MEMORY has no hit box when it is the one on screen:
-        // the cloth needs the pointer for dragging, so it forwards
-        // clicks itself. Off centre it keeps a box so it can be reached
-        Math.abs(i - berth) > 1 || (id === "material-memory" && i === berth) ? null : (
+        Math.abs(i - berth) > 1 ? null : (
           <mesh
             key={id}
             position={[railX(i), hit(id).h / 2, -hit(id).d / 2]}
@@ -914,19 +881,6 @@ function CutOverlay({
           }}
         />
       )}
-      {/* UNVEIL 拍③: the page develops out of the warp/weft. The
-          cloth's own weave canvas as a fading CSS layer, zero new RT */}
-      {transitionId === "material-memory" && getWeaveURL() && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `url(${getWeaveURL()})`,
-            backgroundSize: "160px",
-            animation: "bench-weave 0.3s ease-out 0.72s both",
-          }}
-        />
-      )}
       {surface?.label && (
         <span
           className="font-mono"
@@ -988,16 +942,7 @@ export default function Rail() {
     if (!station?.href || !DIVES[id]) return; // no entry yet
     const s = useBenchStore.getState();
     if (s.transitionId) return;
-    if (id === "material-memory" && clothDrag.active) {
-      // mid-drag enter: let the cloth go, settle a beat, then run the
-      // SAME guarded path rather than starting the dive blind on a timer
-      setTimeout(() => {
-        if (!useBenchStore.getState().transitionId) beginTransition(id);
-      }, 200);
-      return;
-    }
     if (id === "latent") s.b1Feed();
-    if (id === "vestige") s.b5Stamp();
 
     const target = berthOf(id);
     /** The regression guard. The dive is a fixed pose relative to the
@@ -1052,20 +997,6 @@ export default function Rail() {
     requestAnimationFrame(wait);
   };
 
-  /** MATERIAL MEMORY's click path. Its hit box is deliberately absent
-   *  when it is the one on screen so the cloth can be dragged, so the
-   *  cloth forwards clicks here and gets the same contract. */
-  const clothSelect = (dragged: boolean) => {
-    // A pointer that travelled more than a few pixels was a drag meant
-    // to sway the fabric, not a click meant to leave the page
-    if (dragged) return;
-    const st = useBenchStore.getState();
-    if (st.transitionId) return;
-    const mine = berthOf("material-memory");
-    if (st.berth !== mine) st.setBerth(mine);
-    beginTransition("material-memory");
-  };
-
   /** Beat 3: the surface owns the viewport, hand over to the route. The
    *  CUT_KEY flag dresses the case page in the same surface
    *  (BenchArrival) and later arms the 0.5s walk-back reverse. */
@@ -1110,7 +1041,7 @@ export default function Rail() {
         <fog attach="fog" args={["#E9E3D6", 7, 20]} />
         <directionalLight position={[-3, 6, 4]} intensity={1.4} color="#fff6e8" />
         <ambientLight intensity={0.75} />
-        <Instruments clothSelect={clothSelect} onFit={onFit} />
+        <Instruments onFit={onFit} />
         <PointerTargets
           beginTransition={beginTransition}
           railSettled={railSettled}

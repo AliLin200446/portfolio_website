@@ -24,7 +24,7 @@ export const STATIONS: Station[] = [
     href: "/work/latent",
     line: "Dehancer assumes you've shot something. We assume you haven't.",
     blurb:
-      "A film physics engine that gives AI generated video real halation and grain, in a browser tab.",
+      "A film physics engine that gives AI generated video real halation and grain, running in a browser tab. Calibrated against negatives I shot and scanned myself.",
   },
   {
     id: "skeletal-silk",
@@ -32,31 +32,17 @@ export const STATIONS: Station[] = [
     href: "/work/skeletal-silk",
     line: "AI as material interpreter, not image generator.",
     blurb:
-      "Reads a fabric photo with a vision model, drives a live shader from it.",
+      "Reads a fabric photo with a vision model and drives a live shader from it. I ran a blank control to find out what it actually resolves.",
   },
   {
     id: "teardown",
     label: "TEARDOWN",
     href: "/work/teardown", // LINK-WIRE: enter → case page; 外站唯一入口在 case HERO open live ↗
     blurb:
-      "A published measurement study that turns \"it feels fast\" into numbers.",
+      "A published measurement study of a hosted image generation API, built to turn \"it feels fast\" into numbers. Every figure links to its raw measurement file.",
   },
-  {
-    id: "vestige",
-    label: "VESTIGE",
-    href: "/work/vestige",
-    line: "A digital product passport built to outlast the first sale.",
-    blurb:
-      "One cryptographic commitment. A regulator, a brand, and a customer each verify a different amount.",
-  },
-  {
-    id: "material-memory",
-    label: "MATERIAL MEMORY",
-    href: "/work/material-memory", // CASE-NAV: 器物点击/揭帛 hook 有目的地
-    line: "hand-written cloth physics",
-    blurb:
-      "Real time cloth simulation. A photograph cannot show you how fabric moves.",
-  },
+
+
 ];
 
 /** Rail order, left to right. Hardcoded and deliberate: this is the
@@ -72,8 +58,6 @@ export const BERTH_ORDER = [
   "latent",
   "teardown",
   "skeletal-silk",
-  "material-memory",
-  "vestige",
 ] as const;
 
 export const berthOf = (id: string) => BERTH_ORDER.indexOf(id as (typeof BERTH_ORDER)[number]);
