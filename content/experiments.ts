@@ -88,6 +88,37 @@ export const experiments: Experiment[] = [
     shot: "/experiments/consensus-couture.webp",
     href: "https://consensus-couture.alilinlab.com/",
   },
+  /* MATERIAL MEMORY and VESTIGE moved here from the home rail. They
+   * keep their full case pages; `href` points at those rather than at
+   * the live site, the same way RESONANCE does, so the case page stays
+   * the one place that carries the live link.
+   *
+   * Neither has a `shot`. The card back renders a labelled empty slot
+   * for a missing one, which is the honest state: /experiments/*.webp
+   * are 16:10 captures and the only images these two have are case
+   * heroes at 2.26 and 1.67, one of them 3800px wide. Pointing the
+   * card at those would ship a hero-sized file into a thumbnail and
+   * crop it wrong. Two proper captures is the fix, not a reused path.
+   */
+  {
+    name: "Material Memory",
+    // the case page's own oneLine, unchanged
+    line: "a real-time fabric simulator that lets a buyer feel a garment before they buy it",
+    year: "2026",
+    tags: ["3d", "web"],
+    href: "/work/material-memory",
+  },
+  {
+    name: "Vestige",
+    // `line`, not `credit`: the card front renders the name alone, and
+    // `line` is what reaches the list row. `credit` is reserved for a
+    // third party confirming the work; a provisional you filed
+    // yourself is a status, not an endorsement.
+    line: "a filed provisional · EU digital product passport",
+    year: "2026",
+    tags: ["web3", "3d"],
+    href: "/work/vestige",
+  },
   // 填字模板(照抄,一条一分钟):
   // { name: 'Cyber I Ching', line: 'Ethereum block hash → I Ching hexagram', year: '2025',
   //   tags: ['web3','generative'], href: '〔live URL〕', featured: true,

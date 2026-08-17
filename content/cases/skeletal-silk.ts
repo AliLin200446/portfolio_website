@@ -37,8 +37,8 @@ const skeletalSilk: CaseData = {
       "upload a material · Claude Vision reads four properties · they drive the shader in real time: try it",
   },
   sections: {
-    what: "A vision model's native output is language: descriptive, unbounded, useless as a shader input on its own.",
-    why: "Wanting a real fabric's drape and sheen means hand-tuning shader parameters or taking a preset. The problem is turning an unbounded reading into four bounded parameters.",
+    what: "Ask a model to describe silk and you get a paragraph, which no renderer can use.",
+    why: "Matching a real fabric today means hand-tuning sliders or settling for a preset. This turns a photograph into the four numbers a renderer needs.",
     how: {
       summary: [
         "One fixed GLSL shader; the model writes uniforms, never GLSL. Mapping an open-ended vision output onto a fixed parameter set is the tool's core.",

@@ -34,7 +34,7 @@ const latent: CaseData = {
   },
   sections: {
     what: "AI generated video has film looks. It does not have film physics.",
-    why: "A LUT maps one pixel to another; halation is about the neighbourhood. The plugins that do it properly sit outside the browser.",
+    why: "Existing filters recolour each pixel on its own, so they cannot spread light the way film does. The tools that can are paid desktop plugins.",
     how: {
       summary: [
         "Five GL passes on WebGL2, on your GPU, in a browser tab. Their order is where each step happens on real film.",

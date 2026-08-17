@@ -39,7 +39,7 @@ const teardown: CaseData = {
   },
   sections: {
     what: "AI image APIs ship faster than anyone measures them.",
-    why: "Latency claims are marketing and parameter docs are partial. A benchmark answers which is better; a teardown answers what the API withholds.",
+    why: "Latency claims are marketing and the documentation leaves out what each setting costs. A benchmark answers which is better; a teardown answers what the API withholds.",
     how: {
       summary: [
         "48 hours on one model, fal-ai/flux/dev: 47 calls across five experiments, every measurement logged and traceable to a file and line.",
