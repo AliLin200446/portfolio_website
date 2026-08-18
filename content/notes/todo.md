@@ -50,3 +50,13 @@ found so far: BenchLoader claiming drei asset tracking that never
 existed, applyPointer claiming toward viewer while pushing away, a
 subdivision comment claiming a necessity the measurement did not
 support. When they diverge, the comment is what changes.
+
+## geometry: measure the placement, do not recompute it
+
+A number derived from the placement formula agrees with the placement
+code even when the placement code is wrong. Read it back off the scene
+graph instead.
+
+This is why the dive assertion could never catch the `% 6` bug it was
+written for: both of its sides ran through the same index function, so
+a wrong index moved the object and moved the expected value with it.
