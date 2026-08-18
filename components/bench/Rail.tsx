@@ -119,15 +119,62 @@ const TRIM: Record<string, number> = {
   "skeletal-silk": 1,
 };
 
-/** World size of each instrument AFTER it has been fitted, written by
- *  Fit and read by the hit boxes.
+/** The silhouette rule, in one place because three callers have to
+ *  agree on it: Fit sizes against it, Fit records the placed x from it,
+ *  and the dive assertion re-measures with it.
+ *
+ *  Box3 measures geometry, and geometry can lie about the silhouette:
+ *  FilmRoll's leader is a full length ribbon that the shader reveals
+ *  along its curve, so at rest two thirds of it is present and not
+ *  drawn. Framing on it centres a strip nobody can see and pushes the
+ *  canister off to the side. userData.noFrame marks that case at the
+ *  source rather than special casing an instrument here. */
+function frameBox(o: THREE.Object3D, out: THREE.Box3, scratch: THREE.Box3) {
+  out.makeEmpty();
+  o.traverse((c) => {
+    const m = c as THREE.Mesh;
+    if (!m.isMesh || m.userData.noFrame || !m.geometry) return;
+    // recomputed, never reused: a geometry whose vertices are rewritten
+    // every frame carries a cached box of the shape it started as
+    m.geometry.computeBoundingBox();
+    if (!m.geometry.boundingBox) return;
+    scratch.copy(m.geometry.boundingBox).applyMatrix4(m.matrixWorld);
+    out.union(scratch);
+  });
+  return out;
+}
+
+/** World size of each instrument AFTER it has been fitted, plus the x
+ *  it actually ended up on. Written by Fit, read by the hit boxes and
+ *  by the dive.
  *
  *  The hit boxes used to be the stage: 86 percent of the frame wide,
  *  whatever the object inside it came out as. Latent is 22 percent of
  *  the frame wide before its trim, so four fifths of its target was
  *  empty paper and the pointer triggered it from most of the way
- *  across the screen, well before it was anywhere near the object. */
-const FITTED = new Map<string, { w: number; h: number; d: number }>();
+ *  across the screen, well before it was anywhere near the object.
+ *
+ *  `x` is MEASURED off the placed object, not recomputed from the
+ *  formula that placed it. That distinction is the whole point: a
+ *  number derived from railX(berthOf(id)) agrees with the placement
+ *  code even when the placement code is wrong, which is how a bad
+ *  index stays invisible. A number read back off the scene graph
+ *  disagrees. */
+const FITTED = new Map<string, { w: number; h: number; d: number; x: number }>();
+
+/** The placed instruments, by id, so the dive can re-measure one at the
+ *  moment it fires rather than trusting a cache written at mount.
+ *  Cleared on unmount: an entry here means "this object is in the
+ *  scene right now", which is a thing the dive needs to know. */
+const FIT_NODES = new Map<string, THREE.Object3D>();
+
+/** Where the camera must end up in x to be looking at an instrument.
+ *
+ *  Undefined means the object is not currently placed, which is a real
+ *  state: nothing is fitted before first layout. Callers must treat it
+ *  as "no target", never as 0 — 0 is a valid rail position and flying
+ *  there looks like a deliberate move to the wrong instrument. */
+const diveXOf = (id: string): number | undefined => FITTED.get(id)?.x;
 
 const STAGE_W_FRAC = 0.86;
 const STAGE_H_FRAC = 0.62;
@@ -279,16 +326,40 @@ function Rig({
     // path-inherent lean <=2.2 degrees. No orbit, no free look. dp
     // comes off the single MASTER curve, so it is C1 through every beat
     const id = useBenchStore.getState().transitionId;
-    const dive = id ? DIVES[id] : undefined;
+    if (!id) return;
+    const dive = DIVES[id];
     if (!dive) return;
     const dp = MASTER(clamp01(tt.current / T_TOTAL));
     const q = 1 - dp;
-    // x starts and ends on the rail; the control point only bows it
-    const cx = ax + 0.38;
+    /* THE DIVE'S X USED TO BE THE CAMERA'S OWN X, AT BOTH ENDS.
+     *
+     * It read `dp*dp*ax`, so the arc started and finished on whatever
+     * rail position the camera already held, and never referred to the
+     * instrument at all. That was not a shortcut, it was an unstated
+     * dependency on an invariant the RAIL happened to maintain: the
+     * rail moves the camera to railX(berth) and the fit stands each
+     * object on railX(berthOf(id)), so for the object you are entering,
+     * camera x and object x were the same number. Aiming at nothing and
+     * aiming at the instrument produced identical frames, so the bug
+     * could not be seen.
+     *
+     * The invariant holds only while exactly one instrument can be in
+     * front of the camera. Standing three side by side breaks it
+     * permanently, and then a dive into the left or right instrument
+     * flies straight down into the middle one.
+     *
+     * `tx` is the instrument's measured x. On the rail it equals ax
+     * whenever the rail has settled, so this is behaviour neutral
+     * today; off the rail it is the difference between arriving at the
+     * object and arriving at its neighbour. */
+    const tx = diveXOf(id) ?? ax;
+    // the control point bows the arc sideways off the line of travel,
+    // which is now a real line rather than a point
+    const cx = (ax + tx) / 2 + 0.38;
     const cy = (CAM_Y + dive.y) / 2 - 0.14;
     const cz = (CAM_Z + dive.z) / 2;
     out.pos.set(
-      q * q * ax + 2 * q * dp * cx + dp * dp * ax,
+      q * q * ax + 2 * q * dp * cx + dp * dp * tx,
       q * q * CAM_Y + 2 * q * dp * cy + dp * dp * dive.y,
       q * q * CAM_Z + 2 * q * dp * cz + dp * dp * dive.z
     );
@@ -574,25 +645,7 @@ function Fit({
       o.scale.setScalar(1);
       o.position.set(0, 0, 0);
       o.updateMatrixWorld(true);
-      // Box3 measures geometry, and geometry can lie about the
-      // silhouette: FilmRoll's leader is a full length ribbon that the
-      // shader reveals along its curve, so at rest two thirds of it is
-      // present and not drawn. Framing on it centres a strip nobody can
-      // see and pushes the canister off to the side. userData.noFrame
-      // marks that case at the source rather than special casing an
-      // instrument here.
-      box.makeEmpty();
-      o.traverse((c) => {
-        const m = c as THREE.Mesh;
-        if (!m.isMesh || m.userData.noFrame || !m.geometry) return;
-        // recomputed, never reused: the cloth is a PlaneGeometry whose
-        // vertices the Verlet sim rewrites every frame, and its cached
-        // box is the flat sheet it started as
-        m.geometry.computeBoundingBox();
-        if (!m.geometry.boundingBox) return;
-        scratch.copy(m.geometry.boundingBox).applyMatrix4(m.matrixWorld);
-        box.union(scratch);
-      });
+      frameBox(o, box, scratch);
       if (box.isEmpty()) return;
       const d = box.getSize(new THREE.Vector3());
       if (d.x < 1e-4 || d.y < 1e-4) return;
@@ -620,9 +673,25 @@ function Fit({
         -box.min.y * s,
         -box.max.z * s
       );
-      // the object is now centred on its berth in x, standing on y = 0
-      // and receding from z = 0, so its world size is just d scaled
-      FITTED.set(id, { w: d.x * s, h: d.y * s, d: d.z * s });
+      // Read the placed x back off the scene graph rather than reusing
+      // the expression above. It costs one Box3 and it is the only
+      // reason the dive assertion can disagree with the placement code:
+      // recomputing railX(berthOf(id)) here would make the recorded x
+      // and the placed x the same expression, so a wrong index would
+      // move the object AND move the number that is supposed to catch
+      // it. Measured, they part company.
+      o.updateMatrixWorld(true);
+      frameBox(o, box, scratch);
+      if (box.isEmpty()) return;
+      // the object is now standing on y = 0 and receding from z = 0, so
+      // its world size is just d scaled; x is where it actually landed
+      FITTED.set(id, {
+        w: d.x * s,
+        h: d.y * s,
+        d: d.z * s,
+        x: (box.min.x + box.max.x) / 2,
+      });
+      FIT_NODES.set(id, o);
       onFit();
       invalidate();
     };
@@ -635,7 +704,14 @@ function Fit({
     // through the description. A static instrument measures the same
     // both times and this costs it one Box3.
     const again = setTimeout(fit, 900);
-    return () => clearTimeout(again);
+    return () => {
+      clearTimeout(again);
+      // an entry in FIT_NODES means "in the scene right now". Leaving a
+      // stale node here would let the dive re-measure an unmounted
+      // object and conclude it is aimed correctly at something nobody
+      // can see.
+      if (FIT_NODES.get(id) === o) FIT_NODES.delete(id);
+    };
   }, [id, trim, onFit, invalidate, size.width, size.height]);
   return <group ref={g}>{children}</group>;
 }
@@ -945,32 +1021,87 @@ export default function Rail() {
     if (id === "latent") s.b1Feed();
 
     const target = berthOf(id);
-    /** The regression guard. The dive is a fixed pose relative to the
-     *  camera's rail position; it does not aim at an object. So entering
-     *  before the rail has arrived flies the camera at whoever is
-     *  standing there instead. The store's berth updates instantly while
-     *  the rail springs over about a second, so checking berth alone is
-     *  not enough: wait for the geometry, not the state.
+    /** The regression guard, rewritten.
      *
-     *  This bug has now shipped twice, both times invisible until
-     *  someone clicked. */
+     *  It used to compare pos.current.x against railX(target): the
+     *  camera's rail position against the formula that placed the
+     *  object. Both sides ran through berthOf, so a wrong index moved
+     *  the object and moved the expected value with it, and the two
+     *  agreed while the camera flew at the wrong instrument. That is
+     *  precisely why it never caught the `% 6` bug it was written for.
+     *  A test whose two sides share a term can only catch disagreement
+     *  between things that were never going to disagree.
+     *
+     *  Now it measures. The object is re-measured off the live scene
+     *  graph at the moment the dive fires, and that measurement is
+     *  compared against the x the camera is actually going to fly to.
+     *  The two reach the same number by different routes, so they can
+     *  part company.
+     *
+     *  What it catches: a stale FITTED entry after a resize whose refit
+     *  did not run or early-returned; an instrument that has moved
+     *  itself off its slot since it was fitted; and a dive fired at an
+     *  instrument that is not currently in the scene.
+     *
+     *  What it does NOT catch, written down so nobody trusts it further
+     *  than it goes:
+     *
+     *  - A wrong `id` arriving from the hit box. Every check here is
+     *    keyed by id, so the wrong instrument measured against the
+     *    wrong instrument's aim agrees. That belongs to the hit box.
+     *  - Someone restoring the old `dp*dp*ax` endpoint in poseAt. These
+     *    checks read diveXOf, not the arc, so the aim would still look
+     *    right while the camera flew somewhere else. What protects that
+     *    now is structural rather than asserted: the endpoint reads the
+     *    measured x, so there is no second number to drift from. Asking
+     *    the assertion to re-derive the arc's endpoint would put a
+     *    shared formula on both sides again, which is the fault being
+     *    removed. */
     const assertAligned = (where: string) => {
       if (process.env.NODE_ENV === "production") return;
-      const d = pos.current.x - railX(target);
-      if (Math.abs(d) > 0.05)
+
+      const node = FIT_NODES.get(id);
+      if (!node) {
         console.error(
-          `[rail] dive started ${d.toFixed(3)} world units off target for ` +
-            `"${id}" (${where}). camera.x=${pos.current.x.toFixed(4)} ` +
-            `want=${railX(target).toFixed(4)}. The camera will fly at ` +
-            `whatever is standing there instead.`
+          `[rail] dive fired for "${id}" (${where}) but that instrument is ` +
+            `not in the scene: nothing has been fitted under that id. The ` +
+            `camera has no target and will fly to wherever it already is.`
         );
-      // Index agreement. Today this cannot fire: select() calls
-      // setBerth(i) with the same i it derives the id from, so the two
-      // are the same number by construction. It is here for the day
-      // somebody changes select, or adds a second way in, and the two
-      // stop being derived from each other. It is NOT the guard that
-      // catches the `% 6` class of bug: that one is the geometry test
-      // above, because a wrong index makes both sides wrong together.
+        return;
+      }
+      const aim = diveXOf(id);
+      if (aim === undefined) {
+        console.error(
+          `[rail] dive fired for "${id}" (${where}) with no recorded x. ` +
+            `Fit ran but did not write FITTED, so the arc falls back to the ` +
+            `camera's own position and lands on whatever is standing there.`
+        );
+        return;
+      }
+      const measured = frameBox(node, new THREE.Box3(), new THREE.Box3());
+      if (measured.isEmpty()) {
+        console.error(
+          `[rail] dive fired for "${id}" (${where}) but the instrument ` +
+            `measures empty right now, so where it appears cannot be ` +
+            `confirmed. Every mesh is either missing or marked noFrame.`
+        );
+        return;
+      }
+      const mx = (measured.min.x + measured.max.x) / 2;
+      if (Math.abs(aim - mx) > 0.05)
+        console.error(
+          `[rail] dive for "${id}" (${where}) aims at x=${aim.toFixed(4)} ` +
+            `but the instrument is measuring at x=${mx.toFixed(4)}, ` +
+            `${Math.abs(aim - mx).toFixed(3)} world units away. The camera ` +
+            `will fly at whatever is standing at the aim point instead.`
+        );
+      // Index agreement, kept but demoted. Today this cannot fire:
+      // select() calls setBerth(i) with the same i it derives the id
+      // from, so the two are the same number by construction. It is
+      // here for the day somebody changes select, or adds a second way
+      // in, and the two stop being derived from each other. It is NOT
+      // the guard that catches the `% 6` class of bug, and it never
+      // was: the measurement above is.
       const active = useBenchStore.getState().berth;
       if (active !== target)
         console.error(
