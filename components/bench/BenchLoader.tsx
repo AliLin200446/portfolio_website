@@ -1,15 +1,39 @@
 "use client";
 
-import { useProgress } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
 import { useBenchStore } from "@/lib/benchStore";
 
 /*
+ * BUNDLE RULE, and it is not a style preference:
+ *
+ *   Nothing from three, fiber or drei at module scope in any eagerly
+ *   imported file. One static import defeats the dynamic one. This
+ *   cost 100 kB gz on the home page until 2026-08.
+ *
+ * The mechanism: Rail is loaded with dynamic(ssr:false) so the 3D
+ * module stays out of the first paint. This file is NOT dynamic, and
+ * it sat one `import { useProgress } from "@react-three/drei"` away
+ * from the whole three dependency tree. That single line pulled the
+ * 383 kB three chunk into the home route's First Load, where it
+ * blocked the first paint of a page whose first paint is deliberately
+ * plain DOM. The dynamic import had been correct the whole time and
+ * was doing nothing.
+ *
+ * Worse, the import bought nothing. useProgress reports on
+ * THREE.DefaultLoadingManager, which only speaks when a THREE Loader
+ * runs. Every instrument here is procedural geometry: no useLoader, no
+ * useTexture, no useGLTF, no drei component that fetches. `active` was
+ * therefore always false, so the branch it fed always took the same
+ * arm. Deleting it changes what the loader displays in exactly zero
+ * cases. If an instrument ever does load a real asset, feed it through
+ * setBoot from inside Rail, which is already dynamic. Do not import
+ * drei here to get it back.
+ *
  * LOADER — instrument boot, not loading theater.
  * Honest readout: the shown value only ever chases the REAL target
- * (runtime chunk → webgl context → assets via the shared drei manager →
- * compileAsync) and never runs ahead of it. If reality plateaus, the
- * bar stops. That stop is the point.
+ * (runtime chunk → webgl context → shader compile) and never runs
+ * ahead of it. If reality plateaus, the bar stops. That stop is the
+ * point.
  * Pure HTML/CSS overlay, zero images, zero new deps; the number lerps
  * via direct DOM writes (no per-frame React), the bar moves on
  * transform: scaleX. Copper fill, no cinnabar (the seal owns it),
@@ -23,15 +47,9 @@ const LERP = 0.1;
  *  plain DOM and must not pull the 3D module into the first paint. */
 const READY_KEY = "bench-ready";
 
-function cleanLabel(url: string) {
-  const base = url.split("/").pop() ?? url;
-  return base.split(".")[0].replace(/[-_]/g, " ").toLowerCase() || "assets";
-}
-
 export default function BenchLoader() {
   const bootTarget = useBenchStore((s) => s.bootTarget);
   const bootLabel = useBenchStore((s) => s.bootLabel);
-  const { active, progress, item } = useProgress();
 
   const [phase, setPhase] = useState<"boot" | "fade" | "gone">("boot");
 
@@ -52,9 +70,12 @@ export default function BenchLoader() {
   const barRef = useRef<HTMLDivElement>(null);
   const reduced = useRef(false);
 
-  // real target: milestones, with any genuine assets mapped into 60–90
-  const target = Math.max(bootTarget, active ? 60 + progress * 0.3 : 0);
-  const label = active && item ? cleanLabel(item) : bootLabel;
+  // real target: the milestones, and nothing else. bootTarget is
+  // monotonic and never negative, so this is what the old
+  // Math.max(bootTarget, active ? … : 0) evaluated to on every frame
+  // this page has ever rendered.
+  const target = bootTarget;
+  const label = bootLabel;
 
   useEffect(() => {
     reduced.current = window.matchMedia(
