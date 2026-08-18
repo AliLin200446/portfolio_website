@@ -41,3 +41,12 @@ rows, so the obvious cases are closed. What remains, for a later pass:
   supports radius 4.9 -> N 6 -> about sigma 30, and the
   MAX_BLUR_ITERATIONS ceiling of 24 near radius 9.8. A third row would
   mean computing an effective sigma no evidence file states.
+
+## comments: a lying comment survives review
+
+A comment that describes intent while the code does something else is
+a lie that survives review, because reviewers read the comment. Three
+found so far: BenchLoader claiming drei asset tracking that never
+existed, applyPointer claiming toward viewer while pushing away, a
+subdivision comment claiming a necessity the measurement did not
+support. When they diverge, the comment is what changes.
