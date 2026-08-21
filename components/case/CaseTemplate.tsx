@@ -186,7 +186,7 @@ export default function CaseTemplate({
   ];
 
   return (
-    <main className="mx-auto max-w-5xl px-6">
+    <main className="mx-auto max-w-[1268px] px-6">
       <BenchArrival slug={data.slug} />
       <header className="sticky top-[3.25rem] z-[3] -mx-6 border-b border-line bg-paper/90 px-6 backdrop-blur-sm flex items-baseline justify-between py-3 font-mono font-medium text-[length:var(--text-meta)] text-muted">
         <Link
@@ -201,245 +201,262 @@ export default function CaseTemplate({
       </header>
 
       {/* left rail: the Teardown page's own section nav */}
-      <CaseIndex items={items} />
+      {/* 20 / 80. The index used to be xl:fixed against the viewport
+          edge, which meant it took no layout width at all and the
+          measure was whatever max-w-5xl gave it. It is a column now, so
+          the width has to come from somewhere, and the container grew
+          rather than the prose shrinking: 1268px minus the 48px of px-6
+          leaves 1220, and 20/80 of that is 244 and 976. 976 is exactly
+          the measure the case pages already had, so the reading column
+          is unchanged and the rail is what is new.
 
-      {/* ① MASTHEAD */}
-      <section className="pt-14">
-        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">
-          {data.name}
-        </h1>
-        <p className="mt-4 max-w-[52ch] font-serif text-[length:var(--text-lead)] text-muted">
-          {data.oneLine}
-        </p>
-        <p className="mt-6 flex flex-wrap gap-x-3 gap-y-1 font-mono font-medium text-[length:var(--text-meta)] text-muted">
-          <span>{data.meta.type}</span>
-          <span aria-hidden>·</span>
-          <span>{data.meta.stack}</span>
-          <span aria-hidden>·</span>
-          <span>{data.meta.year}</span>
-          <span aria-hidden>·</span>
-          <span>{data.meta.status}</span>
-          {data.meta.live && (
-            <>
-              <span aria-hidden>·</span>
+          Below xl the grid collapses to one column and CaseIndex falls
+          back to the horizontal row it already had at the top, which is
+          why the split is not expressed as two fixed widths. */}
+      <div className="xl:grid xl:grid-cols-[20%_80%] xl:gap-0">
+        {/* left rail: this page's own section nav */}
+        <CaseIndex items={items} />
+        <div className="min-w-0">
+
+        {/* ① MASTHEAD */}
+        <section className="pt-14">
+          <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">
+            {data.name}
+          </h1>
+          <p className="mt-4 max-w-[52ch] font-serif text-[length:var(--text-lead)] text-muted">
+            {data.oneLine}
+          </p>
+          <p className="mt-6 flex flex-wrap gap-x-3 gap-y-1 font-mono font-medium text-[length:var(--text-meta)] text-muted">
+            <span>{data.meta.type}</span>
+            <span aria-hidden>·</span>
+            <span>{data.meta.stack}</span>
+            <span aria-hidden>·</span>
+            <span>{data.meta.year}</span>
+            <span aria-hidden>·</span>
+            <span>{data.meta.status}</span>
+            {data.meta.live && (
+              <>
+                <span aria-hidden>·</span>
+                <a
+                  href={data.meta.live}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="border-b border-bronze pb-px transition-colors hover:text-bronze-text"
+                >
+                  open live ↗
+                </a>
+              </>
+            )}
+          </p>
+        </section>
+
+        {/* ② CLAIM. One sentence, the thesis */}
+        <section
+          id="claim"
+          className="flex min-h-[38svh] scroll-mt-8 items-center border-b border-line"
+        >
+          <p className="max-w-[38ch] font-serif text-[1.75rem] leading-snug sm:text-[2.15rem]">
+            {Array.isArray(data.claim)
+              ? data.claim.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))
+              : data.claim}
+          </p>
+        </section>
+
+        {/* TEST, teardown only. This was a 3D close-up of the instrument
+            you arrived through, which showed the object but not the
+            thing the page is about. The recording shows the instrument
+            being used, with the same numbers the page argues from. It
+            goes through Fig so it inherits the poster-then-click bargain
+            rather than restating it. */}
+        {data.slug === "teardown" && (
+          <section className="pt-10">
+            <Fig
+              figure={{
+                kind: "video",
+                src: "/case-assets/teardown/teardown-demo.mp4",
+                poster: "/case-assets/teardown/teardown-demo-poster.webp",
+                caption: "the instrument running, 25.2s · click to play",
+              }}
+            />
+          </section>
+        )}
+
+        {/* ③ HERO. The strongest single visual */}
+        <section className="py-12">
+          <Fig figure={data.hero} />
+        </section>
+
+        {/* WHAT / WHY / HOW. The new structure. Every phase body is in
+            the DOM whether the row is open or not: a details element
+            folds, it does not unmount. Find-in-page, crawlers and
+            check-claims all need to reach the sentences inside. */}
+        <>
+            <section id="what" className="scroll-mt-8 border-t border-line py-14">
+              <p className={LABEL}>WHAT</p>
+              <p className={`${PROSE} mt-8`}>{data.sections.what}</p>
+            </section>
+
+            <section id="why" className="scroll-mt-8 border-t border-line py-14">
+              <p className={LABEL}>WHY</p>
+              <p className={`${PROSE} mt-8`}>{data.sections.why}</p>
+            </section>
+
+            <section id="how" className="scroll-mt-8 border-t border-line py-14">
+              <p className={LABEL}>HOW</p>
+              {data.sections.how.summary.map((para, i) => (
+                <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
+                  {para}
+                </p>
+              ))}
+              <div className="mt-10">
+                {data.sections.how.phases.map((ph) => (
+                  <details
+                    key={ph.title}
+                    className="group border-t border-line last:border-b"
+                    style={{ borderTopWidth: "0.5px" }}
+                  >
+                    <summary className="flex cursor-pointer list-none items-baseline gap-3 py-5 font-mono text-[length:var(--text-body)] uppercase tracking-widest text-ink outline-none [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]">
+                      <span aria-hidden className="text-bronze-text">
+                        <span className="group-open:hidden">+</span>
+                        <span className="hidden group-open:inline">
+                          {String.fromCharCode(8211)}
+                        </span>
+                      </span>
+                      {ph.title}
+                    </summary>
+                    <div className="pb-10">
+                      {ph.body.map((para, i) => (
+                        <p
+                          key={para}
+                          className={`${PROSE} ${i === 0 ? "mt-2" : "mt-5"}`}
+                        >
+                          {para}
+                        </p>
+                      ))}
+                      {ph.data?.map((d) => (
+                        <p
+                          key={d}
+                          className="mt-5 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed tracking-wide text-muted"
+                        >
+                          {d}
+                        </p>
+                      ))}
+                      {ph.figure && <Fig figure={ph.figure} />}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          </>
+
+        {/* ⑥ WHY IT HOLDS: evidence, then limits */}
+        <section id="proof" className="scroll-mt-8 border-t border-line py-14">
+          <p className={LABEL}>{data.proofLabel ?? "PROOF"}</p>
+          {data.proof.intro?.map((para, i) => (
+            <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
+              {para}
+            </p>
+          ))}
+          <ul className={data.proofSplit ? "mt-8" : "mt-8 max-w-[68ch]"}>
+            {data.proof.items.map((p) => (
+              <li
+                key={p.claim}
+                className={`border-b border-line py-6 ${
+                  data.proofSplit && p.figure
+                    ? "grid gap-8 lg:grid-cols-[60fr_40fr] lg:items-start"
+                    : ""
+                }`}
+                style={{ borderBottomWidth: "0.5px" }}
+              >
+                <div className="max-w-[68ch]">
+                {p.label && (
+                  <p className="mb-2 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-ink">
+                    {p.label}
+                  </p>
+                )}
+                <p className="font-serif text-[length:var(--text-lead)] leading-relaxed">{p.claim}</p>
+                {p.source && (
+                  <p className="mt-2 font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-bronze-text">
+                    {p.source}
+                  </p>
+                )}
+                {p.pending && <Pending what={p.pending} ip />}
+                </div>
+                {p.figure && (
+                  <div className={data.proofSplit ? "lg:mt-0" : ""}>
+                    <Fig figure={p.figure} />
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+          {data.proof.limits.length > 0 && (
+            <div id="limits" className="mt-10 scroll-mt-8">
+              <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-muted">
+                LIMITS
+              </p>
+              <ul className="mt-4 max-w-[68ch] space-y-3">
+                {data.proof.limits.map((l) => (
+                  <li key={l} className="font-serif text-[length:var(--text-lead)] leading-relaxed text-muted">
+                    {l}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+
+        {/* ⑦ CONTEXT. The new structure has no MORE section, so a page
+            that opted in does not render one. contextParas stays in the
+            data file rather than being deleted: it is the author's copy
+            and no decision has been taken about where it goes. */}
+        <section id="more" className="scroll-mt-8 border-t border-line py-14">
+          {/* the closing note: a rule and a short paragraph, no heading.
+              Same shape on all five pages. */}
+          {data.coda && (
+            <p className="max-w-[68ch] text-[length:var(--text-body)] leading-relaxed text-ink/70">
+              {data.coda}
+            </p>
+          )}
+          {/* the ending is an action, not a conclusion: on a page whose
+              subject is a working tool, the last thing the reader meets is
+              the door to it: larger than the byline, ahead of the nav */}
+          {data.cta && (
+            <p className="mt-10">
               <a
-                href={data.meta.live}
+                href={data.cta.href}
                 target="_blank"
                 rel="noreferrer"
-                className="border-b border-bronze pb-px transition-colors hover:text-bronze-text"
+                className="inline-block border border-ink px-5 py-3 font-mono text-[length:var(--text-body)] transition-colors hover:text-bronze-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
               >
-                open live ↗
+                {data.cta.label}
               </a>
-            </>
-          )}
-        </p>
-      </section>
-
-      {/* ② CLAIM. One sentence, the thesis */}
-      <section
-        id="claim"
-        className="flex min-h-[38svh] scroll-mt-8 items-center border-b border-line"
-      >
-        <p className="max-w-[38ch] font-serif text-[1.75rem] leading-snug sm:text-[2.15rem]">
-          {Array.isArray(data.claim)
-            ? data.claim.map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))
-            : data.claim}
-        </p>
-      </section>
-
-      {/* TEST, teardown only. This was a 3D close-up of the instrument
-          you arrived through, which showed the object but not the
-          thing the page is about. The recording shows the instrument
-          being used, with the same numbers the page argues from. It
-          goes through Fig so it inherits the poster-then-click bargain
-          rather than restating it. */}
-      {data.slug === "teardown" && (
-        <section className="pt-10">
-          <Fig
-            figure={{
-              kind: "video",
-              src: "/case-assets/teardown/teardown-demo.mp4",
-              poster: "/case-assets/teardown/teardown-demo-poster.webp",
-              caption: "the instrument running, 25.2s · click to play",
-            }}
-          />
-        </section>
-      )}
-
-      {/* ③ HERO. The strongest single visual */}
-      <section className="py-12">
-        <Fig figure={data.hero} />
-      </section>
-
-      {/* WHAT / WHY / HOW. The new structure. Every phase body is in
-          the DOM whether the row is open or not: a details element
-          folds, it does not unmount. Find-in-page, crawlers and
-          check-claims all need to reach the sentences inside. */}
-      <>
-          <section id="what" className="scroll-mt-8 border-t border-line py-14">
-            <p className={LABEL}>WHAT</p>
-            <p className={`${PROSE} mt-8`}>{data.sections.what}</p>
-          </section>
-
-          <section id="why" className="scroll-mt-8 border-t border-line py-14">
-            <p className={LABEL}>WHY</p>
-            <p className={`${PROSE} mt-8`}>{data.sections.why}</p>
-          </section>
-
-          <section id="how" className="scroll-mt-8 border-t border-line py-14">
-            <p className={LABEL}>HOW</p>
-            {data.sections.how.summary.map((para, i) => (
-              <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
-                {para}
-              </p>
-            ))}
-            <div className="mt-10">
-              {data.sections.how.phases.map((ph) => (
-                <details
-                  key={ph.title}
-                  className="group border-t border-line last:border-b"
-                  style={{ borderTopWidth: "0.5px" }}
-                >
-                  <summary className="flex cursor-pointer list-none items-baseline gap-3 py-5 font-mono text-[length:var(--text-body)] uppercase tracking-widest text-ink outline-none [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]">
-                    <span aria-hidden className="text-bronze-text">
-                      <span className="group-open:hidden">+</span>
-                      <span className="hidden group-open:inline">
-                        {String.fromCharCode(8211)}
-                      </span>
-                    </span>
-                    {ph.title}
-                  </summary>
-                  <div className="pb-10">
-                    {ph.body.map((para, i) => (
-                      <p
-                        key={para}
-                        className={`${PROSE} ${i === 0 ? "mt-2" : "mt-5"}`}
-                      >
-                        {para}
-                      </p>
-                    ))}
-                    {ph.data?.map((d) => (
-                      <p
-                        key={d}
-                        className="mt-5 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed tracking-wide text-muted"
-                      >
-                        {d}
-                      </p>
-                    ))}
-                    {ph.figure && <Fig figure={ph.figure} />}
-                  </div>
-                </details>
-              ))}
-            </div>
-          </section>
-        </>
-
-      {/* ⑥ WHY IT HOLDS: evidence, then limits */}
-      <section id="proof" className="scroll-mt-8 border-t border-line py-14">
-        <p className={LABEL}>{data.proofLabel ?? "PROOF"}</p>
-        {data.proof.intro?.map((para, i) => (
-          <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
-            {para}
-          </p>
-        ))}
-        <ul className={data.proofSplit ? "mt-8" : "mt-8 max-w-[68ch]"}>
-          {data.proof.items.map((p) => (
-            <li
-              key={p.claim}
-              className={`border-b border-line py-6 ${
-                data.proofSplit && p.figure
-                  ? "grid gap-8 lg:grid-cols-[60fr_40fr] lg:items-start"
-                  : ""
-              }`}
-              style={{ borderBottomWidth: "0.5px" }}
-            >
-              <div className="max-w-[68ch]">
-              {p.label && (
-                <p className="mb-2 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-ink">
-                  {p.label}
-                </p>
-              )}
-              <p className="font-serif text-[length:var(--text-lead)] leading-relaxed">{p.claim}</p>
-              {p.source && (
-                <p className="mt-2 font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-bronze-text">
-                  {p.source}
-                </p>
-              )}
-              {p.pending && <Pending what={p.pending} ip />}
-              </div>
-              {p.figure && (
-                <div className={data.proofSplit ? "lg:mt-0" : ""}>
-                  <Fig figure={p.figure} />
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-        {data.proof.limits.length > 0 && (
-          <div id="limits" className="mt-10 scroll-mt-8">
-            <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-muted">
-              LIMITS
             </p>
-            <ul className="mt-4 max-w-[68ch] space-y-3">
-              {data.proof.limits.map((l) => (
-                <li key={l} className="font-serif text-[length:var(--text-lead)] leading-relaxed text-muted">
-                  {l}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </section>
-
-      {/* ⑦ CONTEXT. The new structure has no MORE section, so a page
-          that opted in does not render one. contextParas stays in the
-          data file rather than being deleted: it is the author's copy
-          and no decision has been taken about where it goes. */}
-      <section id="more" className="scroll-mt-8 border-t border-line py-14">
-        {/* the closing note: a rule and a short paragraph, no heading.
-            Same shape on all five pages. */}
-        {data.coda && (
-          <p className="max-w-[68ch] text-[length:var(--text-body)] leading-relaxed text-ink/70">
-            {data.coda}
-          </p>
-        )}
-        {/* the ending is an action, not a conclusion: on a page whose
-            subject is a working tool, the last thing the reader meets is
-            the door to it: larger than the byline, ahead of the nav */}
-        {data.cta && (
-          <p className="mt-10">
-            <a
-              href={data.cta.href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block border border-ink px-5 py-3 font-mono text-[length:var(--text-body)] transition-colors hover:text-bronze-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
-            >
-              {data.cta.label}
-            </a>
-          </p>
-        )}
-        {data.byline && (
-          <p className="mt-8 font-mono font-medium text-[length:var(--text-meta)] text-muted">{data.byline}</p>
-        )}
-        <nav className="mt-10 flex flex-wrap justify-between gap-4 font-mono font-medium text-[length:var(--text-meta)] text-muted">
-          {data.prev ? (
-            <Link href={data.prev.href} className="transition-colors hover:text-bronze-text">
-              ← {data.prev.label}
-            </Link>
-          ) : (
-            <span />
           )}
-          {data.next && (
-            <Link href={data.next.href} className="transition-colors hover:text-bronze-text">
-              {data.next.label} →
-            </Link>
+          {data.byline && (
+            <p className="mt-8 font-mono font-medium text-[length:var(--text-meta)] text-muted">{data.byline}</p>
           )}
-        </nav>
-      </section>
+          <nav className="mt-10 flex flex-wrap justify-between gap-4 font-mono font-medium text-[length:var(--text-meta)] text-muted">
+            {data.prev ? (
+              <Link href={data.prev.href} className="transition-colors hover:text-bronze-text">
+                ← {data.prev.label}
+              </Link>
+            ) : (
+              <span />
+            )}
+            {data.next && (
+              <Link href={data.next.href} className="transition-colors hover:text-bronze-text">
+                {data.next.label} →
+              </Link>
+            )}
+          </nav>
+        </section>
+        </div>
+      </div>
       <div className="pb-24" />
     </main>
   );

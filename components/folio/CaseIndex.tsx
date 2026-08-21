@@ -5,11 +5,12 @@ import { useEffect, useState } from "react";
 /*
  * CASE-NAV §2 — the in-page index. DATA-DRIVEN: the section list comes
  * from what the page actually renders (empty sections never appear).
- * Desktop ≥1024px: fixed vertical rail on the far right edge, mono ink,
- * the current section in copper (never cinnabar — the case-page 朱
- * budget belongs to the active exhibit number); it hugs the viewport
- * edge so the split-screen exhibit column is never covered. Below
- * 1024px: a static horizontal row at the top — no width stolen.
+ * Desktop ≥1280px: a sticky vertical rail occupying the 20% column of
+ * the case page's 20/80 grid, mono ink, the current section in copper
+ * (never cinnabar — the case-page 朱 budget belongs to the active
+ * exhibit number). It used to be fixed to the viewport edge and take no
+ * layout width at all; it is a real column now. Below 1280px: a static
+ * horizontal row at the top — no width stolen.
  * Behavior: click = smooth scroll (reduced-motion: instant jump);
  * highlight = IntersectionObserver on scroll, still the moment the
  * scroll stops. No JS: plain anchor links, fully usable, zero loss.
@@ -72,7 +73,13 @@ export default function CaseIndex({ items }: { items: IndexItem[] }) {
       aria-label="page sections"
       // FISH-POLISH §1: left edge (folio 右侧让位给分屏右栏与旁注);
       // 竖排阈值 1280px —— 以下收起为顶部横排(既有降级,仅改触发)
-      className="flex flex-wrap gap-x-4 gap-y-1 py-2 xl:fixed xl:left-2 xl:top-1/2 xl:z-10 xl:-translate-y-1/2 xl:flex-col xl:gap-2 xl:py-0"
+      // It was xl:fixed against the viewport's left edge, pinned to the
+      // vertical centre. That took no layout width, so the rail floated
+      // beside the prose rather than sharing a grid with it. It is the
+      // 20% column now: sticky inside its own column, so it holds its
+      // place while the 80% column scrolls past. Below xl it is still
+      // the horizontal row at the top, unchanged.
+      className="flex flex-wrap gap-x-4 gap-y-1 py-2 xl:sticky xl:top-28 xl:z-10 xl:flex-col xl:items-start xl:gap-2 xl:self-start xl:py-0"
     >
       {items.map((it) => (
         <a
