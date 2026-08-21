@@ -93,12 +93,18 @@ export const experiments: Experiment[] = [
    * the live site, the same way RESONANCE does, so the case page stays
    * the one place that carries the live link.
    *
-   * Neither has a `shot`. The card back renders a labelled empty slot
-   * for a missing one, which is the honest state: /experiments/*.webp
-   * are 16:10 captures and the only images these two have are case
-   * heroes at 2.26 and 1.67, one of them 3800px wide. Pointing the
-   * card at those would ship a hero-sized file into a thumbnail and
-   * crop it wrong. Two proper captures is the fix, not a reused path.
+   * Both now have a `shot`, cut to the 16:10 the card backs expect
+   * rather than pointed at a case hero. MATERIAL MEMORY's source is
+   * 3758x1856 at 2.02, cropped right-aligned so the product sidebar
+   * goes and the cloth keeps both its edges; VESTIGE's is 3208x1916 at
+   * 1.67, cropped centre, which only takes grey ground off either side
+   * of the passport. Both resampled to 1600x1000 webp, 16 and 23 kB,
+   * the same shape and weight as the other five.
+   *
+   * The card back sets these as bg-cover bg-center, so an image that
+   * is not already 16:10 gets cropped by CSS with nobody looking. That
+   * is why the crop is done here, by eye, against what is actually in
+   * the frame.
    */
   {
     name: "Material Memory",
@@ -106,6 +112,7 @@ export const experiments: Experiment[] = [
     line: "a real-time fabric simulator that lets a buyer feel a garment before they buy it",
     year: "2026",
     tags: ["3d", "web"],
+    shot: "/experiments/material-memory.webp",
     href: "/work/material-memory",
   },
   {
@@ -117,6 +124,7 @@ export const experiments: Experiment[] = [
     line: "a filed provisional · EU digital product passport",
     year: "2026",
     tags: ["web3", "3d"],
+    shot: "/experiments/vestige.webp",
     href: "/work/vestige",
   },
   // 填字模板(照抄,一条一分钟):
