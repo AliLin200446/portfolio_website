@@ -24,7 +24,7 @@ export const STATIONS: Station[] = [
     href: "/work/latent",
     line: "Dehancer assumes you've shot something. We assume you haven't.",
     blurb:
-      "A film physics engine that gives AI generated video real halation and grain, running in a browser tab. Calibrated against negatives I shot and scanned myself.",
+      "A film physics engine that gives AI video real halation and grain, running in a browser tab.",
   },
   {
     id: "skeletal-silk",
@@ -32,14 +32,14 @@ export const STATIONS: Station[] = [
     href: "/work/skeletal-silk",
     line: "AI as material interpreter, not image generator.",
     blurb:
-      "Reads a fabric photo with a vision model and drives a live shader from it. I ran a blank control to find out what it actually resolves.",
+      "Reads a fabric photo with a vision model and drives a live shader from it.",
   },
   {
     id: "teardown",
     label: "TEARDOWN",
     href: "/work/teardown", // LINK-WIRE: enter → case page; 外站唯一入口在 case HERO open live ↗
     blurb:
-      "A published measurement study of a hosted image generation API, built to turn \"it feels fast\" into numbers. Every figure links to its raw measurement file.",
+      "A measurement study of a hosted image generation API, built to turn \"it feels fast\" into numbers.",
   },
 
 

@@ -97,8 +97,21 @@ export default function HomeShell() {
 
       {/* DOM list: SSR fallback and the whole story on mobile/coarse/
           reduced-motion/no-JS. Hidden only once the 3D bench mounts. */}
+      {/* The pt on the section clears the fixed site bar. globals.css
+          zeroes the body's 3.25rem on the index because the desktop
+          scene is a fixed inset-0 canvas that wants the whole viewport,
+          but THIS path is ordinary flowed content and inherits that
+          zero, so it has to put the clearance back itself.
+
+          6.5rem rather than 3.25rem because the bar wraps: one row at
+          49px on a wide screen, two rows at 83px by 390, which is where
+          this path is the only one that renders. The body rule was
+          written for the one-row case. At 48px the first line sat 35px
+          underneath the bar, and that was true before there was any
+          text here to hide it with: the instrument frame's top edge was
+          already under it, which is quiet enough to miss. */}
       {!bench3d && (
-        <section className="relative z-10 mx-auto max-w-3xl px-6 py-12">
+        <section className="relative z-10 mx-auto max-w-3xl px-6 pb-12 pt-[6.5rem]">
           {/* the bench, reduced to one turning object. Tapping a
               station below swaps it rather than opening a second
               context. */}
