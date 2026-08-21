@@ -46,13 +46,6 @@ function StationLink({
   );
 }
 
-/* One source for both layout paths. Two copies of a sentence is how
- * the hero and its case page drifted apart; see
- * scripts/check-hero-drift.mjs. */
-const POSITIONING =
-  "I build tools for generative systems and measure where they fail.";
-const STACK = "WebGL2 / GLSL \u00b7 Three.js \u00b7 React / Next.js \u00b7 TypeScript";
-
 export default function HomeShell() {
   const bench3d = useBench3d();
   // which instrument the phone is showing. The list is the control,
@@ -69,31 +62,6 @@ export default function HomeShell() {
       <BenchHome active={bench3d} />
       {/* instrument boot: pure HTML/CSS, first paint before Three parses */}
       {bench3d && <BenchLoader />}
-
-      {/* WHO THIS IS. The home page carried 51 words and not one of them
-          said what the person who made it does; a visitor had to infer
-          it from three instrument descriptions. It sits above the rail
-          on both paths because it is the sentence everything below is
-          evidence for.
-
-          Rendered twice rather than once, because the two paths lay out
-          differently and a single element cannot be both: the rail is a
-          fixed inset-0 canvas, so its copy has to be fixed too, while
-          the DOM list is ordinary flow. The strings live in one place
-          above so the two can never drift, which is the same fault the
-          hero drift guard exists for. */}
-      {bench3d ? (
-        <div className="pointer-events-none fixed inset-x-0 top-[4.5rem] z-10 px-5 sm:px-10">
-          <div className="mx-auto w-1/2">
-            <p className="font-serif text-[length:var(--text-lead)] leading-snug text-ink">
-              {POSITIONING}
-            </p>
-            <p className="mt-2 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.12em] text-muted">
-              {STACK}
-            </p>
-          </div>
-        </div>
-      ) : null}
 
       {/* DOM list: SSR fallback and the whole story on mobile/coarse/
           reduced-motion/no-JS. Hidden only once the 3D bench mounts. */}
@@ -115,12 +83,6 @@ export default function HomeShell() {
           {/* the bench, reduced to one turning object. Tapping a
               station below swaps it rather than opening a second
               context. */}
-          <p className="font-serif text-[length:var(--text-lead)] leading-snug text-ink">
-            {POSITIONING}
-          </p>
-          <p className="mb-8 mt-2 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.12em] text-muted">
-            {STACK}
-          </p>
           <div className="mb-8">
             <MobileBench slug={shown} />
           </div>
