@@ -75,9 +75,8 @@ const latent: CaseData = {
     calibration: {
       label: "CALIBRATION",
       body: [
-        "I shot and scanned 800T myself and matched the engine to the negatives: threshold 0.55, radius 4.9, intensity 1.01, tint 1.2 / 0.03 / 0.03. Green and blue near zero, so the halo is almost pure red, not the warm orange most filters give you.",
-        "Above the 9.8 radius cap, three settings produced the same image and my eye could not tell them apart.",
-        "A dark field R minus B metric caught it numerically.",
+        "I shot and scanned 800T myself and matched the engine to the negatives: threshold 0.55, radius 4.9, tint 1.2 / 0.03 / 0.03. Green and blue near zero, so the halo is almost pure red, not the warm orange most filters give you.",
+        "Above a 9.8 radius cap three settings produced the same image, and my eye could not tell them apart. A dark field R minus B metric caught it.",
       ],
       data: ["calibration date 2026-07-10, stored with the source data"],
       figure: {
@@ -88,8 +87,16 @@ const latent: CaseData = {
         caption:
           "the calibration workbench \u00b7 reference scan on the left, engine output on the right, the parameter panel on the right edge",
         selfCaptioned: true,
+        /* The claim of sameness is gone, not the reading. The panel
+         * shows four parameters and the body above now quotes three of
+         * them: intensity 1.01 is on screen in the photograph and
+         * nowhere in the prose, so "the same values this page quotes"
+         * became false the moment the body dropped it. The figure sits
+         * directly under that paragraph, close enough for a reader to
+         * check, which is exactly the kind of line that has to be true.
+         * What it says now is only what the panel reads. */
         attribution:
-          "the workbench \u00b7 the panel reads threshold 0.55, radius 4.90, intensity 1.01, tint 1.20 / 0.03 / 0.03, the same values this page quotes",
+          "the workbench \u00b7 the panel reads threshold 0.55, radius 4.90, intensity 1.01, tint 1.20 / 0.03 / 0.03",
       },
     },
   },
