@@ -77,3 +77,16 @@ The duplication this produces is not a defect, it is the guard's
 control. PROBLEM and WHAT are the same sentence in two files on
 purpose. If the hero became the only place the sentence appeared, the
 position check would have nothing left to compare against.
+
+## records: a decision recorded only in conversation is not recorded
+
+A decision recorded in one repo is not recorded in the other. The
+cross-repo style reconciliation was written down in Skeletal Silk's
+STYLE.md and nowhere in the portfolio, so from inside the portfolio it
+did not exist, and I reported it as unrecorded after searching only
+this repo. Both halves were wrong in the same way: a note is only
+findable from the side it was written on.
+
+If a decision spans two repos, it goes in a file in BOTH, and each copy
+names the other by its real path. Searching one repo is not evidence
+about the other.

@@ -34,7 +34,20 @@ const vestigeHero: CaseHero = validateHero({
     },
     {
       label: "Solution",
-      body: "From a single cryptographic commitment it generates role-differentiated zero-knowledge proofs.",
+      /* 62 characters, three lines at 21px in the 277px quadrant
+       * column at 1440. Was 94 and four lines.
+       *
+       * "zero-knowledge" went, and that is a judgement worth writing
+       * down rather than leaving to be re-argued. The property is
+       * already established twice above this slot: the brief says each
+       * audience sees only what it is allowed to, and Problem says the
+       * facts that prove compliance are the ones a brand cannot
+       * reveal. Role-differentiated proofs, read after those two
+       * sentences, is the same claim. The term itself is not lost from
+       * the page: content/cases/vestige.ts still carries
+       * "zero-knowledge proofs" in HOW, where the mechanism is the
+       * subject. No guard depends on the phrase. */
+      body: "One cryptographic commitment generates role-differentiated proofs.",
     },
     {
       label: "Methods",

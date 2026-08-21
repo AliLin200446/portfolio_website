@@ -1,5 +1,14 @@
 # Design system notes
 
+> **There is a second design system file.**
+> `/Users/alilin/Applications/Skeletal_Silk/STYLE.md` sets house rules
+> for the Skeletal Silk repo: palette, one-thing-shouts-per-screen, and
+> a 9px readability floor. Neither file is authoritative over the
+> other, and deciding which one is comes before any attempt to
+> reconcile them. Until then, treat this file as governing the
+> portfolio only. See Open.
+
+
 Material moved off the case pages. It describes how a page or a report
 is put together, which is a subject of its own and belongs on the
 design system page when that exists. It is parked here rather than
@@ -75,26 +84,38 @@ Measured at 1440, in the real column:
     latent           80 chars  3 lines
     teardown         59 chars  3 lines
     skeletal-silk    70 chars  3 lines
-    material-memory  95 chars  4 lines  OVER
-    vestige          94 chars  4 lines  OVER
+    material-memory  76 chars  3 lines
+    vestige          66 chars  3 lines
+
+Character count is a guide, not the rule. material-memory fits at 76
+and an earlier draft did not fit at 95, but where a line breaks depends
+on word lengths, so the only real test is to measure the rendered line
+count in the 277px column. Treat 70 as "probably fine" and anything
+past 80 as "measure it".
 
 ## Open
 
-- **SVG chart labels.** 383 words at 7-10px in teardown, 19 in
-  skeletal-silk. A separate pass: it needs per-chart re-layout and
-  visual verification, not a scale change. Worth noting that the
-  Skeletal Silk repo's own STYLE.md sets 9px as the floor for any text
-  a user is expected to read, established by a typography audit, and
-  teardown's 7px and 8px labels sit under it.
-
-- **material-memory and vestige Solution copy.** Both run to four lines
-  at 21px, 95 and 94 characters against a cap of about 72. Their case
-  pages are still live, so the slot is still rendered. Numbers above;
-  the rewrite is the author's.
+- **SVG chart labels: a correctness issue, not a consistency one.**
+  Chart labels in teardown sit at 7px and 8px, below the 9px
+  readability floor established by a typography audit in the Skeletal
+  Silk repo's STYLE.md. This is a correctness issue, not a consistency
+  one. 383 words across three figures, needing per-chart re-layout
+  because labels are hand-positioned against bars and ticks. Not a
+  scale change.
 
 - **Two design system files, not aligned.** This file and
   `/Users/alilin/Applications/Skeletal_Silk/STYLE.md` both set house
-  rules and neither refers to the other. That repo's STYLE.md carries
-  the palette, the one-thing-shouts rule, and the 9px floor. This was
-  believed to be recorded already and was not, in either file, which is
-  how it stayed lost. Recorded here now; not acted on.
+  rules. Each now names the other, which is the whole of what has been
+  done; they are NOT merged and should not be until the first decision
+  is made, which is **which of the two is authoritative**. Everything
+  else follows from that answer and nothing can be reconciled before
+  it. That repo's STYLE.md carries the palette, the one-thing-shouts
+  rule, and the 9px readability floor.
+
+  It was already recorded on the other side: Skeletal Silk's STYLE.md
+  has carried "Reconcile with the portfolio STYLE file ... decide which
+  is canonical first" in its own Open section. What was missing was
+  this half. A note living in one of the two repos is invisible from
+  the other, which is the repo that needed it. That entry also points
+  at a "portfolio STYLE file", and no file by that name exists here;
+  the portfolio's rules live in this file.

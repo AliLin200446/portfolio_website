@@ -36,7 +36,12 @@ const materialMemoryHero: CaseHero = validateHero({
     },
     {
       label: "Solution",
-      body: "A WebGL cloth simulation you can push, drop and drag, so a garment behaves before it is bought.",
+      /* 64 characters, three lines at 21px in the 277px quadrant
+       * column at 1440. Was 95 and four lines. "simulation" and "drop"
+       * went because push and drag already say it is interactive, and
+       * "behaves" became "moves" because movement is the thing a
+       * photograph cannot give you. */
+      body: "A WebGL cloth you can push and drag, so a garment moves before it is bought.",
     },
     {
       label: "Methods",
