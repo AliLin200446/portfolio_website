@@ -852,15 +852,29 @@ function RailCaption() {
       {/* the horizon: the instruments stand on this */}
       <div className="border-t border-line" />
       <div className="flex h-full flex-col justify-between pb-2 pt-4">
-        {/* Half the window, on the same centre line as the ticks below
-            at four fifths. The 60ch cap that used to sit inside this
-            block is gone with it: a measure inside a measure meant the
-            frame said one width and the text took another, and it was
-            the inner one that decided how many lines a description
-            broke into. One width, set here, is what makes five
-            descriptions of different lengths land on the same number
-            of lines. */}
-        <div className="mx-auto w-1/2">
+        {/* Four fifths, the SAME measure as the ticks below, so the
+            description and the rail it belongs to are one column rather
+            than two centred on each other.
+
+            This was half the window, chosen when the goal was to make
+            descriptions of different lengths break onto the same number
+            of lines. They are one sentence each now and the goal is one
+            line each, which is a different constraint and wants a wider
+            measure: the longest of the three needs 901px at 21px, and
+            half of a 1440 window is 713.
+
+            One line is not free at every width. At four fifths it holds
+            down to about a 1130px window and wraps below that, which is
+            arithmetic rather than a choice: 901px of text cannot fit a
+            768px window at this size, and the rail renders from 768 up.
+            Shortening the copy to about 74 characters, the length of
+            the silk line, is what would buy one line further down.
+
+            The 60ch cap that used to sit inside this block is gone: a
+            measure inside a measure meant the frame said one width and
+            the text took another, and it was the inner one that decided
+            where a line broke. */}
+        <div className="mx-auto w-4/5">
           <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.18em] text-bronze">
             {String(berth + 1).padStart(2, "0")} / {String(BERTH_ORDER.length).padStart(2, "0")}
             <span className="ml-3 text-muted">{station?.label}</span>
