@@ -66,7 +66,7 @@ export default function CaseHero({ data }: { data: CaseHeroData }) {
     >
       {/* ROW 1 · meta bar. 25 / 50 / 25 on desktop; the centre cell is
           dropped below 640px, leaving two equal cells. */}
-      <div className="grid h-[35px] shrink-0 grid-cols-2 border-b border-[color:var(--hero-hair)] font-mono text-[8px] uppercase tracking-[0.12em] text-[color:var(--hero-slate)] sm:grid-cols-4">
+      <div className="grid h-[35px] shrink-0 grid-cols-2 border-b border-[color:var(--hero-hair)] font-mono text-[length:var(--text-meta)] font-medium uppercase tracking-[0.12em] text-[color:var(--hero-slate)] sm:grid-cols-4">
         <div className="flex items-center gap-2 border-r border-[color:var(--hero-hair)] pr-3">
           <span className="text-oxblood">{data.index}</span>
           <span>{data.meta.left}</span>
@@ -95,7 +95,7 @@ export default function CaseHero({ data }: { data: CaseHeroData }) {
             min-h-0 so the media yields height instead of pushing the
             footer off the screen. */}
         <div className="flex min-h-0 flex-col pt-[26px] lg:col-span-6 lg:pr-[38px]">
-          <p className="max-w-[52ch] shrink-0 font-serif text-[19px] text-muted">
+          <p className="max-w-[52ch] shrink-0 font-serif text-[length:var(--text-lead)] text-muted">
             {data.brief}
           </p>
           {/* The 4/5 box is the PREFERRED size. min-h-0 plus shrink lets
@@ -167,10 +167,30 @@ export default function CaseHero({ data }: { data: CaseHeroData }) {
                 className="hero-quad-inner hero-rise"
                 style={{ animationDelay: `${200 + i * 70}ms` }}
               >
-                <h2 className="mb-[14px] font-serif text-base uppercase tracking-[0.04em] text-bronze-text">
+                <h2 className="mb-[14px] font-mono text-[length:var(--text-meta)] font-medium uppercase tracking-[0.12em] text-bronze-text">
                   {q.label}
                 </h2>
-                <p className="font-serif text-sm leading-[1.6] text-[color:var(--hero-slate)]">
+                {/* The outcome quadrant is set one level up, at lead
+                    rather than body. That is the whole point of the
+                    scale change: at a quarter scale all four quadrants
+                    used to be identical grey rectangles, so a reader
+                    squinting at the page could not tell which one held
+                    the conclusion. Size does that job here, not colour,
+                    because the palette is not available to spend on it.
+                    SOLUTION is the slot that answers "so what did you
+                    build", which is the thing worth finding first.
+                    Matched on the label rather than the index so that
+                    reordering the quadrants cannot silently promote the
+                    wrong one. Copy in this slot has about 70 characters
+                    before it runs past three lines in the 277px column
+                    at 1440; past that it reads as crowding. */}
+                <p
+                  className={`font-serif leading-[1.6] text-[color:var(--hero-slate)] ${
+                    q.label.toUpperCase() === "SOLUTION"
+                      ? "text-[length:var(--text-lead)]"
+                      : "text-[length:var(--text-body)]"
+                  }`}
+                >
                   {q.body}
                 </p>
               </div>
@@ -180,7 +200,7 @@ export default function CaseHero({ data }: { data: CaseHeroData }) {
       </div>
 
       {/* ROW 4 · footer. Total comes off BERTH_ORDER.length. */}
-      <div className="flex h-8 shrink-0 items-center justify-end border-t border-[color:var(--hero-hair)] font-mono text-[8px] uppercase tracking-[0.12em] text-[color:var(--hero-slate)]">
+      <div className="flex h-8 shrink-0 items-center justify-end border-t border-[color:var(--hero-hair)] font-mono text-[length:var(--text-meta)] font-medium uppercase tracking-[0.12em] text-[color:var(--hero-slate)]">
         {data.index}/{CASE_TOTAL}
       </div>
     </section>

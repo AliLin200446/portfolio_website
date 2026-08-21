@@ -36,6 +36,41 @@
   --bronze-text: #866339;
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* ── TYPE SCALE ────────────────────────────────────────────────────
+   * Five sizes. There were seventeen, which is not a hierarchy but a
+   * gradient, and a gradient has no levels: at a quarter scale the four
+   * hero quadrants were four identical grey rectangles, so the one
+   * carrying the conclusion could not be told from the one carrying the
+   * problem. Rank is now carried by size AND weight together, because
+   * size alone was doing all the work across steps of two pixels.
+   *
+   *   display  75  the page's own name, one per page
+   *   title    34  section openers
+   *   lead     21  the brief, and the quadrant that states the outcome
+   *   body     15  ordinary prose
+   *   meta     11  labels, data, captions, everything mono
+   *
+   * WEIGHTS: 400 / 500 / 600, and those three are not a preference.
+   * Measured off document.fonts and canvas ink coverage rather than off
+   * the config: Spectral ships static faces at 400, 500 and 600 only.
+   * Asking for 300 renders the 400 face at identical ink, so a 300 in
+   * this scale would have been a weight that changes nothing. Geist
+   * Sans and Geist Mono are variable across 100-900 and follow
+   * whatever they are given. Nothing here is synthesised.
+   *
+   * SVG IS EXEMPT, deliberately. Chart labels sit at 7-10px inside
+   * their own viewBox, hand-positioned against bars and axis ticks. A
+   * chart is a self-contained coordinate system, so a document type
+   * scale does not reach into it: raising those labels is a re-layout,
+   * not a resize, and they would collide. If you came here looking for
+   * why the figures do not follow these five sizes, this is why. See
+   * content/notes/design-system.md, Open. */
+  --text-display: 75px;
+  --text-title: 34px;
+  --text-lead: 21px;
+  --text-body: 15px;
+  --text-meta: 11px;
 }
 
 body {

@@ -48,7 +48,12 @@ const skeletalSilkHero: CaseHero = validateHero({
     },
     {
       label: "Solution",
-      body: "This turns a photograph into the four numbers a renderer needs, driving one fixed shader.",
+      /* Three lines at 21px in the 277px quadrant column at 1440, which
+       * is the width that binds; 768 collapses the hero to one 643px
+       * column and fits it in two. The previous wording was one word
+       * longer and ran to four, which reads as crowding rather than
+       * emphasis. Budget here is about 70 characters. */
+      body: "This turns a photograph into four numbers that drive one fixed shader.",
     },
     {
       label: "Methods",
