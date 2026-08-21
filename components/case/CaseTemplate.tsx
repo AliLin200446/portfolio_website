@@ -244,23 +244,13 @@ export default function CaseTemplate({
             <span>{data.meta.year}</span>
             <span aria-hidden>·</span>
             <span>{data.meta.status}</span>
-            {data.meta.live && (
-              <>
-                <span aria-hidden>·</span>
-                <a
-                  href={data.meta.live}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="border-b border-bronze pb-px transition-colors hover:text-bronze-text"
-                >
-                  open live ↗
-                </a>
-              </>
-            )}
           </p>
         </section>
 
-        {/* ② CLAIM. One sentence, the thesis */}
+        {/* ② CLAIM. One sentence, the thesis. Optional: the band is
+            38svh tall, so an absent claim has to remove the section
+            rather than render it empty. */}
+        {data.claim && (
         <section
           id="claim"
           className="flex min-h-[38svh] scroll-mt-8 items-center border-b border-line"
@@ -275,6 +265,7 @@ export default function CaseTemplate({
               : data.claim}
           </p>
         </section>
+        )}
 
         {/* TEST, teardown only. This was a 3D close-up of the instrument
             you arrived through, which showed the object but not the
@@ -295,9 +286,31 @@ export default function CaseTemplate({
           </section>
         )}
 
-        {/* ③ HERO. The strongest single visual */}
+        {/* ③ HERO. The strongest single visual, and the way in.
+            The live link used to sit at the end of the masthead meta
+            row, set in 11px mono between the year and the status, where
+            it read as another piece of metadata rather than as the one
+            thing on the page a reader can go and use. It belongs under
+            the demo: you watch the thing run, then you open it.
+
+            Cinnabar, and that is the palette's own instruction rather
+            than a preference. globals.css: at most one static cinnabar
+            element per screen, and cinnabar is reserved for primary
+            content links, "index titles, demo". This is the demo link.
+            Verified after the change that it is the only static
+            cinnabar mark on its screen. */}
         <section className="py-12">
           <Fig figure={data.hero} />
+          {data.meta.live && (
+            <a
+              href={data.meta.live}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 inline-flex items-center gap-2 border border-oxblood px-3 py-1.5 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-oxblood transition-colors hover:bg-oxblood hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
+            >
+              open live ↗
+            </a>
+          )}
         </section>
 
         {/* WHAT / WHY / HOW. The new structure. Every phase body is in

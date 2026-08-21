@@ -113,8 +113,14 @@ export type CaseData = {
   meta: { type: string; stack: string; year: string; status: string; live?: string };
   /** ② one sentence, no hedging. An array renders one line per entry
    *  inside the claim block; a plain string keeps the old single-line
-   *  path unchanged. */
-  claim: string | string[];
+   *  path unchanged.
+   *
+   *  OPTIONAL as of the latent rewrite. The section and its 38svh of
+   *  height disappear together when it is absent, so a page without a
+   *  claim does not render an empty band. It also fed the route's
+   *  meta description, which falls back to oneLine rather than going
+   *  empty: a page with no description is worse than a short one. */
+  claim?: string | string[];
   /** ③ the strongest single visual */
   hero: Figure;
   /** ⑥ evidence + limits; the section label may be renamed per page.

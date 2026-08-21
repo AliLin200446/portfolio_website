@@ -20,11 +20,6 @@ const latent: CaseData = {
     status: "shipped July 2026",
     live: "https://latentfilm.com",
   },
-  claim: [
-    "AI video gets light wrong.",
-    "The light does not follow optics.",
-    "The grain does not follow chemistry.",
-  ],
   hero: {
     kind: "video",
     src: "/case-assets/latent/latent-demo.mp4",

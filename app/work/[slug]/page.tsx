@@ -80,7 +80,14 @@ export async function generateMetadata({
   if (!c) return {};
   return {
     title: c.name.toUpperCase(),
-    description: Array.isArray(c.claim) ? c.claim.join(" ") : c.claim,
+    // falls back to oneLine when a page has no claim: the claim block is
+    // optional now, and a route with no meta description at all is worse
+    // than one with a short description.
+    description: c.claim
+      ? Array.isArray(c.claim)
+        ? c.claim.join(" ")
+        : c.claim
+      : c.oneLine,
   };
 }
 
