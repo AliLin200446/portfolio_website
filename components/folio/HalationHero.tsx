@@ -51,7 +51,7 @@ export default function HalationHero() {
           <circle cx="380" cy="330" r="5" />
         </g>
       </svg>
-      <div className="mt-3 flex items-center gap-4 font-mono text-xs">
+      <div className="mt-3 flex items-center gap-4 font-mono font-medium text-[length:var(--text-meta)]">
         <input
           type="range"
           min={0}

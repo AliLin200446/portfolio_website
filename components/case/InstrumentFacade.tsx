@@ -18,7 +18,7 @@ const MovementInspector = dynamic(() => import("./MovementInspector"), {
   ssr: false,
   loading: () => (
     <div className="flex h-[46svh] w-full items-center justify-center border border-line bg-[#EDE9E0]">
-      <span className="font-mono text-[11px] text-muted">loading the movement …</span>
+      <span className="font-mono font-medium text-[length:var(--text-meta)] text-muted">loading the movement …</span>
     </div>
   ),
 });
@@ -44,11 +44,11 @@ export default function InstrumentFacade({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={poster} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
       ) : (
-        <span className="px-6 text-center font-mono text-[10px] leading-relaxed tracking-wide text-muted">
+        <span className="px-6 text-center font-mono font-medium text-[length:var(--text-meta)] leading-relaxed tracking-wide text-muted">
           {label}
         </span>
       )}
-      <span className="absolute bottom-3 right-3 border border-ink bg-paper px-3 py-1.5 font-mono text-[11px] transition-colors group-hover:text-bronze-text">
+      <span className="absolute bottom-3 right-3 border border-ink bg-paper px-3 py-1.5 font-mono font-medium text-[length:var(--text-meta)] transition-colors group-hover:text-bronze-text">
         ▶ inspect the movement
       </span>
     </button>

@@ -285,7 +285,7 @@ export default function ExperimentSpace() {
 
   return (
     <div>
-      <p className="mb-3 font-mono text-xs uppercase tracking-widest text-muted">
+      <p className="mb-3 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-muted">
         Five experiments, 47 structured calls
       </p>
       <div
@@ -370,7 +370,7 @@ export default function ExperimentSpace() {
         </button>
       </div>
 
-      <p className="mt-3 min-h-[40px] font-mono text-xs leading-relaxed">
+      <p className="mt-3 min-h-[40px] font-mono font-medium text-[length:var(--text-meta)] leading-relaxed">
         {active >= 0 ? (
           <>
             {E[active].read} <span className="text-muted">{E[active].sub}</span>

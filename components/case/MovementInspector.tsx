@@ -145,7 +145,7 @@ export default function MovementInspector() {
           <Movement position={[0, 0, 0]} standalone />
         </group>
       </Canvas>
-      <p className="pointer-events-none absolute bottom-2 left-3 font-mono text-[10px] text-muted">
+      <p className="pointer-events-none absolute bottom-2 left-3 font-mono font-medium text-[length:var(--text-meta)] text-muted">
         {focused
           ? "drag to lean · scroll to zoom · click to run"
           : "click to focus, then drag or scroll"}

@@ -32,7 +32,7 @@ function EmptySlot() {
   return (
     <div className="p-5">
       <div className="border-t border-line" />
-      <span className="mt-2 block font-mono text-[10px] uppercase tracking-widest text-muted">
+      <span className="mt-2 block font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-muted">
         no capture yet
       </span>
     </div>
@@ -70,10 +70,10 @@ export default function ExperimentsIndex() {
       className="group flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-line py-4 transition-colors hover:text-bronze"
       style={{ borderBottomWidth: "0.5px" }}
     >
-      <span className={big ? "font-serif text-3xl" : "font-serif text-xl"}>
+      <span className={big ? "font-serif text-[length:var(--text-title)]" : "font-serif text-[length:var(--text-lead)]"}>
         {e.name}
       </span>
-      <span className="text-base text-muted">
+      <span className="text-[length:var(--text-body)] text-muted">
         {e.line.replace(/^DRAFT:\s*/, "")}
       </span>
       {/* half-filled ring: the entry exists but its line is still a
@@ -91,16 +91,16 @@ export default function ExperimentsIndex() {
           <path d="M6 1.5 A4.5 4.5 0 0 1 6 10.5 Z" fill="currentColor" />
         </svg>
       )}
-      <span className="font-mono text-xs text-muted">{e.year}</span>
-      <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
+      <span className="font-mono font-medium text-[length:var(--text-meta)] text-muted">{e.year}</span>
+      <span className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-muted">
         {e.tags.join(" · ")}
       </span>
       {e.credit && (
-        <span className="font-mono text-[10px] tracking-wide text-wood">
+        <span className="font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-wood">
           {e.credit}
         </span>
       )}
-      <span aria-hidden className="ml-auto font-mono text-xs">
+      <span aria-hidden className="ml-auto font-mono font-medium text-[length:var(--text-meta)]">
         {away ? String.fromCharCode(8599) : String.fromCharCode(8594)}
       </span>
     </a>
@@ -132,7 +132,7 @@ export default function ExperimentsIndex() {
             className="absolute inset-0 flex flex-col justify-end p-5 [backface-visibility:hidden]"
             style={{ border: "0.5px solid color-mix(in srgb, var(--bronze) 55%, transparent)" }}
           >
-            <span className="font-serif text-2xl leading-tight">{e.name}</span>
+            <span className="font-serif text-[length:var(--text-lead)] leading-tight">{e.name}</span>
           </div>
 
           {/* back: the capture, or the slot where it will go */}
@@ -173,7 +173,7 @@ export default function ExperimentsIndex() {
             )}
             <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5">
               <span
-                className={`font-serif text-2xl leading-tight ${
+                className={`font-serif text-[length:var(--text-lead)] leading-tight ${
                   e.shot ? "text-paper" : "text-ink"
                 }`}
               >
@@ -181,7 +181,7 @@ export default function ExperimentsIndex() {
               </span>
               {e.stack && (
                 <span
-                  className={`font-mono text-[10px] uppercase tracking-widest ${
+                  className={`font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest ${
                     e.shot ? "text-paper/75" : "text-muted"
                   }`}
                 >
@@ -197,7 +197,7 @@ export default function ExperimentsIndex() {
 
   if (visible.length === 0)
     return (
-      <p className="border-t border-line py-14 font-mono text-sm text-muted">
+      <p className="border-t border-line py-14 font-mono text-[length:var(--text-body)] text-muted">
         PENDING: experiments list: content/experiments.ts (name · one
         line · year · tags · link)
       </p>
@@ -206,7 +206,7 @@ export default function ExperimentsIndex() {
   return (
     <>
       {/* tag 筛选行: counts are the only ornament */}
-      <div className="flex flex-wrap gap-x-5 gap-y-1 border-t border-line py-4 font-mono text-xs" style={{ borderTopWidth: "0.5px" }}>
+      <div className="flex flex-wrap gap-x-5 gap-y-1 border-t border-line py-4 font-mono font-medium text-[length:var(--text-meta)]" style={{ borderTopWidth: "0.5px" }}>
         <button
           type="button"
           onClick={() => pick(null)}
@@ -216,7 +216,7 @@ export default function ExperimentsIndex() {
               : "text-muted opacity-40 transition-opacity hover:text-ink hover:opacity-100"
           }
         >
-          ALL <span className="text-[10px]">{visible.length}</span>
+          ALL <span className="text-[length:var(--text-meta)]">{visible.length}</span>
         </button>
         {TAGS.map((t) => (
           <button
@@ -229,7 +229,7 @@ export default function ExperimentsIndex() {
                 : "text-muted opacity-40 transition-opacity hover:text-ink hover:opacity-100"
             }`}
           >
-            {t} <span className="text-[10px]">{counts[t]}</span>
+            {t} <span className="text-[length:var(--text-meta)]">{counts[t]}</span>
           </button>
         ))}
       </div>

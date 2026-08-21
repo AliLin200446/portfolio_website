@@ -29,10 +29,10 @@ import type { CaseData, Figure } from "@/content/cases/_schema";
  * comparator is the same SVG instrument.
  */
 
-const LABEL = "font-mono text-sm uppercase tracking-widest text-bronze-text";
-const PROSE = "max-w-[68ch] font-serif text-[21px] leading-relaxed";
+const LABEL = "font-mono text-[length:var(--text-body)] uppercase tracking-widest text-bronze-text";
+const PROSE = "max-w-[68ch] font-serif text-[length:var(--text-lead)] leading-relaxed";
 const CAPTION =
-  "mt-3 font-mono text-[13px] leading-relaxed tracking-wide text-muted";
+  "mt-3 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed tracking-wide text-muted";
 
 /** A value that has not arrived yet. Loud on purpose: mono, boxed,
  *  annotation-red. It exists so an unfinished page cannot be mistaken
@@ -40,7 +40,7 @@ const CAPTION =
  *  the real value lands the chip goes with it. */
 function Pending({ what, ip }: { what: string; ip?: boolean }) {
   return (
-    <span className="mt-2 inline-flex items-center gap-2 border border-oxblood px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-oxblood">
+    <span className="mt-2 inline-flex items-center gap-2 border border-oxblood px-2 py-0.5 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-oxblood">
       {ip ? "pending-ip" : "pending"}
       <span className="tracking-normal normal-case">{what}</span>
     </span>
@@ -110,14 +110,14 @@ function Fig({ figure }: { figure: Figure }) {
         );
       case "code":
         return (
-          <pre className="overflow-x-auto border border-line bg-[#EDE9E0] p-4 font-mono text-xs leading-relaxed text-ink">
+          <pre className="overflow-x-auto border border-line bg-[#EDE9E0] p-4 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed text-ink">
             {figure.code}
           </pre>
         );
       case "pending":
         return (
           <div className="flex aspect-[16/10] items-center justify-center border border-line bg-[#EDE9E0]">
-            <span className="px-6 text-center font-mono text-[10px] tracking-wide text-muted">
+            <span className="px-6 text-center font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-muted">
               {figure.note}
             </span>
           </div>
@@ -188,7 +188,7 @@ export default function CaseTemplate({
   return (
     <main className="mx-auto max-w-5xl px-6">
       <BenchArrival slug={data.slug} />
-      <header className="sticky top-[3.25rem] z-[3] -mx-6 border-b border-line bg-paper/90 px-6 backdrop-blur-sm flex items-baseline justify-between py-3 font-mono text-xs text-muted">
+      <header className="sticky top-[3.25rem] z-[3] -mx-6 border-b border-line bg-paper/90 px-6 backdrop-blur-sm flex items-baseline justify-between py-3 font-mono font-medium text-[length:var(--text-meta)] text-muted">
         <Link
           href={berth >= 0 ? `/?berth=${berth}` : "/"}
           className="transition-colors hover:text-bronze-text"
@@ -205,13 +205,13 @@ export default function CaseTemplate({
 
       {/* ① MASTHEAD */}
       <section className="pt-14">
-        <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
+        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">
           {data.name}
         </h1>
-        <p className="mt-4 max-w-[52ch] font-serif text-2xl text-muted">
+        <p className="mt-4 max-w-[52ch] font-serif text-[length:var(--text-lead)] text-muted">
           {data.oneLine}
         </p>
-        <p className="mt-6 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs text-muted">
+        <p className="mt-6 flex flex-wrap gap-x-3 gap-y-1 font-mono font-medium text-[length:var(--text-meta)] text-muted">
           <span>{data.meta.type}</span>
           <span aria-hidden>·</span>
           <span>{data.meta.stack}</span>
@@ -304,7 +304,7 @@ export default function CaseTemplate({
                   className="group border-t border-line last:border-b"
                   style={{ borderTopWidth: "0.5px" }}
                 >
-                  <summary className="flex cursor-pointer list-none items-baseline gap-3 py-5 font-mono text-sm uppercase tracking-widest text-ink outline-none [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]">
+                  <summary className="flex cursor-pointer list-none items-baseline gap-3 py-5 font-mono text-[length:var(--text-body)] uppercase tracking-widest text-ink outline-none [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]">
                     <span aria-hidden className="text-bronze-text">
                       <span className="group-open:hidden">+</span>
                       <span className="hidden group-open:inline">
@@ -325,7 +325,7 @@ export default function CaseTemplate({
                     {ph.data?.map((d) => (
                       <p
                         key={d}
-                        className="mt-5 font-mono text-[13px] leading-relaxed tracking-wide text-muted"
+                        className="mt-5 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed tracking-wide text-muted"
                       >
                         {d}
                       </p>
@@ -359,13 +359,13 @@ export default function CaseTemplate({
             >
               <div className="max-w-[68ch]">
               {p.label && (
-                <p className="mb-2 font-mono text-[13px] uppercase tracking-widest text-ink">
+                <p className="mb-2 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-ink">
                   {p.label}
                 </p>
               )}
-              <p className="font-serif text-[21px] leading-relaxed">{p.claim}</p>
+              <p className="font-serif text-[length:var(--text-lead)] leading-relaxed">{p.claim}</p>
               {p.source && (
-                <p className="mt-2 font-mono text-[13px] tracking-wide text-bronze-text">
+                <p className="mt-2 font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-bronze-text">
                   {p.source}
                 </p>
               )}
@@ -381,12 +381,12 @@ export default function CaseTemplate({
         </ul>
         {data.proof.limits.length > 0 && (
           <div id="limits" className="mt-10 scroll-mt-8">
-            <p className="font-mono text-xs uppercase tracking-widest text-muted">
+            <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-muted">
               LIMITS
             </p>
             <ul className="mt-4 max-w-[68ch] space-y-3">
               {data.proof.limits.map((l) => (
-                <li key={l} className="font-serif text-[19px] leading-relaxed text-muted">
+                <li key={l} className="font-serif text-[length:var(--text-lead)] leading-relaxed text-muted">
                   {l}
                 </li>
               ))}
@@ -403,7 +403,7 @@ export default function CaseTemplate({
         {/* the closing note: a rule and a short paragraph, no heading.
             Same shape on all five pages. */}
         {data.coda && (
-          <p className="max-w-[68ch] text-[15px] leading-relaxed text-ink/70">
+          <p className="max-w-[68ch] text-[length:var(--text-body)] leading-relaxed text-ink/70">
             {data.coda}
           </p>
         )}
@@ -416,16 +416,16 @@ export default function CaseTemplate({
               href={data.cta.href}
               target="_blank"
               rel="noreferrer"
-              className="inline-block border border-ink px-5 py-3 font-mono text-sm transition-colors hover:text-bronze-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
+              className="inline-block border border-ink px-5 py-3 font-mono text-[length:var(--text-body)] transition-colors hover:text-bronze-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
             >
               {data.cta.label}
             </a>
           </p>
         )}
         {data.byline && (
-          <p className="mt-8 font-mono text-xs text-muted">{data.byline}</p>
+          <p className="mt-8 font-mono font-medium text-[length:var(--text-meta)] text-muted">{data.byline}</p>
         )}
-        <nav className="mt-10 flex flex-wrap justify-between gap-4 font-mono text-xs text-muted">
+        <nav className="mt-10 flex flex-wrap justify-between gap-4 font-mono font-medium text-[length:var(--text-meta)] text-muted">
           {data.prev ? (
             <Link href={data.prev.href} className="transition-colors hover:text-bronze-text">
               ← {data.prev.label}

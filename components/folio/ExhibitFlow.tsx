@@ -79,7 +79,7 @@ function Instrument({ idSuffix }: { idSuffix: string }) {
   return (
     <div>
       <HalationSvg id={idSuffix} r={t * 14} />
-      <div className="mt-3 flex items-center gap-4 font-mono text-xs">
+      <div className="mt-3 flex items-center gap-4 font-mono font-medium text-[length:var(--text-meta)]">
         <input
           type="range"
           min={0}
@@ -108,12 +108,12 @@ function Visual({ ex, idSuffix }: { ex: Exhibit; idSuffix: string }) {
         <img src={ex.src} alt="" className="w-full border border-line" />
       ) : (
         <div className="relative flex aspect-[16/10] items-center justify-center border border-line bg-[#EDE9E0]">
-          <span className="px-6 text-center font-mono text-[10px] tracking-wide text-muted">
+          <span className="px-6 text-center font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-muted">
             {ex.placeholderLabel}
           </span>
         </div>
       )}
-      <figcaption className="mt-3 font-mono text-[10px] leading-relaxed tracking-wide text-muted">
+      <figcaption className="mt-3 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed tracking-wide text-muted">
         EXHIBIT {ex.no} · {ex.caption}
         {ex.crossHref && (
           <>
@@ -215,7 +215,7 @@ export default function ExhibitFlow({ exhibits }: { exhibits: Exhibit[] }) {
               }}
               className={enhanced ? "min-h-[80svh] py-16" : "py-12"}
             >
-              <p className="font-mono text-xs uppercase tracking-widest">
+              <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest">
                 <span className={enhanced && active === i ? "text-oxblood" : "text-bronze"}>
                   EXHIBIT {ex.no}
                 </span>
@@ -224,14 +224,14 @@ export default function ExhibitFlow({ exhibits }: { exhibits: Exhibit[] }) {
               <div className="mt-6 grid gap-6 sm:grid-cols-[minmax(0,60ch)_9rem]">
                 <div>
                   {ex.paras.map((p) => (
-                    <p key={p} className="mb-5 max-w-[60ch] font-serif text-[17px] leading-7">
+                    <p key={p} className="mb-5 max-w-[60ch] font-serif text-[length:var(--text-lead)] leading-7">
                       {p}
                     </p>
                   ))}
                 </div>
                 {/* right-edge margin note: the author's real aside */}
                 {ex.note && (
-                  <aside className="border-l border-line pl-4 font-serif text-sm leading-6 text-muted">
+                  <aside className="border-l border-line pl-4 font-serif text-[length:var(--text-body)] leading-6 text-muted">
                     {ex.note}
                   </aside>
                 )}

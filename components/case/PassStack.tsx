@@ -236,7 +236,7 @@ export default function PassStack() {
             }}
           />
         </Canvas>
-        <span className="pointer-events-none absolute bottom-2 left-3 font-mono text-[10px] uppercase tracking-wider text-muted">
+        <span className="pointer-events-none absolute bottom-2 left-3 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-wider text-muted">
           drag to orbit
         </span>
       </div>
@@ -257,7 +257,7 @@ export default function PassStack() {
                 }`}
                 style={on ? { borderTopColor: OXBLOOD } : undefined}
               >
-                <span className="block font-mono text-[10px] tracking-widest text-bronze-text">
+                <span className="block font-mono font-medium text-[length:var(--text-meta)] tracking-widest text-bronze-text">
                   {L.n}
                 </span>
                 <span
@@ -266,7 +266,7 @@ export default function PassStack() {
                 >
                   {L.t}
                 </span>
-                <span className="mt-0.5 block text-[17px] leading-snug text-muted">
+                <span className="mt-0.5 block text-[length:var(--text-lead)] leading-snug text-muted">
                   {L.d}
                 </span>
               </li>
@@ -274,10 +274,10 @@ export default function PassStack() {
           })}
         </ol>
         <div className="mt-5 min-h-[76px] border-t border-line pt-3">
-          <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-bronze-text">
+          <span className="mb-1.5 block font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-bronze-text">
             {active >= 0 ? "why here" : "order"}
           </span>
-          <p className="max-w-[62ch] font-serif text-[18px] leading-relaxed">
+          <p className="max-w-[62ch] font-serif text-[length:var(--text-lead)] leading-relaxed">
             {active >= 0
               ? LAYERS[active].why
               : "Weave, then exposure, then development, then the crystal structure you are left looking at. Each position is where that step happens on real film."}

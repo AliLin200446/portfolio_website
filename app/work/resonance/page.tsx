@@ -24,7 +24,7 @@ const link =
 export default function ResonancePage() {
   return (
     <main className="mx-auto max-w-5xl px-6">
-      <header className="sticky top-[3.25rem] z-[3] -mx-6 border-b border-line bg-paper/90 px-6 backdrop-blur-sm flex items-baseline justify-between py-3 font-mono text-xs text-muted">
+      <header className="sticky top-[3.25rem] z-[3] -mx-6 border-b border-line bg-paper/90 px-6 backdrop-blur-sm flex items-baseline justify-between py-3 font-mono font-medium text-[length:var(--text-meta)] text-muted">
         <Link href="/experiments" className="transition-colors hover:text-bronze-text">
           ← Experiments
         </Link>
@@ -34,14 +34,14 @@ export default function ResonancePage() {
       </header>
 
       <section className="py-16">
-        <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
+        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">
           RESONANCE
         </h1>
-        <p className="mt-5 max-w-[52ch] font-serif text-2xl text-muted">
+        <p className="mt-5 max-w-[52ch] font-serif text-[length:var(--text-lead)] text-muted">
           an interface for steering generative video: closed human-in-the-loop
           generation.
         </p>
-        <p className="mt-6 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs text-muted">
+        <p className="mt-6 flex flex-wrap gap-x-3 gap-y-1 font-mono font-medium text-[length:var(--text-meta)] text-muted">
           <span>experiment</span>
           <span aria-hidden>·</span>
           <span>Three.js / WebGL</span>
@@ -60,7 +60,7 @@ export default function ResonancePage() {
 
         {/* the one visual: the loop itself, which is the whole idea */}
         <figure className="my-12 max-w-[68ch]">
-          <pre className="overflow-x-auto border border-line bg-[#EDE9E0] p-6 font-mono text-xs leading-relaxed text-ink">
+          <pre className="overflow-x-auto border border-line bg-[#EDE9E0] p-6 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed text-ink">
 {`   ┌──────────────────────────────────────┐
    │                                      │
    ▼                                      │
@@ -69,14 +69,14 @@ export default function ResonancePage() {
                               conditions
                               the next)`}
           </pre>
-          <figcaption className="mt-3 font-mono text-[13px] leading-relaxed tracking-wide text-muted">
+          <figcaption className="mt-3 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed tracking-wide text-muted">
             the loop · what is rendered conditions what is generated, and what
             is generated is rendered back in
           </figcaption>
         </figure>
 
         <div className="max-w-[68ch] border-t border-line pt-8">
-          <p className="font-serif text-[21px] leading-relaxed">
+          <p className="font-serif text-[length:var(--text-lead)] leading-relaxed">
             Most generative video is open-loop: you write a prompt, wait, and
             accept or discard what returns. Resonance closes the loop. What is
             on the canvas is fed back as the condition for the next generation,
@@ -84,17 +84,17 @@ export default function ResonancePage() {
             re-roll. The interface exists to make that steering direct. You
             adjust the surface, and the next generation inherits it.
           </p>
-          <p className="mt-5 font-serif text-[21px] leading-relaxed text-muted">
+          <p className="mt-5 font-serif text-[length:var(--text-lead)] leading-relaxed text-muted">
             This one is an experiment, not an instrument. Nothing here is
             measured or benchmarked, and no claim is made about output quality. It demonstrates a control loop and stops there.
           </p>
         </div>
 
         <div className="mt-14 max-w-[68ch] border-t border-line pt-8">
-          <p className="font-mono text-xs uppercase tracking-widest text-bronze-text">
+          <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-bronze-text">
             THE MEASURED SIBLINGS
           </p>
-          <p className="mt-5 font-serif text-[21px] leading-relaxed">
+          <p className="mt-5 font-serif text-[length:var(--text-lead)] leading-relaxed">
             Where this one demonstrates,{" "}
             <Link href="/work/latent" className={link}>
               Latent

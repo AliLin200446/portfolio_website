@@ -30,7 +30,7 @@ export default function AboutPage() {
       <FolioBar backHref="/" />
 
       <section className="pt-16 pb-4">
-        <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">ABOUT</h1>
+        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">ABOUT</h1>
       </section>
 
       <Venn />
@@ -41,7 +41,7 @@ export default function AboutPage() {
         className="mt-16 border-t border-line pt-6"
         style={{ borderTopWidth: "0.5px" }}
       >
-        <dl className="font-mono text-[13px]">
+        <dl className="font-mono font-medium text-[length:var(--text-meta)]">
           {CONTACT.map((c) => (
             <div key={c.label} className="flex gap-2 py-1">
               <dt className="text-muted">{c.label}:</dt>

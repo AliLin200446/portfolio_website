@@ -14,7 +14,7 @@ const ExperimentSpace = dynamic(() => import("./ExperimentSpace"), {
 function Slot({ label }: { label: string }) {
   return (
     <div className="flex aspect-[3/2] w-full items-center justify-center border border-line bg-[#EDE9E0]">
-      <span className="px-6 text-center font-mono text-[10px] tracking-wide text-muted">
+      <span className="px-6 text-center font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-muted">
         {label}
       </span>
     </div>

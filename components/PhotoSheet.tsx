@@ -43,7 +43,7 @@ export default function PhotoSheet() {
 
   if (rolls.length === 0)
     return (
-      <p className="border-t border-line py-14 font-mono text-sm text-muted">
+      <p className="border-t border-line py-14 font-mono text-[length:var(--text-body)] text-muted">
         PENDING: content/photography.ts: one roll per group (camera ·
         stock · format · place · year + numbered frames)
       </p>
@@ -65,13 +65,13 @@ export default function PhotoSheet() {
 
   return (
     <>
-      <div className="flex flex-wrap gap-x-5 border-t border-line py-4 font-mono text-xs" style={{ borderTopWidth: "0.5px" }}>
+      <div className="flex flex-wrap gap-x-5 border-t border-line py-4 font-mono font-medium text-[length:var(--text-meta)]" style={{ borderTopWidth: "0.5px" }}>
         <button type="button" onClick={() => router.replace("/photography", { scroll: false })} className={active === null ? "text-bronze" : "text-muted hover:text-ink"}>
-          ALL <span className="text-[10px]">{rolls.length}</span>
+          ALL <span className="text-[length:var(--text-meta)]">{rolls.length}</span>
         </button>
         {FORMATS.map((f) => (
           <button key={f} type="button" onClick={() => router.replace(`/photography?format=${f}`, { scroll: false })} className={`uppercase ${active === f ? "text-bronze" : "text-muted hover:text-ink"}`}>
-            {f} <span className="text-[10px]">{counts[f]}</span>
+            {f} <span className="text-[length:var(--text-meta)]">{counts[f]}</span>
           </button>
         ))}
       </div>
@@ -79,7 +79,7 @@ export default function PhotoSheet() {
       {shown.map((r) => (
         <section key={r.id} className="border-t border-line py-8" style={{ borderTopWidth: "0.5px" }}>
           {facts(r).length > 0 && (
-            <h2 className="mb-4 font-mono text-xs tracking-wide text-muted">
+            <h2 className="mb-4 font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-muted">
               {facts(r).join(" · ")}
             </h2>
           )}
@@ -95,7 +95,7 @@ export default function PhotoSheet() {
                 className="group relative block outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
               >
                 <Image src={f.thumb ?? f.src} alt={alt(r, f)} width={360} height={360} sizes="(max-width: 768px) 45vw, 200px" className="aspect-square w-full object-cover" loading="lazy" />
-                <span className="absolute bottom-1 right-1 font-mono text-[10px] text-paper" style={{ textShadow: "0 0 3px rgba(0,0,0,0.5)" }}>
+                <span className="absolute bottom-1 right-1 font-mono font-medium text-[length:var(--text-meta)] text-paper" style={{ textShadow: "0 0 3px rgba(0,0,0,0.5)" }}>
                   {f.n}
                 </span>
               </a>
@@ -122,7 +122,7 @@ export default function PhotoSheet() {
               priority
             />
           </div>
-          <p className="mt-4 font-mono text-xs text-muted">
+          <p className="mt-4 font-mono font-medium text-[length:var(--text-meta)] text-muted">
             {[
               loupe.roll.frames[loupe.i].n,
               ...facts(loupe.roll),
@@ -131,7 +131,7 @@ export default function PhotoSheet() {
               .filter(Boolean)
               .join(" · ")}
           </p>
-          <div className="mt-2 flex gap-6 font-mono text-xs">
+          <div className="mt-2 flex gap-6 font-mono font-medium text-[length:var(--text-meta)]">
             <button type="button" onClick={() => setLoupe((l) => l && { roll: l.roll, i: (l.i + l.roll.frames.length - 1) % l.roll.frames.length })} className="text-muted hover:text-bronze">←</button>
             <button type="button" onClick={() => setLoupe(null)} className="text-muted hover:text-bronze">ESC</button>
             <button type="button" onClick={() => setLoupe((l) => l && { roll: l.roll, i: (l.i + 1) % l.roll.frames.length })} className="text-muted hover:text-bronze">→</button>

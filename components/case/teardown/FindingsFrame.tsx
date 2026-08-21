@@ -261,7 +261,7 @@ export default function FindingsFrame() {
       <div className="grid grid-cols-1 lg:grid-cols-12">
         <h2
           id="teardown-findings-heading"
-          className="pb-8 pt-10 font-serif text-5xl font-semibold uppercase leading-[0.92] tracking-tight text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:pr-[38px]"
+          className="pb-8 pt-10 font-serif text-[length:var(--text-display)] font-semibold uppercase leading-[0.92] tracking-tight text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:pr-[38px]"
         >
           Findings
         </h2>
@@ -298,7 +298,7 @@ export default function FindingsFrame() {
               ))}
             </div>
           </div>
-          <p className="finding-caption absolute left-[38px] top-full mt-3 font-mono text-[8px] uppercase tracking-[0.12em] text-[color:var(--hero-slate)]">
+          <p className="finding-caption absolute left-[38px] top-full mt-3 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.12em] text-[color:var(--hero-slate)]">
             {FINDINGS[shown].caption}
           </p>
         </div>
@@ -322,14 +322,14 @@ export default function FindingsFrame() {
                   {...bind(i)}
                 >
                   <div className="flex items-baseline gap-5">
-                    <span className="w-8 shrink-0 font-serif text-[34px] leading-none text-ink">
+                    <span className="w-8 shrink-0 font-serif text-[length:var(--text-title)] leading-none text-ink">
                       {f.n}
                     </span>
                     <span className="min-w-0">
-                      <span className="block font-serif text-base uppercase tracking-[0.04em] text-bronze-text">
+                      <span className="block font-serif text-[length:var(--text-body)] uppercase tracking-[0.04em] text-bronze-text">
                         {f.title}
                       </span>
-                      <span className="mt-2 block font-serif text-sm leading-[1.6] text-[color:var(--hero-slate)]">
+                      <span className="mt-2 block font-serif text-[length:var(--text-body)] leading-[1.6] text-[color:var(--hero-slate)]">
                         {f.body}
                       </span>
                     </span>
@@ -347,7 +347,7 @@ export default function FindingsFrame() {
                     >
                       {figureFor(i)}
                     </div>
-                    <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[color:var(--hero-slate)]">
+                    <p className="mt-2 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.12em] text-[color:var(--hero-slate)]">
                       {f.caption}
                     </p>
                   </div>

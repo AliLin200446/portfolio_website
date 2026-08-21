@@ -115,7 +115,7 @@ export default function PassBreakdown() {
       <div className="grid grid-cols-1 lg:grid-cols-12">
         <h2
           id="latent-passes-heading"
-          className="pb-8 pt-10 font-serif text-5xl font-semibold uppercase leading-[0.92] tracking-tight text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:pr-[38px]"
+          className="pb-8 pt-10 font-serif text-[length:var(--text-display)] font-semibold uppercase leading-[0.92] tracking-tight text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:pr-[38px]"
         >
           Five GL Passes
         </h2>
@@ -194,14 +194,14 @@ export default function PassBreakdown() {
                   }}
                   {...bind(p.n)}
                 >
-                  <span className="w-8 shrink-0 font-serif text-[34px] leading-none text-ink">
+                  <span className="w-8 shrink-0 font-serif text-[length:var(--text-title)] leading-none text-ink">
                     {p.n}
                   </span>
                   <span className="min-w-0">
-                    <span className="block font-serif text-base uppercase tracking-[0.04em] text-bronze-text">
+                    <span className="block font-serif text-[length:var(--text-body)] uppercase tracking-[0.04em] text-bronze-text">
                       {p.name}
                     </span>
-                    <span className="mt-2 block font-serif text-sm leading-[1.6] text-[color:var(--hero-slate)]">
+                    <span className="mt-2 block font-serif text-[length:var(--text-body)] leading-[1.6] text-[color:var(--hero-slate)]">
                       {p.body}
                     </span>
                   </span>

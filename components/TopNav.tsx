@@ -67,7 +67,7 @@ export default function TopNav() {
   return (
     <nav
       aria-label="Site"
-      className="flex flex-wrap items-baseline gap-x-5 gap-y-1 font-mono text-xs"
+      className="flex flex-wrap items-baseline gap-x-5 gap-y-1 font-mono font-medium text-[length:var(--text-meta)]"
     >
       <div ref={wrap} className="relative">
         {mounted ? (

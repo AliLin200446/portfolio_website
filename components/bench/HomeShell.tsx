@@ -73,7 +73,7 @@ export default function HomeShell() {
           <div className="mb-8">
             <MobileBench slug={shown} />
           </div>
-          <h2 className="mb-6 font-mono text-xs uppercase tracking-widest text-bronze">
+          <h2 className="mb-6 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-bronze">
             Stations
           </h2>
           <ol className="border-t border-line">
@@ -90,19 +90,19 @@ export default function HomeShell() {
                   station={s}
                   className="group grid gap-1 py-5"
                 >
-                  <span className="font-mono text-xs text-bronze">
+                  <span className="font-mono font-medium text-[length:var(--text-meta)] text-bronze">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="font-serif text-2xl decoration-bronze decoration-1 underline-offset-4 group-hover:underline">
+                  <span className="font-serif text-[length:var(--text-lead)] decoration-bronze decoration-1 underline-offset-4 group-hover:underline">
                     {s.label}
                   </span>
                   {s.blurb && (
-                    <span className="text-[15px] leading-snug text-muted">
+                    <span className="text-[length:var(--text-body)] leading-snug text-muted">
                       {s.blurb}
                     </span>
                   )}
                   {s.external && (
-                    <span className="font-mono text-xs text-muted">
+                    <span className="font-mono font-medium text-[length:var(--text-meta)] text-muted">
                       teardown.alilinlab.com →
                     </span>
                   )}
@@ -117,7 +117,7 @@ export default function HomeShell() {
       <footer
         className={`${
           bench3d ? "fixed inset-x-0 bottom-0" : "relative"
-        } z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-t border-line bg-paper/85 px-6 py-4 font-mono text-xs text-muted`}
+        } z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-t border-line bg-paper/85 px-6 py-4 font-mono font-medium text-[length:var(--text-meta)] text-muted`}
       >
         <span>New York</span>
         <nav aria-label="Contact" className="flex flex-wrap gap-x-5 gap-y-1">

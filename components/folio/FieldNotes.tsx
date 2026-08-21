@@ -40,11 +40,11 @@ function Evidence({ note }: { note: (typeof fieldNotes)[number] }) {
           className="border-b border-line py-3"
           style={{ borderBottomWidth: "0.5px" }}
         >
-          <dt className="font-mono text-sm text-ink">{m.value}</dt>
+          <dt className="font-mono text-[length:var(--text-body)] text-ink">{m.value}</dt>
           {m.label && (
-            <dd className="mt-1 font-mono text-[11px] text-muted">{m.label}</dd>
+            <dd className="mt-1 font-mono font-medium text-[length:var(--text-meta)] text-muted">{m.label}</dd>
           )}
-          <dd className="mt-1 font-mono text-[10px] tracking-wide text-bronze">
+          <dd className="mt-1 font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-bronze">
             {m.source}
           </dd>
         </div>
@@ -68,17 +68,17 @@ function CardFace({
         className="flex items-baseline justify-between border-b border-line pb-2"
         style={{ borderBottomWidth: "0.5px" }}
       >
-        <span className="font-mono text-xs tracking-widest text-bronze group-hover:text-[#FFB46B]">
+        <span className="font-mono font-medium text-[length:var(--text-meta)] tracking-widest text-bronze group-hover:text-[#FFB46B]">
           {String(n).padStart(2, "0")}
         </span>
-        <span className="font-mono text-[10px] tracking-wide text-muted">
+        <span className="font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-muted">
           {note.metrics.length} sources
         </span>
       </div>
-      <p className="mt-3 font-serif text-lg leading-snug">{note.title}</p>
-      <p className="mt-2 font-mono text-xs text-muted">{note.headline}</p>
+      <p className="mt-3 font-serif text-[length:var(--text-lead)] leading-snug">{note.title}</p>
+      <p className="mt-2 font-mono font-medium text-[length:var(--text-meta)] text-muted">{note.headline}</p>
       {open && (
-        <p className="mt-4 max-w-[60ch] font-serif text-[15px] leading-relaxed">
+        <p className="mt-4 max-w-[60ch] font-serif text-[length:var(--text-body)] leading-relaxed">
           {note.body}
         </p>
       )}
@@ -133,7 +133,7 @@ export default function FieldNotes() {
           <div className={SPLIT_GRID}>
             <div>
               {/* card switcher: stay in the split, change the note */}
-              <div className="mb-5 flex flex-wrap items-center gap-3 font-mono text-xs">
+              <div className="mb-5 flex flex-wrap items-center gap-3 font-mono font-medium text-[length:var(--text-meta)]">
                 {fieldNotes.map((f, i) => (
                   <button
                     key={f.id}
@@ -160,7 +160,7 @@ export default function FieldNotes() {
               </div>
             </div>
             <div key={note.id + "-ev"} className="fn-fade">
-              <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-muted">
+              <p className="mb-2 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-muted">
                 evidence
               </p>
               <Evidence note={note} />

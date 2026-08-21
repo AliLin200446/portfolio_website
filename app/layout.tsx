@@ -81,7 +81,7 @@ export default function RootLayout({
             <Link
               href="/"
               aria-label="Ali Lin Lab, home"
-              className="group flex items-center gap-3 font-mono text-xs"
+              className="group flex items-center gap-3 font-mono font-medium text-[length:var(--text-meta)]"
             >
               <BrandMark />
               <span className="text-ink">ALI LIN</span>
@@ -91,13 +91,13 @@ export default function RootLayout({
         </header>
         {children}
         <footer className="mx-auto max-w-5xl border-t border-line px-6 py-8">
-          <div className="flex items-center justify-between font-mono text-xs text-muted">
+          <div className="flex items-center justify-between font-mono font-medium text-[length:var(--text-meta)] text-muted">
             <div className="flex items-center gap-3">
               <span>© 2026 Ali Lin</span>
               {/* Year seal: the footer's single static cinnabar element. */}
               <span
                 aria-hidden
-                className="grid h-6 w-6 select-none place-items-center bg-oxblood font-mono text-[9px] leading-none text-paper"
+                className="grid h-6 w-6 select-none place-items-center bg-oxblood font-mono font-medium text-[length:var(--text-meta)] leading-none text-paper"
               >
                 2026
                 </span>

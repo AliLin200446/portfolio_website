@@ -50,7 +50,15 @@ const latentHero: CaseHero = validateHero({
     },
     {
       label: "Solution",
-      body: "Latent is a film physics engine that runs in a browser tab with no server and no upload.",
+      /* Three lines at 21px in the 277px quadrant column at 1440,
+       * which is the width that binds. The previous wording was 88
+       * characters and ran to four, which reads as crowding rather
+       * than emphasis. What went is "is a film physics engine": the
+       * brief one column to the left already says it, so the slot was
+       * spending its first four words repeating the sentence directly
+       * beside it. "models the optics instead" answers the Problem
+       * above it, and the no-server fact is the commercial claim. */
+      body: "Latent models the optics instead, in a browser tab with no server and no upload.",
     },
     {
       label: "Methods",

@@ -17,7 +17,7 @@ import Link from "next/link";
 /** Top bar: the walk back to the bench + signature. Both templates. */
 export function FolioBar({ backHref }: { backHref: string }) {
   return (
-    <header className="flex items-baseline justify-between py-6 font-mono text-xs text-muted">
+    <header className="flex items-baseline justify-between py-6 font-mono font-medium text-[length:var(--text-meta)] text-muted">
       <Link href={backHref} className="transition-colors hover:text-bronze">
         ← Index
       </Link>
@@ -41,10 +41,10 @@ export function ColophonHead({
 }) {
   return (
     <section className="pt-16 pb-4">
-      <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
+      <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">
         {title}
       </h1>
-      <p className="mt-4 font-mono text-xs tracking-wide text-muted">
+      <p className="mt-4 font-mono font-medium text-[length:var(--text-meta)] tracking-wide text-muted">
         {meta}
       </p>
     </section>
@@ -67,9 +67,9 @@ export function ColophonTail({
   return (
     <footer className="mt-24 border-t border-line py-10">
       {couplet && (
-        <p className="mb-6 font-serif text-lg text-ink">{couplet}</p>
+        <p className="mb-6 font-serif text-[length:var(--text-lead)] text-ink">{couplet}</p>
       )}
-      <div className="flex flex-wrap items-baseline justify-between gap-4 font-mono text-xs text-muted">
+      <div className="flex flex-wrap items-baseline justify-between gap-4 font-mono font-medium text-[length:var(--text-meta)] text-muted">
         <span>{year}</span>
         {next && (
           <Link
@@ -94,7 +94,7 @@ export function SectionNo({
   label?: string;
 }) {
   return (
-    <p className="font-mono text-xs uppercase tracking-widest text-bronze">
+    <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-bronze">
       {n}
       {label ? ` / ${label}` : ""}
     </p>

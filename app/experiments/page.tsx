@@ -16,7 +16,7 @@ export default function ExperimentsPage() {
     <main className="mx-auto max-w-5xl px-6">
       <FolioBar backHref="/" />
       <section className="pt-16 pb-8">
-        <h1 className="font-serif text-5xl tracking-tight sm:text-6xl">
+        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">
           EXPERIMENTS
         </h1>
       </section>

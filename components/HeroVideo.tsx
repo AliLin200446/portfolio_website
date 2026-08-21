@@ -56,7 +56,7 @@ export default function HeroVideo({
           aria-label="Play demo video"
           className="absolute inset-0 flex items-center justify-center"
         >
-          <span className="bg-oxblood px-5 py-3 font-mono text-sm text-paper transition-opacity hover:opacity-85">
+          <span className="bg-oxblood px-5 py-3 font-mono text-[length:var(--text-body)] text-paper transition-opacity hover:opacity-85">
             ▶ Play demo
           </span>
         </button>

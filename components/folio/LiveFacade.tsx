@@ -59,7 +59,7 @@ export default function LiveFacade({
           href={liveUrl}
           target="_blank"
           rel="noreferrer"
-          className="font-mono text-[11px] transition-colors hover:text-bronze"
+          className="font-mono font-medium text-[length:var(--text-meta)] transition-colors hover:text-bronze"
         >
           open live ↗
         </a>
@@ -68,7 +68,7 @@ export default function LiveFacade({
       {running && canEmbed ? (
         <div className="relative h-[70svh] w-full border border-line">
           {!loaded && (
-            <span className="absolute left-3 top-3 font-mono text-[11px] text-muted">
+            <span className="absolute left-3 top-3 font-mono font-medium text-[length:var(--text-meta)] text-muted">
               loading live …
             </span>
           )}
@@ -109,11 +109,11 @@ export default function LiveFacade({
             />
           ) : (
             <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 border border-line bg-[#EDE9E0]">
-              <span className="font-mono text-xs text-oxblood">
+              <span className="font-mono font-medium text-[length:var(--text-meta)] text-oxblood">
                 loads on click. The real engine
               </span>
               {posterNote && (
-                <span className="font-mono text-[11px] text-muted">
+                <span className="font-mono font-medium text-[length:var(--text-meta)] text-muted">
                   {posterNote}
                 </span>
               )}
@@ -123,7 +123,7 @@ export default function LiveFacade({
             <button
               type="button"
               onClick={() => setRunning(true)}
-              className="absolute bottom-3 right-3 border border-ink bg-paper px-3 py-1.5 font-mono text-[11px] transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
+              className="absolute bottom-3 right-3 border border-ink bg-paper px-3 py-1.5 font-mono font-medium text-[length:var(--text-meta)] transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
             >
               ▶ run live
             </button>

@@ -861,11 +861,11 @@ function RailCaption() {
             descriptions of different lengths land on the same number
             of lines. */}
         <div className="mx-auto w-1/2">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-bronze">
+          <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.18em] text-bronze">
             {String(berth + 1).padStart(2, "0")} / {String(BERTH_ORDER.length).padStart(2, "0")}
             <span className="ml-3 text-muted">{station?.label}</span>
           </p>
-          <p className="mt-2 font-serif text-[17px] leading-snug text-ink">
+          <p className="mt-2 font-serif text-[length:var(--text-lead)] leading-snug text-ink">
             {station?.blurb}
           </p>
         </div>
@@ -896,7 +896,7 @@ function RailCaption() {
                     }`}
                   />
                   <span
-                    className={`font-mono text-[10px] tracking-widest transition-colors ${
+                    className={`font-mono font-medium text-[length:var(--text-meta)] tracking-widest transition-colors ${
                       on ? "text-bronze" : "text-muted group-hover:text-ink"
                     }`}
                   >
@@ -910,7 +910,7 @@ function RailCaption() {
               equal. Both ends are hard stops and say so; getting to
               the experiments cabinet is the top nav's job, which is
               where a visitor already looks for it. */}
-          <div className="mt-2 flex h-4 items-baseline justify-between font-mono text-[10px] tracking-widest text-muted">
+          <div className="mt-2 flex h-4 items-baseline justify-between font-mono font-medium text-[length:var(--text-meta)] tracking-widest text-muted">
             <span>{berth === 0 ? "start" : ""}</span>
             <span>{berth === last ? "end" : ""}</span>
           </div>

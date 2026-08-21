@@ -201,8 +201,8 @@ function Block({ k, heading }: { k: RegionKey; heading: 2 | 3 }) {
   const H = heading === 2 ? "h2" : "h3";
   return (
     <>
-      <H className="font-serif text-[22px] leading-tight">{p.title}</H>
-      <p className="mt-3 max-w-[46ch] text-[15px] leading-relaxed text-ink/80">
+      <H className="font-serif text-[length:var(--text-lead)] leading-tight">{p.title}</H>
+      <p className="mt-3 max-w-[46ch] text-[length:var(--text-body)] leading-relaxed text-ink/80">
         {p.body}
       </p>
     </>
@@ -228,7 +228,7 @@ export default function Venn() {
   const shown = PANELS[active ?? "center"];
 
   const intro = (
-    <p className="max-w-[46ch] font-serif text-[19px] leading-snug text-muted">
+    <p className="max-w-[46ch] font-serif text-[length:var(--text-lead)] leading-snug text-muted">
       {INTRO}
     </p>
   );
@@ -301,7 +301,7 @@ export default function Venn() {
                   setFocused(null);
                   setActive(null);
                 }}
-                className="absolute left-0 top-1 h-px w-px overflow-hidden whitespace-nowrap bg-paper font-mono text-[11px] uppercase tracking-[0.08em] text-ink opacity-0 focus:h-auto focus:w-auto focus:overflow-visible focus:px-2 focus:py-1 focus:opacity-100 focus:outline focus:outline-[1.5px] focus:outline-offset-2 focus:outline-[#FFB46B]"
+                className="absolute left-0 top-1 h-px w-px overflow-hidden whitespace-nowrap bg-paper font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.08em] text-ink opacity-0 focus:h-auto focus:w-auto focus:overflow-visible focus:px-2 focus:py-1 focus:opacity-100 focus:outline focus:outline-[1.5px] focus:outline-offset-2 focus:outline-[#FFB46B]"
               >
                 {PANELS[k].title}
               </button>
@@ -315,10 +315,10 @@ export default function Venn() {
           style={{ borderLeftWidth: "0.5px" }}
           aria-live="polite"
         >
-          <h2 className="font-serif text-[22px] leading-tight">
+          <h2 className="font-serif text-[length:var(--text-lead)] leading-tight">
             {shown.title}
           </h2>
-          <p className="mt-3 max-w-[46ch] text-[15px] leading-relaxed text-ink/80">
+          <p className="mt-3 max-w-[46ch] text-[length:var(--text-body)] leading-relaxed text-ink/80">
             {shown.body}
           </p>
         </div>
