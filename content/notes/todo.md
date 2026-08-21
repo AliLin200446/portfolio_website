@@ -90,3 +90,18 @@ findable from the side it was written on.
 If a decision spans two repos, it goes in a file in BOTH, and each copy
 names the other by its real path. Searching one repo is not evidence
 about the other.
+
+## records: click the pointer the day you write it
+
+A record that points at a path should be followed once, at the moment
+it is written. "Reconcile with the portfolio STYLE file" named a file
+that has never existed under that name, so the pointer was broken on
+the day it was written and stayed broken because nobody followed it.
+
+The note read as useful the whole time. A dead pointer does not
+announce itself; it just quietly fails the one time someone finally
+tries to use it. Following it once costs seconds and is the only moment
+the author still knows what they meant.
+
+Same rule for a path in a comment, a source citation, or a file
+reference in a commit message.

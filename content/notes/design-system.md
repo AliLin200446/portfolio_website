@@ -95,13 +95,57 @@ past 80 as "measure it".
 
 ## Open
 
-- **SVG chart labels: a correctness issue, not a consistency one.**
-  Chart labels in teardown sit at 7px and 8px, below the 9px
-  readability floor established by a typography audit in the Skeletal
-  Silk repo's STYLE.md. This is a correctness issue, not a consistency
-  one. 383 words across three figures, needing per-chart re-layout
-  because labels are hand-positioned against bars and ticks. Not a
-  scale change.
+Everything below is deferred on purpose, with the reason it is deferred
+written next to it. That is the point of the section: these are known
+and decided against for now, which is a different state from a problem
+nobody has found yet. A todo that says only "do this" gets misread
+later as neglect. One that says why it is waiting can be re-argued on
+its merits, or picked up the moment the reason stops holding.
+
+### 1. SVG chart labels. Correctness, and next up.
+
+Chart labels in teardown sit at 7px and 8px, below the 9px readability
+floor established by a typography audit in the Skeletal Silk repo's
+STYLE.md. This is a correctness issue, not a consistency one: the floor
+was set because 7.5px labels were found unreadable, and these are that
+size, in the one case study whose whole argument is measurement.
+
+383 words across three figures. Per-chart re-layout, not a scale
+change, because labels are hand-positioned against bars and ticks and
+raising them makes them collide.
+
+WHY NOT YET: it wants doing alone, not folded into another pass. The
+type scale round could be verified cleanly because it changed one thing
+everywhere; this changes three figures each in their own way, and
+mixing the two would leave neither checkable. Start it with an
+inventory: which three figures, how many labels each, and which labels
+collide at 9px.
+
+### 2. Evidence front-loading. Biggest cost, waits for the SVG round.
+
+skeletal-silk's first 100 words contain zero checkable facts. latent's
+contain 22%. Half of each page's evidence has not appeared until 58%
+of the way down. The pages are not short of evidence, they are
+back-loaded with it and front-loaded with positioning a reader has no
+reason to trust yet.
+
+WHY NOT YET: this restructures the case page itself, not its copy, so
+it is the most expensive of the three and the only one that touches
+CaseTemplate's section order. Do it after the SVG round, when the
+figures it would be reordering are themselves settled.
+
+### 3. The rail shows one project at a time.
+
+A visitor who does not drag sees one of three, and nothing on screen
+says the other two exist.
+
+WHY NOT YET: real, and not a copy problem. But the home layout has
+already been rewritten three times in two days, turntable to rail to a
+side-by-side attempt that was reverted, and each rewrite cost a bug
+that only surfaced under the next one. The cost here is not the work,
+it is the churn. Frozen deliberately until the case pages settle.
+
+### Also open
 
 - **Two design system files, not aligned.** This file and
   `/Users/alilin/Applications/Skeletal_Silk/STYLE.md` both set house
