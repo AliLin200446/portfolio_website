@@ -110,15 +110,44 @@ const slugs = readdirSync(HEROES)
 
 const fail = [];
 const rows = [];
+const exempt = [];
 
 for (const slug of slugs) {
-  let hero, kase;
+  let heroRaw, hero, kase;
   try {
-    hero = decomment(readFileSync(join(HEROES, `${slug}.ts`), "utf8"));
+    heroRaw = readFileSync(join(HEROES, `${slug}.ts`), "utf8");
+    hero = decomment(heroRaw);
     kase = decomment(readFileSync(join(CASES, `${slug}.ts`), "utf8"));
   } catch {
     continue; // a hero without a case page is the router's problem, not this one
   }
+  /* Per-file opt-out, declared in the hero file itself so it is
+   * greppable from either end: grep -rn hero-drift-exempt content/heroes.
+   * Modelled on the em dash guard's, and it exists for the same reason:
+   * two rules collided and only one of them was still describing the
+   * page. This guard asserts that a hero's PROBLEM is the case page's
+   * WHAT, which held while all five pages used PROBLEM for the problem
+   * statement. A page may instead use PROBLEM for the reader's pain and
+   * WHAT for what the thing is; those are different sentences on
+   * purpose, and no overlap threshold can tell that apart from drift.
+   *
+   * Measured before adding this rather than after: re-pointing the
+   * guard at the hero's brief instead scores 0.60 on latent but 0.00,
+   * 0.14 and 0.00 on teardown, material-memory and vestige. There is no
+   * single pairing that fits all five, so the exemption is per page.
+   *
+   * A file that opts out has to say why, above the marker. */
+  /* Tested against heroRaw, NOT hero. The marker lives in a comment,
+   * and this guard strips comments before it reads anything, so testing
+   * the stripped copy looks for a string it has just deleted. Written
+   * that way first and caught by the build: the exemption was declared,
+   * correct, and invisible. The em dash guard reads its own marker off
+   * the raw source for exactly this reason. */
+  if (heroRaw.includes("hero-drift-exempt")) {
+    exempt.push(slug);
+    continue;
+  }
+
   const problem = quadrant(hero, "Problem");
   const what = section(kase, "what");
   if (problem === null || what === null) {
@@ -147,5 +176,6 @@ if (fail.length) {
 
 console.log(
   `Hero drift guard passed: ${rows.length} hero(es) still state their case's WHAT ` +
-    `(${rows.map(([s, v]) => `${s} ${v.toFixed(2)}`).join(", ")}).`
+    `(${rows.map(([s, v]) => `${s} ${v.toFixed(2)}`).join(", ")})` +
+    (exempt.length ? `. ${exempt.length} opted out: ${exempt.join(", ")}` : ".")
 );

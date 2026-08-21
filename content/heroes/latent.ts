@@ -43,26 +43,34 @@ const latentHero: CaseHero = validateHero({
     type: "image",
     alt: "The Latent calibration workbench: on the left a reference film scan of a tiled subway platform with orange halation blooming off the overhead light, in the centre the engine OUTPUT panel rendering the same kind of scene, and at the right edge the halation control panel, of which only the parameter names are in frame.",
   },
+  /* hero-drift-exempt
+   *
+   * scripts/check-hero-drift.mjs asserts that a hero's PROBLEM is the
+   * case page's WHAT. That held while this page used PROBLEM for the
+   * problem statement and WHAT repeated it. It no longer does: PROBLEM
+   * is the reader's pain ("that is why it looks fake") and WHAT is what
+   * the thing is ("a film physics engine that gives AI video real
+   * halation and grain"). Those are different sentences on purpose, and
+   * they measure 0.38 against a 0.5 threshold, which is the guard doing
+   * exactly what it was built to do and being wrong about this page.
+   *
+   * The exemption is per file rather than a lowered threshold, because
+   * the other four pages still use the old structure and still want the
+   * check. If this page's PROBLEM and WHAT ever become the same claim
+   * again, delete this block and the guard resumes.
+   */
   quadrants: [
     {
       label: "Problem",
-      body: "AI generated video has film looks, not film physics.",
+      body: "AI generated video has film looks, not film physics. That's why it looks fake.",
     },
     {
       label: "Solution",
-      /* Three lines at 21px in the 277px quadrant column at 1440,
-       * which is the width that binds. The previous wording was 88
-       * characters and ran to four, which reads as crowding rather
-       * than emphasis. What went is "is a film physics engine": the
-       * brief one column to the left already says it, so the slot was
-       * spending its first four words repeating the sentence directly
-       * beside it. "models the optics instead" answers the Problem
-       * above it, and the no-server fact is the commercial claim. */
-      body: "Latent models the optics instead, in a browser tab with no server and no upload.",
+      body: "Latent models the film optics instead.",
     },
     {
       label: "Methods",
-      body: "I shot CineStill 800T, scanned it, and matched the engine. Also, built five GL passes on WebGL2.",
+      body: "Use 5 GLSL passes to resemble the actual film physics. Calibrated against film I shot and scanned myself.",
     },
     {
       label: "Next Step",

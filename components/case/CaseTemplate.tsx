@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import BenchArrival from "@/components/bench/BenchArrival";
 import CaseIndex, { type IndexItem } from "@/components/folio/CaseIndex";
+import PassBreakdown from "@/components/case/latent/PassBreakdown";
 import PassStackFacade from "./PassStackFacade";
 import ExperimentSpaceFacade from "./ExperimentSpaceFacade";
 import SilkControl from "./SilkControl";
@@ -66,6 +67,7 @@ function Fig({ figure }: { figure: Figure }) {
           />
         );
       case "instrument":
+        if (figure.component === "passes") return <PassBreakdown embedded />;
         if (figure.component === "latency") return <LatencyAnatomy />;
         if (figure.component === "stepdelta") return <StepDelta />;
         if (figure.component === "stepfit") return <StepFit />;
@@ -175,12 +177,20 @@ export default function CaseTemplate({
   const items: IndexItem[] = [
         ...(leadingIndexItems ?? []),
         { id: "what", label: "WHAT" },
+        ...(data.sections.who ? [{ id: "who", label: "WHO" }] : []),
         { id: "why", label: "WHY" },
         { id: "how", label: "HOW" },
-        { id: "proof", label: data.proofLabel ?? "PROOF" },
-        // only when the page has any. An index entry pointing at an
-        // anchor that was never rendered is a link that does nothing.
-        ...(data.proof.limits.length > 0
+        ...(data.sections.calibration
+          ? [{ id: "calibration", label: data.sections.calibration.label }]
+          : []),
+        // Every entry below is conditional for the same reason: an index
+        // entry pointing at an anchor that was never rendered is a link
+        // that does nothing. That was already true of LIMITS; it is now
+        // true of the evidence section too, which a page may omit.
+        ...(data.proof
+          ? [{ id: "proof", label: data.proofLabel ?? "PROOF" }]
+          : []),
+        ...(data.proof && data.proof.limits.length > 0
           ? [{ id: "limits", label: "LIMITS" }]
           : []),
   ];
@@ -300,9 +310,23 @@ export default function CaseTemplate({
               <p className={`${PROSE} mt-8`}>{data.sections.what}</p>
             </section>
 
+            {data.sections.who && (
+              <section id="who" className="scroll-mt-8 border-t border-line py-14">
+                <p className={LABEL}>WHO</p>
+                <p className={`${PROSE} mt-8`}>{data.sections.who}</p>
+              </section>
+            )}
+
             <section id="why" className="scroll-mt-8 border-t border-line py-14">
               <p className={LABEL}>WHY</p>
-              <p className={`${PROSE} mt-8`}>{data.sections.why}</p>
+              {(Array.isArray(data.sections.why)
+                ? data.sections.why
+                : [data.sections.why]
+              ).map((para, i) => (
+                <p key={i} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-6"}`}>
+                  {para}
+                </p>
+              ))}
             </section>
 
             <section id="how" className="scroll-mt-8 border-t border-line py-14">
@@ -351,9 +375,40 @@ export default function CaseTemplate({
                 ))}
               </div>
             </section>
+
+            {/* A labelled block after HOW. Its content is rendered flat
+                rather than as a folded phase: the section label is the
+                heading, so a phase title under it would be a second
+                heading for one thing, and there is nothing to fold when
+                a section holds a single block. */}
+            {data.sections.calibration && (
+              <section id="calibration" className="scroll-mt-8 border-t border-line py-14">
+                <p className={LABEL}>{data.sections.calibration.label}</p>
+                {data.sections.calibration.body.map((para, i) => (
+                  <p key={para} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
+                    {para}
+                  </p>
+                ))}
+                {data.sections.calibration.data?.map((d) => (
+                  <p
+                    key={d}
+                    className="mt-5 font-mono font-medium text-[length:var(--text-meta)] leading-relaxed tracking-wide text-muted"
+                  >
+                    {d}
+                  </p>
+                ))}
+                {data.sections.calibration.figure && (
+                  <Fig figure={data.sections.calibration.figure} />
+                )}
+              </section>
+            )}
           </>
 
-        {/* ⑥ WHY IT HOLDS: evidence, then limits */}
+        {/* ⑥ WHY IT HOLDS: evidence, then limits.
+            Optional. A page that omits proof renders no section and no
+            index entry rather than an empty heading, and the reader is
+            never offered a link to evidence that is not there. */}
+        {data.proof && (
         <section id="proof" className="scroll-mt-8 border-t border-line py-14">
           <p className={LABEL}>{data.proofLabel ?? "PROOF"}</p>
           {data.proof.intro?.map((para, i) => (
@@ -409,6 +464,7 @@ export default function CaseTemplate({
             </div>
           )}
         </section>
+        )}
 
         {/* ⑦ CONTEXT. The new structure has no MORE section, so a page
             that opted in does not render one. contextParas stays in the

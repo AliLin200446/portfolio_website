@@ -15,7 +15,6 @@ import materialMemoryHero from "@/content/heroes/material-memory";
 import vestigeHero from "@/content/heroes/vestige";
 import type { CaseHero as CaseHeroData } from "@/content/heroes/_schema";
 import type { IndexItem } from "@/components/folio/CaseIndex";
-import PassBreakdown from "@/components/case/latent/PassBreakdown";
 import FindingsFrame from "@/components/case/teardown/FindingsFrame";
 
 /*
@@ -28,10 +27,6 @@ const leadingSections: Record<
   string,
   { Section: React.ComponentType; indexItem: IndexItem }
 > = {
-  latent: {
-    Section: PassBreakdown,
-    indexItem: { id: "latent-passes", label: "PASSES" },
-  },
   teardown: {
     Section: FindingsFrame,
     indexItem: { id: "teardown-findings", label: "FINDINGS" },

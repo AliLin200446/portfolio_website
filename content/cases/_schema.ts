@@ -54,7 +54,7 @@ export type Figure = Pending &
       }
     | {
         kind: "instrument";
-        component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed" | "passstack" | "expspace" | "silkcontrol";
+        component: "halation" | "latency" | "stepdelta" | "stepfit" | "seed" | "passstack" | "passes" | "expspace" | "silkcontrol";
         /** an array renders one line per entry; a plain string keeps the
          *  single-line path byte for byte */
         caption: string | string[];
@@ -117,11 +117,19 @@ export type CaseData = {
   claim: string | string[];
   /** ③ the strongest single visual */
   hero: Figure;
-  /** ⑥ evidence + limits; the section label may be renamed per page */
+  /** ⑥ evidence + limits; the section label may be renamed per page.
+   *
+   *  OPTIONAL as of the latent rewrite. It was required, because all
+   *  five pages carried evidence and a required field is the cheapest
+   *  way to keep it that way. A page without it makes claims a reader
+   *  cannot check, and the section's own intro line used to say so.
+   *  The type no longer enforces that; whoever drops it is choosing to.
+   *  The index rail and the section both disappear when it is absent,
+   *  so nothing renders an empty shell. */
   proofLabel?: string;
   /** findings sit beside their figure instead of above it */
   proofSplit?: boolean;
-  proof: {
+  proof?: {
     /** prose that sets up the evidence, before the itemised claims */
     intro?: string[];
     items: Proof[];
@@ -134,13 +142,34 @@ export type CaseData = {
   sections: {
     /** one line: what the problem is */
     what: string;
-    /** one line: why the existing answers fall short, and where this
-     *  one sits */
-    why: string;
+    /** who this is for, and what they try that does not work. Optional:
+     *  it renders as its own section between WHAT and WHY, with its own
+     *  entry in the index rail, and is skipped entirely when absent so
+     *  the four pages without it are unchanged. */
+    who?: string;
+    /** why the existing answers fall short, and where this one sits.
+     *  An array renders one paragraph per entry; a plain string keeps
+     *  the single-paragraph path every other page uses. It was a bare
+     *  string, which is why an earlier compression pass could not split
+     *  a three line WHY into two paragraphs and said so in the report
+     *  rather than restructuring for it. */
+    why: string | string[];
     how: {
       /** two or three lines before the phases open */
       summary: string[];
       phases: Phase[];
+    };
+    /** A labelled block after HOW, for material that is a stage of the
+     *  argument rather than one of the build's phases. It is flat, not
+     *  a list of phases: the section label is its heading, so a phase
+     *  title underneath would be a second heading for the same thing.
+     *  Optional, and the section and its index entry disappear together
+     *  when it is absent. */
+    calibration?: {
+      label: string;
+      body: string[];
+      data?: string[];
+      figure?: Figure;
     };
   };
   /** The closing note under the new structure: one short unfolded

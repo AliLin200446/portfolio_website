@@ -77,7 +77,13 @@ function rhombus(cy: number) {
   ].join(" ");
 }
 
-export default function PassBreakdown() {
+/* `embedded` renders this inside a HOW phase instead of as its own
+ * full-bleed section. The difference is only the frame: same diagram,
+ * same five rows, same hover wiring. It drops the outer section id and
+ * page padding, which belong to a top level section, and drops the h2,
+ * because the phase's own summary row is already titled and two
+ * headings for one thing is how a reader loses track of which is which. */
+export default function PassBreakdown({ embedded = false }: { embedded?: boolean } = {}) {
   const [active, setActive] = useState<number | null>(null);
   /* Starts false so the server render and the first client render agree,
      and so a touch device never enters a hover state at all. */
@@ -95,17 +101,21 @@ export default function PassBreakdown() {
       ? { onMouseEnter: () => setActive(n), onMouseLeave: () => setActive(null) }
       : {};
 
+  const Frame = (embedded ? "div" : "section") as "div" | "section";
   return (
-    <section
-      id="latent-passes"
-      aria-labelledby="latent-passes-heading"
+    <Frame
+      {...(embedded
+        ? {}
+        : { id: "latent-passes", "aria-labelledby": "latent-passes-heading" })}
       style={
         {
           "--hero-hair": "color-mix(in srgb, var(--ink) 14%, transparent)",
           "--hero-slate": "#4E5B54",
         } as React.CSSProperties
       }
-      className="scroll-mt-8 bg-paper px-5 sm:pl-10 sm:pr-8 xl:pl-[132px]"
+      className={
+        embedded ? "" : "scroll-mt-8 bg-paper px-5 sm:pl-10 sm:pr-8 xl:pl-[132px]"
+      }
     >
       {/* Explicit column and row placement rather than `order`, because a
           single heading has to sit in two different places: above the
@@ -113,12 +123,14 @@ export default function PassBreakdown() {
           it on two. Placement lets one h2 do both. DOM order is heading,
           diagram, rows, which is exactly the phone reading order. */}
       <div className="grid grid-cols-1 lg:grid-cols-12">
-        <h2
-          id="latent-passes-heading"
-          className="pb-8 pt-10 font-serif text-[length:var(--text-display)] font-semibold uppercase leading-[0.92] tracking-tight text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:pr-[38px]"
-        >
-          Five GL Passes
-        </h2>
+        {!embedded && (
+          <h2
+            id="latent-passes-heading"
+            className="pb-8 pt-10 font-serif text-[length:var(--text-display)] font-semibold uppercase leading-[0.92] tracking-tight text-ink lg:col-span-6 lg:col-start-1 lg:row-start-1 lg:pr-[38px]"
+          >
+            Five GL Passes
+          </h2>
+        )}
 
         {/* DIAGRAM. Spans both rows on desktop so its rule runs the full
             height of the section and the sticky box has room to travel. */}
@@ -212,6 +224,6 @@ export default function PassBreakdown() {
           <div className="border-t border-[color:var(--hero-hair)]" />
         </div>
       </div>
-    </section>
+    </Frame>
   );
 }
