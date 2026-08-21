@@ -25,13 +25,28 @@ const skeletalSilkHero: CaseHero = validateHero({
     alt: "The Skeletal Silk preview surface, a large grey sphere lit from the upper left and centred on black, with an export shader and parameters button beneath it.",
   },
   quadrants: [
+    /* These two are the case page's WHAT and WHY, verbatim.
+     *
+     * They used to be a separate pair of sentences written in this file
+     * and never revisited. When the case page's WHAT and WHY were
+     * rewritten for a reader who is not a graphics programmer, this
+     * file was not part of that change, so the rewrite landed at y=2279
+     * and the sentences it replaced stayed on the first screen. The
+     * jargon was removed from the place almost nobody reaches and kept
+     * in the place everybody starts.
+     *
+     * A hero quadrant is not a place to say something new. It is the
+     * first showing of what the section below argues, so if it diverges
+     * from that section, one of the two is wrong and it is usually this
+     * one. Change content/cases/skeletal-silk.ts and copy the result
+     * here; do not write a fresh sentence. */
     {
       label: "Problem",
-      body: "A vision model's native output is language, which cannot drive a shader on its own.",
+      body: "Ask a model to describe silk and you get a paragraph, which no renderer can use.",
     },
     {
       label: "Solution",
-      body: "There is one fixed GLSL shader, and the model writes uniforms rather than GLSL.",
+      body: "Matching a real fabric today means hand-tuning sliders or settling for a preset. This turns a photograph into the four numbers a renderer needs.",
     },
     {
       label: "Methods",
