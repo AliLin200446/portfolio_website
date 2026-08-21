@@ -25,28 +25,30 @@ const skeletalSilkHero: CaseHero = validateHero({
     alt: "The Skeletal Silk preview surface, a large grey sphere lit from the upper left and centred on black, with an export shader and parameters button beneath it.",
   },
   quadrants: [
-    /* These two are the case page's WHAT and WHY, verbatim.
+    /* PROBLEM is the case page's WHAT, verbatim, and scripts/check-hero-drift.mjs
+     * enforces that. It used to be a separate sentence written here and
+     * never revisited: when WHAT was rewritten for a reader who is not a
+     * graphics programmer, this file was not part of that change, so the
+     * rewrite landed at y=2279 and the sentence it replaced stayed on
+     * the first screen. The jargon was removed from the place almost
+     * nobody reaches and kept in the place everybody starts.
      *
-     * They used to be a separate pair of sentences written in this file
-     * and never revisited. When the case page's WHAT and WHY were
-     * rewritten for a reader who is not a graphics programmer, this
-     * file was not part of that change, so the rewrite landed at y=2279
-     * and the sentences it replaced stayed on the first screen. The
-     * jargon was removed from the place almost nobody reaches and kept
-     * in the place everybody starts.
+     * SOLUTION is deliberately NOT the WHY, and no guard compares them.
+     * The slot answers "so what did you build", because PROBLEM has
+     * already carried half the why and a reader does not need it twice
+     * in one screen. It is written in the same plain language as the
+     * rewrite rather than reverting to the shader jargon that was the
+     * whole fault here.
      *
-     * A hero quadrant is not a place to say something new. It is the
-     * first showing of what the section below argues, so if it diverges
-     * from that section, one of the two is wrong and it is usually this
-     * one. Change content/cases/skeletal-silk.ts and copy the result
-     * here; do not write a fresh sentence. */
+     * The FACT GUARD above still holds: the photograph and its four
+     * numbers drive the shader. The model does not write it. */
     {
       label: "Problem",
       body: "Ask a model to describe silk and you get a paragraph, which no renderer can use.",
     },
     {
       label: "Solution",
-      body: "Matching a real fabric today means hand-tuning sliders or settling for a preset. This turns a photograph into the four numbers a renderer needs.",
+      body: "This turns a photograph into the four numbers a renderer needs, driving one fixed shader.",
     },
     {
       label: "Methods",

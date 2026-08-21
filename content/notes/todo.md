@@ -60,3 +60,20 @@ graph instead.
 This is why the dive assertion could never catch the `% 6` bug it was
 written for: both of its sides ran through the same index function, so
 a wrong index moved the object and moved the expected value with it.
+
+## guards: test the guard against the real failure, not against a clean pass
+
+The orphan-claim detector would not have caught this regression. The old
+hero sentences scored 0.75 against the case file's HOW section: they
+were correctly sourced sentences sitting in the wrong slot. A whole-file
+check cannot see position. Tested against the real failure before
+shipping, and replaced rather than tuned.
+
+The replacement compares positions instead: hero PROBLEM against case
+WHAT, which scored 0.11 on the broken pair and 1.00 on all five heroes
+once fixed.
+
+The duplication this produces is not a defect, it is the guard's
+control. PROBLEM and WHAT are the same sentence in two files on
+purpose. If the hero became the only place the sentence appeared, the
+position check would have nothing left to compare against.
