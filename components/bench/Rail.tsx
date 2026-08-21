@@ -879,7 +879,14 @@ function RailCaption() {
             {String(berth + 1).padStart(2, "0")} / {String(BERTH_ORDER.length).padStart(2, "0")}
             <span className="ml-3 text-muted">{station?.label}</span>
           </p>
-          <p className="mt-2 font-serif text-[length:var(--text-lead)] leading-snug text-ink">
+          {/* Centred, which only works because every description is one
+              line. Centred ragged text over two or more lines gives both
+              edges a soft shape and there is a hard rule directly above
+              it and a tick rail directly below, so the mismatch would
+              read as a mistake. If a description ever wraps again, this
+              goes back to left. That is the same width threshold the
+              measure comment records: below a 1152px window they wrap. */}
+          <p className="mt-2 text-center font-serif text-[length:var(--text-lead)] leading-snug text-ink">
             {station?.blurb}
           </p>
         </div>
