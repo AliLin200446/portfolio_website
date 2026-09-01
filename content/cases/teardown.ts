@@ -27,16 +27,6 @@ const teardown: CaseData = {
     status: "shipped",
     live: "https://teardown.alilinlab.com",
   },
-  claim:
-    "An API's documentation tells you what it returns. Only measurement tells you what it withholds.",
-  hero: {
-    kind: "instrument",
-    component: "latency",
-    caption:
-      "where the milliseconds go · queue, the segment the API doesn't return, holds the variance · FIG A · p50 across N=20 at S28, 512×512",
-    sourceHref: "https://teardown.alilinlab.com/evidence/e4-latency/stats.md",
-    sourceLabel: "e4-latency/stats.md:11-13",
-  },
   sections: {
     what: "Teardown is a measurement study of a hosted inference API (fal.ai's flux endpoint) instrumented from a browser the way an integrator would hit it.",
     who: [
@@ -57,6 +47,27 @@ const teardown: CaseData = {
         { name: "Seed determinism", question: "do identical parameters return identical bytes" },
         { name: "Latency series", question: "where the waiting actually goes" },
         { name: "Friction log", question: "how far the documentation sits from the wire" },
+      ],
+    },
+    findings: {
+      label: "FINDINGS",
+      items: [
+        {
+          name: "The hidden segment",
+          body: "Queue sd 277 ms against inference sd 9.9. The segment carrying nearly all the variance is the one the response body never returns.",
+        },
+        {
+          name: "Identical bytes",
+          body: "Three runs, three different inference times, one sha256, zero of 262,144 pixels different. Determinism holds and the documentation never says so.",
+        },
+        {
+          name: "Past 28",
+          body: "S20 to S28 moves 7.655 percent of pixels. The next eight steps move 1.488.",
+        },
+        {
+          name: "No resting point",
+          body: "No adjacent guidance pair falls below 17.167 percent, and the last rung still moves 57.591. It never converges.",
+        },
       ],
     },
   },

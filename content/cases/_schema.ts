@@ -121,8 +121,12 @@ export type CaseData = {
    *  meta description, which falls back to oneLine rather than going
    *  empty: a page with no description is worse than a short one. */
   claim?: string | string[];
-  /** ③ the strongest single visual */
-  hero: Figure;
+  /** ③ the strongest single visual. Optional: a page whose strongest
+   *  visual is already somewhere else does not need a second one, and
+   *  the section disappears rather than rendering an empty band. The
+   *  live link sits after this section rather than inside it, so it
+   *  still follows whatever visual the page does have. */
+  hero?: Figure;
   /** ⑥ evidence + limits; the section label may be renamed per page.
    *
    *  OPTIONAL as of the latent rewrite. It was required, because all
@@ -182,6 +186,15 @@ export type CaseData = {
       /** the line above the list, e.g. how many experiments */
       lead?: string;
       items: { name: string; question: string }[];
+    };
+    /** What the methods found, in the same numbered form. Deliberately
+     *  the same shape as `methods`: a reader who has just read five
+     *  numbered questions should meet the answers in the same
+     *  typography, not in a different component with its own
+     *  behaviour. Renders after METHODS. */
+    findings?: {
+      label: string;
+      items: { name: string; body: string }[];
     };
     /** A labelled block after HOW, for material that is a stage of the
      *  argument rather than one of the build's phases. It is flat, not

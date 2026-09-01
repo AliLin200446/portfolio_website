@@ -183,6 +183,9 @@ export default function CaseTemplate({
         ...(data.sections.methods
           ? [{ id: "methods", label: data.sections.methods.label }]
           : []),
+        ...(data.sections.findings
+          ? [{ id: "findings", label: data.sections.findings.label }]
+          : []),
         ...(data.sections.calibration
           ? [{ id: "calibration", label: data.sections.calibration.label }]
           : []),
@@ -289,32 +292,37 @@ export default function CaseTemplate({
           </section>
         )}
 
-        {/* ③ HERO. The strongest single visual, and the way in.
-            The live link used to sit at the end of the masthead meta
-            row, set in 11px mono between the year and the status, where
-            it read as another piece of metadata rather than as the one
-            thing on the page a reader can go and use. It belongs under
-            the demo: you watch the thing run, then you open it.
+        {/* ③ HERO. The strongest single visual, when the page has one
+            that is not already above. */}
+        {data.hero && (
+          <section className="py-12">
+            <Fig figure={data.hero} />
+          </section>
+        )}
+
+        {/* The way in, and it sits AFTER the visual rather than inside
+            it so that it follows whichever visual the page actually
+            has: the hero figure where there is one, the demo recording
+            where the hero has been removed. It used to live at the end
+            of the masthead meta row, set in 11px mono between the year
+            and the status, where it read as another piece of metadata
+            rather than as the one thing a reader can go and use.
 
             Cinnabar, and that is the palette's own instruction rather
             than a preference. globals.css: at most one static cinnabar
             element per screen, and cinnabar is reserved for primary
-            content links, "index titles, demo". This is the demo link.
-            Verified after the change that it is the only static
-            cinnabar mark on its screen. */}
-        <section className="py-12">
-          <Fig figure={data.hero} />
-          {data.meta.live && (
-            <a
-              href={data.meta.live}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-flex items-center gap-2 border border-oxblood px-3 py-1.5 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-oxblood transition-colors hover:bg-oxblood hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
-            >
-              open live ↗
-            </a>
-          )}
-        </section>
+            content links, "index titles, demo". This is the demo
+            link. */}
+        {data.meta.live && (
+          <a
+            href={data.meta.live}
+            target="_blank"
+            rel="noreferrer"
+            className="mb-6 inline-flex items-center gap-2 border border-oxblood px-3 py-1.5 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-oxblood transition-colors hover:bg-oxblood hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B]"
+          >
+            open live ↗
+          </a>
+        )}
 
         {/* WHAT / WHY / HOW. The new structure. Every phase body is in
             the DOM whether the row is open or not: a details element
@@ -428,6 +436,43 @@ export default function CaseTemplate({
                         </span>
                         <span className="mt-2 block font-serif text-[length:var(--text-body)] leading-[1.6] text-muted">
                           {it.question}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+
+            {/* FINDINGS, set exactly like METHODS above it. Same
+                numbering, same two-line row, same rule between entries.
+                A reader who has just been given five numbered questions
+                should meet the answers in the same typography; a second
+                component with its own hover behaviour would make the
+                answers look like a different kind of thing from the
+                questions. This used to be a client component with a
+                swapping figure frame above the fold, which is why the
+                page opened on evidence before it had said what was
+                being measured. */}
+            {data.sections.findings && (
+              <section id="findings" className="scroll-mt-8 border-t border-line py-14">
+                <p className={LABEL}>{data.sections.findings.label}</p>
+                <ol className="mt-8 max-w-[68ch]">
+                  {data.sections.findings.items.map((it, i) => (
+                    <li
+                      key={it.name}
+                      className="flex items-baseline gap-5 border-t border-line py-5 last:border-b"
+                      style={{ borderTopWidth: "0.5px" }}
+                    >
+                      <span className="w-6 shrink-0 font-serif text-[length:var(--text-title)] leading-none text-ink">
+                        {i + 1}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.12em] text-bronze-text">
+                          {it.name}
+                        </span>
+                        <span className="mt-2 block font-serif text-[length:var(--text-body)] leading-[1.6] text-muted">
+                          {it.body}
                         </span>
                       </span>
                     </li>

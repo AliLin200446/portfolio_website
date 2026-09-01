@@ -15,7 +15,6 @@ import materialMemoryHero from "@/content/heroes/material-memory";
 import vestigeHero from "@/content/heroes/vestige";
 import type { CaseHero as CaseHeroData } from "@/content/heroes/_schema";
 import type { IndexItem } from "@/components/folio/CaseIndex";
-import FindingsFrame from "@/components/case/teardown/FindingsFrame";
 
 /*
  * Full-bleed sections mounted ABOVE CaseTemplate, keyed by slug. One
@@ -27,10 +26,6 @@ const leadingSections: Record<
   string,
   { Section: React.ComponentType; indexItem: IndexItem }
 > = {
-  teardown: {
-    Section: FindingsFrame,
-    indexItem: { id: "teardown-findings", label: "FINDINGS" },
-  },
 };
 
 /*
