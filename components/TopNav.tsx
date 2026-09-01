@@ -1,25 +1,38 @@
 "use client";
 
+import { BERTH_ORDER, STATIONS } from "@/lib/bench";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 /*
- * NAV-IA — three-layer top nav: PROJECTS (six, expandable) ·
+ * NAV-IA — three-layer top nav: PROJECTS (the rail's instruments,
+ * expandable) ·
  * EXPERIMENTS · PHOTOGRAPHY · ABOUT. The dropdown is 0.5px hairline on
  * paper, mono column, no shadow/radius, 0.15s fade; outside click and
  * Esc close it; current project highlighted in copper (顶栏永久无朱).
- * No-JS: PROJECTS renders as a plain home link — the six instruments
+ * No-JS: PROJECTS renders as a plain home link — the instruments
  * ARE the catalogue. ACUBOT absent (archived).
  */
 
-const PROJECTS: { label: string; slug: string }[] = [
-  { label: "LATENT", slug: "latent" },
-  { label: "MATERIAL MEMORY", slug: "material-memory" },
-  { label: "SKELETAL SILK", slug: "skeletal-silk" },
-  { label: "TEARDOWN", slug: "teardown" },
-  { label: "VESTIGE", slug: "vestige" },
-];
+/* Derived from BERTH_ORDER, not listed again here.
+ *
+ * This was a hardcoded array of five, in a different order from the
+ * rail, and it had already drifted: the comment above still said six.
+ * A second copy of "which projects are the catalogue" is the same
+ * shape as the bug that made indexOf throw when two slugs left the
+ * rail, and it fails the same way, quietly, in whichever copy nobody
+ * edited.
+ *
+ * BERTH_ORDER answers "which instruments does the site put forward",
+ * which is exactly what this menu lists, so the menu reads it. The two
+ * cannot disagree now. Material Memory and Vestige keep their case
+ * pages and are reachable from /experiments; they are not in the
+ * catalogue, and this menu is the catalogue. */
+const PROJECTS = BERTH_ORDER.map((slug) => {
+  const s = STATIONS.find((x) => x.id === slug)!;
+  return { label: s.label, slug };
+});
 
 const navLink =
   "text-muted transition-colors hover:text-bronze focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFB46B] outline-none";
