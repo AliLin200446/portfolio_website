@@ -20,14 +20,27 @@ const teardownHero: CaseHero = validateHero({
     type: "image",
     alt: "The Teardown harness cropped to its middle 60 percent, showing the prompt, seed and guidance controls down the left, a timing readout for fal-ai/flux/dev in the centre, and two generated garment images on the right.",
   },
+  /* hero-drift-exempt
+   *
+   * scripts/check-hero-drift.mjs asserts that a hero's PROBLEM is the
+   * case page's WHAT. That held while PROBLEM restated the problem and
+   * WHAT repeated it. It no longer does: PROBLEM is what these APIs
+   * withhold from you, and WHAT is what this study is. Different
+   * sentences on purpose, so the overlap check cannot tell them from
+   * drift.
+   *
+   * Same shape as latent's exemption and for the same reason. The
+   * pages still using the old structure keep the check; delete this
+   * block if PROBLEM and WHAT ever become one claim again.
+   */
   quadrants: [
     {
       label: "Problem",
-      body: "AI image APIs ship faster than anyone measures them.",
+      body: "These APIs publish what they can do and withhold what they cost you. The one timing the response returns is the one that never moves.",
     },
     {
       label: "Solution",
-      body: "This is an instrumented teardown of a generative image API.",
+      body: "Turning \"it feels quick\" into segments of numbers.",
     },
     {
       label: "Methods",

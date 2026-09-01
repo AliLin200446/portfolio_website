@@ -151,8 +151,10 @@ export type CaseData = {
     /** who this is for, and what they try that does not work. Optional:
      *  it renders as its own section between WHAT and WHY, with its own
      *  entry in the index rail, and is skipped entirely when absent so
-     *  the four pages without it are unchanged. */
-    who?: string;
+     *  the pages without it are unchanged. An array renders one
+     *  paragraph per entry, for a page whose answer is two audiences
+     *  rather than one. */
+    who?: string | string[];
     /** why the existing answers fall short, and where this one sits.
      *  An array renders one paragraph per entry; a plain string keeps
      *  the single-paragraph path every other page uses. It was a bare
@@ -160,10 +162,26 @@ export type CaseData = {
      *  a three line WHY into two paragraphs and said so in the report
      *  rather than restructuring for it. */
     why: string | string[];
-    how: {
+    /** Optional. A page may answer "how" with METHODS below instead,
+     *  which is a numbered list of what was run rather than folded
+     *  phases of how it was built. Absent removes the section and its
+     *  index entry together. */
+    how?: {
       /** two or three lines before the phases open */
       summary: string[];
       phases: Phase[];
+    };
+    /** The alternative to HOW: a numbered list of the things that were
+     *  run, each a name and the question it answers. A study whose
+     *  method IS its experiment list wants this; a build whose method
+     *  is a sequence of stages wants `how`. A page may carry either,
+     *  and carrying both would give a reader two answers to one
+     *  question, so nothing renders both. */
+    methods?: {
+      label: string;
+      /** the line above the list, e.g. how many experiments */
+      lead?: string;
+      items: { name: string; question: string }[];
     };
     /** A labelled block after HOW, for material that is a stage of the
      *  argument rather than one of the build's phases. It is flat, not

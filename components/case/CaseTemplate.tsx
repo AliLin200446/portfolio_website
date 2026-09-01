@@ -179,7 +179,10 @@ export default function CaseTemplate({
         { id: "what", label: "WHAT" },
         ...(data.sections.who ? [{ id: "who", label: "WHO" }] : []),
         { id: "why", label: "WHY" },
-        { id: "how", label: "HOW" },
+        ...(data.sections.how ? [{ id: "how", label: "HOW" }] : []),
+        ...(data.sections.methods
+          ? [{ id: "methods", label: data.sections.methods.label }]
+          : []),
         ...(data.sections.calibration
           ? [{ id: "calibration", label: data.sections.calibration.label }]
           : []),
@@ -326,7 +329,14 @@ export default function CaseTemplate({
             {data.sections.who && (
               <section id="who" className="scroll-mt-8 border-t border-line py-14">
                 <p className={LABEL}>WHO</p>
-                <p className={`${PROSE} mt-8`}>{data.sections.who}</p>
+                {(Array.isArray(data.sections.who)
+                  ? data.sections.who
+                  : [data.sections.who]
+                ).map((para, i) => (
+                  <p key={i} className={`${PROSE} ${i === 0 ? "mt-8" : "mt-5"}`}>
+                    {para}
+                  </p>
+                ))}
               </section>
             )}
 
@@ -342,6 +352,7 @@ export default function CaseTemplate({
               ))}
             </section>
 
+            {data.sections.how && (
             <section id="how" className="scroll-mt-8 border-t border-line py-14">
               <p className={LABEL}>HOW</p>
               {data.sections.how.summary.map((para, i) => (
@@ -388,6 +399,42 @@ export default function CaseTemplate({
                 ))}
               </div>
             </section>
+            )}
+
+            {/* METHODS, the alternative to HOW. A study whose method is
+                its experiment list wants a numbered list; a build whose
+                method is a sequence of stages wants folded phases.
+                Nothing renders both: two answers to one question is
+                worse than either. */}
+            {data.sections.methods && (
+              <section id="methods" className="scroll-mt-8 border-t border-line py-14">
+                <p className={LABEL}>{data.sections.methods.label}</p>
+                {data.sections.methods.lead && (
+                  <p className={`${PROSE} mt-8`}>{data.sections.methods.lead}</p>
+                )}
+                <ol className="mt-8 max-w-[68ch]">
+                  {data.sections.methods.items.map((it, i) => (
+                    <li
+                      key={it.name}
+                      className="flex items-baseline gap-5 border-t border-line py-5 last:border-b"
+                      style={{ borderTopWidth: "0.5px" }}
+                    >
+                      <span className="w-6 shrink-0 font-serif text-[length:var(--text-title)] leading-none text-ink">
+                        {i + 1}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.12em] text-bronze-text">
+                          {it.name}
+                        </span>
+                        <span className="mt-2 block font-serif text-[length:var(--text-body)] leading-[1.6] text-muted">
+                          {it.question}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
 
             {/* A labelled block after HOW. Its content is rendered flat
                 rather than as a folded phase: the section label is the
