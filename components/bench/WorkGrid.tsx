@@ -243,6 +243,13 @@ export default function WorkGrid() {
       progress.current = p;
       const i = Math.round(p);
       setActive((prev) => (prev === i ? prev : i));
+      /* The instruments read `berth` to decide whether they are the one
+         being looked at: FilmRoll and Cocoon gate their resting glow on
+         it, Movement gates its wheels. Nothing wrote it after the rail
+         came out, so it stayed at HOME_BERTH and two of the three were
+         permanently asleep no matter what was on screen. */
+      const st = useBenchStore.getState();
+      if (st.berth !== i) st.setBerth(i);
     };
     // The browser restores a scroll position on reload, and this
     // scroller is not the document, so it restores silently: the page
@@ -262,6 +269,22 @@ export default function WorkGrid() {
   useEffect(() => {
     useBenchStore.getState().setBoot(35, "three runtime");
   }, []);
+
+  /* Hover, restored. The rail played each instrument's own mechanism on
+     pointer-over and prefetched its route; both were lost with the
+     layout, because the canvas takes no pointer events here and the
+     cell above it is the only thing the pointer can reach.
+     So the cell does it: it tells the store which instrument is
+     hovered, which is what Movement already listened to, and it runs
+     the same mechanism the rail ran. */
+  const hoverOn = (id: string) => {
+    const s = useBenchStore.getState();
+    s.setHovered(id);
+    if (id === "latent") s.b1Feed();
+    if (id === "skeletal-silk") s.b3Pull();
+    const st = STATIONS.find((x) => x.id === id);
+    if (st?.href && !st.external) router.prefetch(st.href);
+  };
 
   /* Make the canvas measure itself, and keep asking until it has.
    *
@@ -392,8 +415,10 @@ export default function WorkGrid() {
                 e.preventDefault();
                 enter(s.id);
               }}
-              onMouseEnter={() => useBenchStore.getState().setHovered(s.id)}
+              onMouseEnter={() => hoverOn(s.id)}
+              onFocus={() => hoverOn(s.id)}
               onMouseLeave={() => useBenchStore.getState().setHovered(null)}
+              onBlur={() => useBenchStore.getState().setHovered(null)}
               style={{ height: `${CELL_VH * 100}svh` }}
               className="group relative flex items-end justify-start p-8 outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#FFB46B]"
             >

@@ -192,7 +192,15 @@ export default function Cocoon({
   const nudgeNonce = useBenchStore((s) => s.b3PullNonce); // nameplate 轻推
 
   const [hover, setHover] = useState(false);
-  const awake = hover || berth === berthOf("skeletal-silk");
+  /* The store's hovered id, not just this component's own pointer
+   *  state. The work grid puts a transparent cell over the canvas and
+   *  takes no pointer events in 3D, so this object's own onPointerOver
+   *  can never fire there; it still can on a case page, where the
+   *  object is mounted on its own. Reading both means one branch works
+   *  in each place and neither has to know which place it is in.
+   *  Movement already did this for the same reason. */
+  const hoveredId = useBenchStore((s) => s.hovered);
+  const awake = hover || hoveredId === "skeletal-silk" || berth === berthOf("skeletal-silk");
 
   const shellGeom = useMemo(buildShell, []);
   const silkMaps = useMemo(makeSilkMaps, []);
