@@ -177,6 +177,13 @@ body {
 body { padding-top: 3.25rem; }
 body[data-index="true"] { padding-top: 0; }
 
+/* The index carries its own footer inside the scene, so the layout's
+   one is a second footer there: it sat under the work grid with a rule
+   above it, and scrolling past the bottom of the grid revealed it.
+   Every other route still wants it, so it is hidden here rather than
+   removed from the layout. */
+body[data-index="true"] .site-footer { display: none; }
+
 /* ABOUT VENN — the only things that move are stroke weight, opacity and
    a fill. reduced-motion cuts the transition and the state still
    changes, because the state IS the information here: the diagram is

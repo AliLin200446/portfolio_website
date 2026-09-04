@@ -90,7 +90,13 @@ export default function RootLayout({
           </div>
         </header>
         {children}
-        <footer className="mx-auto max-w-5xl border-t border-line px-6 py-8">
+        {/* Hidden on the index. The home page is a fixed, full-viewport
+            scene with its own footer already in it; this one appeared
+            under the work grid as a second footer with a rule above it,
+            reachable by scrolling past the bottom of the grid. Hidden
+            rather than removed, because every other route still wants
+            it. See the rule in globals.css. */}
+        <footer className="site-footer mx-auto max-w-5xl border-t border-line px-6 py-8">
           <div className="flex items-center justify-between font-mono font-medium text-[length:var(--text-meta)] text-muted">
             <div className="flex items-center gap-3">
               <span>© 2026 Ali Lin</span>
