@@ -263,6 +263,42 @@ export default function WorkGrid() {
     useBenchStore.getState().setBoot(35, "three runtime");
   }, []);
 
+  /* Make the canvas measure itself, and keep asking until it has.
+   *
+   * Without this the FIRST visit deadlocks and the page never leaves
+   * the loading screen. R3F sizes its canvas from a ResizeObserver on
+   * the container; on this mount path that first observation does not
+   * arrive, so the canvas stays at its default 300x150, the renderer is
+   * never created, onCreated never runs, and boot stops at 35. The
+   * loader is waiting on boot to reach 100, so it never unmounts, so
+   * the layout never changes, so nothing triggers the observer again.
+   * Each half waits for the other.
+   *
+   * It was invisible in testing because every local check set
+   * bench-ready first to skip the loader, and removing the loader from
+   * the DOM is itself the layout change that breaks the deadlock. The
+   * one path never exercised was the one every visitor takes.
+   *
+   * A single rAF was tried first and was too early: the observer is not
+   * listening yet that frame. So this polls instead of guessing, and
+   * stops the moment the canvas reports a real backing size. Bounded,
+   * so a browser that never sizes it does not spin forever; it gives up
+   * and leaves the loader honest rather than looping. */
+  useEffect(() => {
+    let tries = 0;
+    const t = setInterval(() => {
+      const c = document.querySelector("canvas");
+      // 300x150 is the HTML default, i.e. "never measured"
+      if (c && (c.width > 300 || c.height > 150)) {
+        clearInterval(t);
+        return;
+      }
+      window.dispatchEvent(new Event("resize"));
+      if (++tries > 40) clearInterval(t);
+    }, 100);
+    return () => clearInterval(t);
+  }, []);
+
   /* Entering a case page. The rail dove the camera into the surface
      first; that pose was defined against a camera parked in front of
      one object, and the camera here is wherever the scroll left it,

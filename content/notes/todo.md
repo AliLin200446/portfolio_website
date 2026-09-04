@@ -105,3 +105,31 @@ the author still knows what they meant.
 
 Same rule for a path in a comment, a source citation, or a file
 reference in a commit message.
+
+## verification: skipping the slow path is skipping the only path
+
+I shipped a home page that never left the loading screen, and every
+local check had been green.
+
+The bug was a deadlock. R3F sizes its canvas from a ResizeObserver; on
+that mount path the first observation never arrived, so the canvas
+stayed at its default 300x150, the renderer was never created,
+onCreated never ran, and boot stopped at 35. The loader waits for boot
+to reach 100, so it never unmounted, so the layout never changed, so
+nothing triggered the observer again. Each half waiting for the other.
+
+Every local verification had set `bench-ready` in sessionStorage first,
+to skip the loading screen and get to the thing being tested. Removing
+the loader from the DOM is itself the layout change that breaks the
+deadlock. So the shortcut did not just skip the loader, it repaired the
+exact fault, and it did so silently. The one path never exercised was
+the one every visitor takes.
+
+The rule is not "always sit through the loader". It is that a step
+skipped to save time is a step not covered, and the ones worth skipping
+are usually the slow ones at the start, which is where first-run faults
+live. If a check needs a shortcut to be quick, the unshortcut version
+is a separate check and it still has to run once.
+
+Same family as "a tool reporting success is not success", one layer
+out: here the tool was right and the setup was wrong.
