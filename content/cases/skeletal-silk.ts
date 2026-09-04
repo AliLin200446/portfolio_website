@@ -146,6 +146,13 @@ cotton and knit differ only in color.`,
       "On an earlier session I recorded knit rigidity at 0.52 and the control at 0.50. I did not keep those responses, and the images were recompressed between then and now, so I cannot tell whether that was model variance or different input bytes. Every number on this page comes from runs I kept.",
       "There is no stability test here at all. Each image was called once and only those four responses were kept, so nothing on this page shows whether the same image returns the same values twice. Repeating the four calls and publishing both sets would close it.",
       "Colour is returned as three normalised channels, not one number. The page calls these four material parameters, which is four fields, not four scalars.",
+      /* Moved out of the tool, where 547px of prose explaining the method sat
+         under a column of counts. The counts are facts about a session and
+         belong in the instrument; the method is a claim about how they were
+         arrived at, and belongs here. The tool now carries one line back to
+         this page. */
+      "The session counter shows landed, cancelled and refused as three separate figures because they cost three different things. A landed analysis reports its own token counts, passed through from the API. A cancelled request left the machine and may well have been billed upstream, but its response never arrived, so its tokens are unknown and are in no total. A refused one was stopped by the cooldown or the concurrency cap before anything was sent, and cost nothing.",
+      "The tool shows what a session spent and never what is left. Reading a remaining balance needs an admin key, and a browser should never hold one.",
     ],
   },
   coda: "A vision model's loose reading, pinned to four numbers you can drive and carry away.",

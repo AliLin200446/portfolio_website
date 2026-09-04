@@ -160,6 +160,14 @@ body {
   .enter-press:active { transform: none; }
 }
 
+/* The handover to a case page: the surface takes the viewport, then
+   the route changes underneath it. BenchArrival wears the same colour
+   on the other side, which is what makes the change invisible. */
+@keyframes bench-cut {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* The index draws its own bar over the 3D canvas (HomeShell); the
    layout-level nav is for every other route. body[data-index] is set
    by the home page so only one nav is ever visible. */

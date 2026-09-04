@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { BERTH_ORDER } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 
-const Rail = dynamic(() => import("./Rail"), { ssr: false });
+const WorkGrid = dynamic(() => import("./WorkGrid"), { ssr: false });
 
 /*
- * Mounts the 3D rail only on desktop fine-pointer displays without
+ * Mounts the 3D work grid only on desktop fine-pointer displays without
  * reduced-motion. Everywhere else (mobile, coarse, reduced, no JS) the
  * server-rendered DOM list stays visible — navigation never depends on
  * WebGL. Returns [mount3d] so the page can hide the list when 3D is up.
@@ -38,7 +38,7 @@ export default function BenchHome({ active }: { active: boolean }) {
   if (!active) return null;
   return (
     <div className="fixed inset-0 z-0">
-      <Rail />
+      <WorkGrid />
     </div>
   );
 }
