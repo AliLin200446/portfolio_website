@@ -15,23 +15,6 @@
   --bronze: #8c6a3f;
   --wood: #3a4a3f;
   --line: #e3ded4;
-
-  /* Shared editorial foundations. Existing pages migrate deliberately.
-     Usage and exceptions: content/notes/DESIGN_SYSTEM.md. */
-  --surface: var(--paper);
-  --text-primary: var(--ink);
-  --text-muted: var(--muted);
-  --hairline: var(--line);
-  --accent: var(--bronze-text);
-  --interactive: var(--oxblood);
-  --focus-ring: var(--bronze-text);
-  --rule-width: 1px;
-  --content-width: 80rem;
-  --space-xs: 8px;
-  --space-s: 16px;
-  --space-m: 24px;
-  --space-l: 48px;
-  --space-xl: 64px;
 }
 
 @theme inline {
@@ -200,34 +183,6 @@ body[data-index="true"] { padding-top: 0; }
    Every other route still wants it, so it is hidden here rather than
    removed from the layout. */
 body[data-index="true"] .site-footer { display: none; }
-
-/* Keep the recruiting nameplate in the same place before and after
-   the desktop instrument mounts. On touch/reduced-motion it flows
-   above the station list. The boot sheet stays behind the text. */
-body:has(.home-positioning) { padding-top: 0; }
-.home-positioning { position: relative; z-index: 1; }
-@media (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .home-positioning {
-    position: fixed;
-    z-index: 6;
-    top: 6rem;
-    left: 0;
-    width: 40%;
-    max-width: none;
-    margin: 0;
-    padding: 0 1.5rem;
-  }
-  .home-stations {
-    width: 60%;
-    max-width: none;
-    margin-left: 40%;
-    padding-top: 6rem;
-  }
-}
-@media (min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .home-positioning { width: 34%; padding-inline: 2.5rem; }
-  .home-stations { width: 66%; margin-left: 34%; }
-}
 
 /* ABOUT VENN — the only things that move are stroke weight, opacity and
    a fill. reduced-motion cuts the transition and the state still

@@ -3,47 +3,27 @@ import Link from "next/link";
 import { Suspense } from "react";
 import PhotoSheet from "@/components/PhotoSheet";
 import { FolioBar } from "@/components/folio/FolioChrome";
-import PhotographyEdit from "@/components/PhotographyEdit";
-import { editorialCount, editorialSections } from "@/content/photography-edit";
-import styles from "./photography.module.css";
 
 export const metadata: Metadata = { title: "Photography" };
 
-/* A selected edit precedes the complete, format-filtered contact sheets. */
+/* PHOTOGRAPHY. The contact sheet the darkroom would actually print.
+ * 决策C: one signature line, no sub-brand. Data: content/photography.ts. */
 export default function PhotographyPage() {
   return (
-    <main className="mx-auto max-w-5xl px-6 pt-8 sm:pt-0">
+    <main className="mx-auto max-w-5xl px-6">
       <FolioBar backHref="/" />
-      <section className="pt-10 pb-10 sm:pt-16 sm:pb-12">
-        <h1 className={`${styles.title} font-serif tracking-tight`}>PHOTOGRAPHY</h1>
-        <p className="mt-4 font-serif text-[length:var(--text-lead)] text-muted">
-          Studies in figure, light, and color.
-        </p>
-        <div className="mt-8 flex flex-wrap items-baseline justify-between gap-4 font-mono font-medium text-[length:var(--text-meta)] text-muted">
-          <span>{editorialCount} SELECTED PHOTOGRAPHS</span>
-          <nav aria-label="Photography chapters" className="flex flex-wrap gap-x-5 gap-y-3">
-            {editorialSections.map((section, i) => (
-              <a key={section.id} href={`#${section.id}`} className="hover:text-bronze">
-                0{i + 1} / {section.title}
-              </a>
-            ))}
-            <a href="#archive" className="hover:text-bronze">ARCHIVE ↓</a>
-          </nav>
-        </div>
+      <section className="pt-16 pb-8">
+        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">PHOTOGRAPHY</h1>
       </section>
-      <PhotographyEdit />
-      <div className="mt-20 flex flex-wrap items-baseline justify-between gap-6 border-t border-line py-10 font-mono font-medium text-[length:var(--text-meta)] text-muted sm:mt-32">
-        <p>The eye came before the instrument.</p>
-        <Link href="/work/latent" className="hover:text-bronze">
-          NEXT / LATENT →
+      <Suspense>
+        <PhotoSheet />
+      </Suspense>
+      {/* 交叉证据链: these negatives are LATENT's calibration samples */}
+      <p className="border-t border-line py-10 font-mono font-medium text-[length:var(--text-meta)]" style={{ borderTopWidth: "0.5px" }}>
+        <Link href="/work/latent" className="text-muted transition-colors hover:text-bronze">
+          these negatives calibrate LATENT ↗
         </Link>
-      </div>
-      <section id="archive" aria-labelledby="archive-title" className={`${styles.archive} pt-12`}>
-        <h2 id="archive-title" className="mb-6 font-serif text-[length:var(--text-title)]">ARCHIVE</h2>
-        <Suspense>
-          <PhotoSheet />
-        </Suspense>
-      </section>
+      </p>
       <div className="pb-24" />
     </main>
   );

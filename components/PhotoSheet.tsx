@@ -131,7 +131,7 @@ export default function PhotoSheet() {
               .filter(Boolean)
               .join(" · ")}
           </p>
-          <div onClick={(e) => e.stopPropagation()} className="mt-2 flex gap-6 font-mono font-medium text-[length:var(--text-meta)]">
+          <div className="mt-2 flex gap-6 font-mono font-medium text-[length:var(--text-meta)]">
             <button type="button" onClick={() => setLoupe((l) => l && { roll: l.roll, i: (l.i + l.roll.frames.length - 1) % l.roll.frames.length })} className="text-muted hover:text-bronze">←</button>
             <button type="button" onClick={() => setLoupe(null)} className="text-muted hover:text-bronze">ESC</button>
             <button type="button" onClick={() => setLoupe((l) => l && { roll: l.roll, i: (l.i + 1) % l.roll.frames.length })} className="text-muted hover:text-bronze">→</button>
