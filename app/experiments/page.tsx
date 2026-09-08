@@ -1,30 +1,18 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import ExperimentsIndex from "@/components/ExperimentsIndex";
 import { FolioBar } from "@/components/folio/FolioChrome";
+import styles from "./experiments.module.css";
 
 export const metadata: Metadata = { title: "Experiments" };
 
-/*
- * /experiments landing. FolioChrome blood: paper, mono data, 0.5px
- * lines, no cards, no shadows, no radius, no cinnabar. Which pieces
- * count as experiments is the author's call; this file only frames
- * them.
- */
 export default function ExperimentsPage() {
   return (
-    <main className="mx-auto max-w-5xl px-6">
+    <main className={styles.page}>
       <FolioBar backHref="/" />
-      <section className="pt-16 pb-8">
-        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">
-          EXPERIMENTS
-        </h1>
-      </section>
-      {/* 可筛选文字索引 — 数据在 content/experiments.ts,作者填字即增删 */}
-      <Suspense>
-        <ExperimentsIndex />
-      </Suspense>
-      <div className="pb-24" />
+      <header className={styles.header}>
+        <h1 className={styles.title}>EXPERIMENTS</h1>
+      </header>
+      <ExperimentsIndex />
     </main>
   );
 }
