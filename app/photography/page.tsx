@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import styles from "./photography.module.css";
 import PhotoSheet from "@/components/PhotoSheet";
 import { FolioBar } from "@/components/folio/FolioChrome";
 
@@ -10,10 +11,10 @@ export const metadata: Metadata = { title: "Photography" };
  * 决策C: one signature line, no sub-brand. Data: content/photography.ts. */
 export default function PhotographyPage() {
   return (
-    <main className="mx-auto max-w-5xl px-6">
+    <main className="mx-auto max-w-5xl px-6 pt-8 sm:pt-0">
       <FolioBar backHref="/" />
       <section className="pt-16 pb-8">
-        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">PHOTOGRAPHY</h1>
+        <h1 className={`${styles.title} font-serif tracking-tight`}>PHOTOGRAPHY</h1>
       </section>
       <Suspense>
         <PhotoSheet />

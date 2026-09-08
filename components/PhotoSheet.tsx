@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import PhotographyColorEdit from "./PhotographyColorEdit";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FORMATS, rolls, type Format, type Roll } from "@/content/photography";
@@ -63,8 +64,7 @@ export default function PhotoSheet() {
   const alt = (r: Roll, f: Roll["frames"][number]) =>
     f.note ?? [...facts(r), `frame ${f.n}`].join(" · ");
 
-  return (
-    <>
+  const formatControls = (
       <div className="flex flex-wrap gap-x-5 border-t border-line py-4 font-mono font-medium text-[length:var(--text-meta)]" style={{ borderTopWidth: "0.5px" }}>
         <button type="button" onClick={() => router.replace("/photography", { scroll: false })} className={active === null ? "text-bronze" : "text-muted hover:text-ink"}>
           ALL <span className="text-[length:var(--text-meta)]">{rolls.length}</span>
@@ -75,6 +75,12 @@ export default function PhotoSheet() {
           </button>
         ))}
       </div>
+  );
+
+  return (
+    <>
+      {formatControls}
+      <PhotographyColorEdit format={active} onOpen={(roll, i) => setLoupe({ roll, i })} />
 
       {shown.map((r) => (
         <section key={r.id} className="border-t border-line py-8" style={{ borderTopWidth: "0.5px" }}>
@@ -131,7 +137,7 @@ export default function PhotoSheet() {
               .filter(Boolean)
               .join(" · ")}
           </p>
-          <div className="mt-2 flex gap-6 font-mono font-medium text-[length:var(--text-meta)]">
+          <div onClick={(e) => e.stopPropagation()} className="mt-2 flex gap-6 font-mono font-medium text-[length:var(--text-meta)]">
             <button type="button" onClick={() => setLoupe((l) => l && { roll: l.roll, i: (l.i + l.roll.frames.length - 1) % l.roll.frames.length })} className="text-muted hover:text-bronze">←</button>
             <button type="button" onClick={() => setLoupe(null)} className="text-muted hover:text-bronze">ESC</button>
             <button type="button" onClick={() => setLoupe((l) => l && { roll: l.roll, i: (l.i + 1) % l.roll.frames.length })} className="text-muted hover:text-bronze">→</button>
