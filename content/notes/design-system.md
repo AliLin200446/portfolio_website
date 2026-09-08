@@ -1,5 +1,7 @@
 # Design system notes
 
+> Historical case-study rationale. For the shared portfolio foundation and future migrations, use [ALILINLAB DESIGN SYSTEM](DESIGN_SYSTEM.md).
+
 > **There is a second design system file.**
 > `/Users/alilin/Applications/Skeletal_Silk/STYLE.md` sets house rules
 > for the Skeletal Silk repo: palette, one-thing-shouts-per-screen, and
@@ -26,7 +28,7 @@ where the call actually happens.
 ## Type scale
 
 Five sizes, three weights. Defined once in `app/globals.css` under
-`@theme` and referenced as `text-[length:var(--text-*)]`, so a
+`@theme` and referenced through named text-size token utilities, so a
 component names a level rather than a number.
 
     level    px  weight  what it carries

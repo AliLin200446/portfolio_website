@@ -1,0 +1,46 @@
+/* Photography-local spreads use the shared 1024px measure and a 12-column
+   grid. Natural image dimensions set the geometry; no cropping or masonry. */
+.title {
+  font-size: min(8.7vw, var(--text-display));
+  line-height: 1.1;
+}
+
+.spread {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem 1rem;
+  align-items: start;
+}
+.photograph { min-width: 0; }
+.triptych > .photograph { grid-column: span 4; }
+.two-up > .photograph { grid-column: span 6; }
+.editorial-grid > .photograph { grid-column: span 4; }
+.editorial-grid > .photograph:nth-child(2) { grid-column: span 8; }
+
+/* Two connected studies stacked beside one portrait. The two rows share
+   the feature's height, bringing their lower edges together when possible. */
+.feature-right > .photograph:nth-child(1) { grid-column: 1 / span 6; grid-row: 1; }
+.feature-right > .photograph:nth-child(2) { grid-column: 1 / span 6; grid-row: 2; }
+.feature-right > .photograph:nth-child(3) { grid-column: 7 / span 6; grid-row: 1 / span 2; }
+
+.imageLink { display: block; }
+.imageLink:focus-visible {
+  outline: 2px solid var(--bronze);
+  outline-offset: 5px;
+}
+.chapter, .archive { scroll-margin-top: 6rem; }
+.chapter + .chapter { margin-top: 3rem; }
+.sequence { display: grid; row-gap: 2.5rem; margin-top: 1.25rem; }
+
+@media (max-width: 639px) {
+  .spread { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem .75rem; }
+  .spread > .photograph { grid-column: 1 / -1; grid-row: auto; }
+  .triptych > .photograph:nth-child(n+2),
+  .two-up > .photograph:nth-child(n+3),
+  .editorial-grid > .photograph:nth-child(n+4) { grid-column: span 1; }
+  .sequence { row-gap: 2rem; }
+  .chapter + .chapter { margin-top: 2.5rem; }
+}
+@media (max-width: 379px) {
+  .spread > .photograph:nth-child(n) { grid-column: 1 / -1; }
+}

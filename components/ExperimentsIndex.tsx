@@ -116,81 +116,41 @@ export default function ExperimentsIndex() {
         target={away ? "_blank" : undefined}
         rel={away ? "noreferrer" : undefined}
         aria-label={e.name}
-        className="group block aspect-[16/10] outline-none [perspective:1100px]"
+        className="group relative flex aspect-[4/5] flex-col items-center justify-center border-b border-r border-line p-8 outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#FFB46B]"
+        style={{ borderWidth: "0.5px" }}
       >
-        <div
-          className="relative h-full w-full transition-transform duration-[400ms] ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)] motion-reduce:transition-none motion-reduce:[transform:rotateY(180deg)]"
-        >
-          {/* front: the name and nothing else, inside a bronze
-              hairline. Bronze rather than the usual line grey because
-              the front of a card is an invitation and the grey reads as
-              a container; it is held to 0.5px and 55 percent so five of
-              them together stay a texture rather than five frames
-              competing for the same attention. Cinnabar is still spoken
-              for: it belongs to the one card being turned. */}
-          <div
-            className="absolute inset-0 flex flex-col justify-end p-5 [backface-visibility:hidden]"
-            style={{ border: "0.5px solid color-mix(in srgb, var(--bronze) 55%, transparent)" }}
-          >
-            <span className="font-serif text-[length:var(--text-lead)] leading-tight">{e.name}</span>
-          </div>
+        {/* The capture, sitting IN the cell rather than filling it.
+            object-contain and a max height leave paper around every
+            piece, which is what lets seven captures of seven different
+            shapes read as one set: a poster and a wide screenshot are
+            the same object here, both floating in the same margin.
+            bg-cover would have cropped each to the cell and made the
+            set look like a contact sheet of accidents.
 
-          {/* back: the capture, or the slot where it will go */}
-          <div
-            className="absolute inset-0 overflow-hidden border border-line [backface-visibility:hidden] [transform:rotateY(180deg)] group-hover:border-oxblood group-focus-visible:border-oxblood"
-            style={{ borderWidth: "0.5px" }}
-          >
-            {e.shot ? (
-              <>
-                {/* A CSS background, not an img.
-                    The grid is display:none below 1024, and an img
-                    inside a hidden container is fetched anyway: all
-                    four decoded at naturalWidth 1600 on a 390px screen,
-                    loading="lazy" and all. A background-image in a
-                    display:none subtree is never requested, which is
-                    what "the phone is left alone" has to mean. alt was
-                    empty regardless: the name sits next to it in text. */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${e.shot})` }}
-                />
-                {/* Weighted to the bottom, not flat. These captures
-                    are not one family: Lethe is near black and Aura is
-                    near white, and a flat scrim dark enough to carry
-                    paper-coloured type over the white one buries the
-                    black one. A gradient puts the density where the
-                    type is and leaves the rest of the frame legible. */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(to bottom, rgba(26,23,20,0.12) 0%, rgba(26,23,20,0.30) 45%, rgba(26,23,20,0.82) 100%)",
-                  }}
-                />
-              </>
-            ) : (
-              <EmptySlot />
-            )}
-            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5">
-              <span
-                className={`font-serif text-[length:var(--text-lead)] leading-tight ${
-                  e.shot ? "text-paper" : "text-ink"
-                }`}
-              >
-                {e.name}
-              </span>
-              {e.stack && (
-                <span
-                  className={`font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest ${
-                    e.shot ? "text-paper/75" : "text-muted"
-                  }`}
-                >
-                  {e.stack}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
+            Still a CSS background rather than an img. The grid is
+            display:none below lg, and an img inside a hidden container
+            is fetched anyway: they all decode at naturalWidth 1600 on a
+            390px screen, loading="lazy" and all. A background-image in
+            a display:none subtree is never requested, which is what
+            "the phone is left alone" has to mean. */}
+        {e.shot ? (
+          <span
+            aria-hidden
+            className="block h-full w-full bg-contain bg-center bg-no-repeat transition-transform duration-500 ease-out group-hover:scale-[1.04] group-focus-visible:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            style={{ backgroundImage: `url(${e.shot})` }}
+          />
+        ) : (
+          <EmptySlot />
+        )}
+
+        {/* The name arrives on hover, under the piece. Off by default
+            because the reference this follows is a wall of work, not a
+            list with pictures: the images carry the page and the label
+            answers the one you stopped on. Reserved height, so nothing
+            below it moves when it appears. */}
+        <span className="pointer-events-none absolute inset-x-0 bottom-4 px-4 text-center font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.14em] text-muted opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">
+          {e.name}
+        </span>
       </a>
     );
   };
@@ -237,7 +197,7 @@ export default function ExperimentsIndex() {
           the order the list has always used. There is no overlap with
           the home rail, so nothing here has a second opinion about
           priority to disagree with. */}
-      <div className="hidden gap-5 pt-2 lg:grid lg:grid-cols-3">
+      <div className="hidden border-l border-t border-line pt-0 lg:grid lg:grid-cols-4" style={{ borderWidth: "0.5px", borderRightWidth: 0, borderBottomWidth: 0 }}>
         {[...featured, ...rest].map((e) => (
           <Card key={e.name} e={e} />
         ))}

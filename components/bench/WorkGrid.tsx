@@ -342,21 +342,23 @@ export default function WorkGrid() {
     <div className="fixed inset-0 z-0 flex">
       {/* LEFT: pinned. It does not scroll, so the description is always
           the one belonging to whatever is on screen. */}
-      <div className="hidden w-[34%] shrink-0 flex-col justify-center border-r border-line px-10 lg:flex">
-        <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.18em] text-bronze">
-          {String(active + 1).padStart(2, "0")} /{" "}
-          {String(BERTH_ORDER.length).padStart(2, "0")}
-          <span className="ml-3 text-muted">{stations[active]?.label}</span>
-        </p>
-        <p className="mt-4 max-w-[42ch] font-serif text-[length:var(--text-lead)] leading-snug text-ink">
-          {stations[active]?.blurb}
-        </p>
-        <a
-          href={stations[active]?.href}
-          className="mt-6 inline-flex w-fit items-center gap-2 border border-bronze px-3 py-1.5 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-bronze-text transition-colors hover:bg-bronze hover:text-paper"
-        >
-          open case ↗
-        </a>
+      <div className="flex w-[40%] shrink-0 flex-col justify-center border-r border-line px-6 pb-20 pt-[24rem] lg:w-[34%] lg:px-10">
+        <div className="overflow-y-auto">
+          <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.18em] text-bronze">
+            {String(active + 1).padStart(2, "0")} /{" "}
+            {String(BERTH_ORDER.length).padStart(2, "0")}
+            <span className="ml-3 text-muted">{stations[active]?.label}</span>
+          </p>
+          <p className="mt-4 max-w-[42ch] font-serif text-[length:var(--text-lead)] leading-snug text-ink">
+            {stations[active]?.blurb}
+          </p>
+          <a
+            href={stations[active]?.href}
+            className="mt-6 inline-flex w-fit items-center gap-2 border border-bronze px-3 py-1.5 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-bronze-text transition-colors hover:bg-bronze hover:text-paper"
+          >
+            open case ↗
+          </a>
+        </div>
       </div>
 
       {/* RIGHT: two stacked layers in one column.

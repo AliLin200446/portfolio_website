@@ -16,10 +16,12 @@ const WorkGrid = dynamic(() => import("./WorkGrid"), { ssr: false });
 export function useBench3d() {
   const [mount, setMount] = useState(false);
   useEffect(() => {
-    const ok = window.matchMedia(
+    const media = window.matchMedia(
       "(min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference)"
-    ).matches;
-    setMount(ok);
+    );
+    const sync = () => setMount(media.matches);
+    sync();
+    media.addEventListener("change", sync);
     // ?berth=N deep-link (also used by case pages to return to a berth).
     // Bounded by BERTH_ORDER, which is what a berth indexes. It read
     // STATIONS.length, a different array that happens to hold the same
@@ -30,6 +32,7 @@ export function useBench3d() {
     const b = raw === null ? NaN : Number(raw);
     if (Number.isInteger(b) && b >= 0 && b < BERTH_ORDER.length)
       useBenchStore.getState().setBerth(b);
+    return () => media.removeEventListener("change", sync);
   }, []);
   return mount;
 }

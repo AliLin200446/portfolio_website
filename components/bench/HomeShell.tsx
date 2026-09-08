@@ -1,163 +1,74 @@
-"use client";
+import Image from "next/image";
+import latent from "@/content/cases/latent";
+import {
+  PageContainer, EditorialGrid, GridSpan, EditorialIntro, SectionHeader,
+  MediaFrame, TextLink, Rule, editorialStyles as s,
+} from "@/components/editorial/Editorial";
+import HomeStations from "./HomeStations";
 
-import Link from "next/link";
-import { BERTH_ORDER, STATIONS } from "@/lib/bench";
-import BenchHome, { useBench3d } from "./BenchHome";
-import BenchLoader from "./BenchLoader";
-import dynamic from "next/dynamic";
-import { useState } from "react";
-
-/* One instrument, mounted only on the phone path, dynamic so the
- * desktop bundle never carries it. */
-const MobileBench = dynamic(() => import("./MobileBench"), {
-  ssr: false,
-  loading: () => <div className="aspect-square w-full border border-line bg-[#EDE9E0]" />,
-});
-
-function StationLink({
-  station,
-  className,
-  children,
-}: {
-  station: (typeof STATIONS)[number];
-  className?: string;
-  children: React.ReactNode;
-}) {
-  if (!station.href) {
-    // no destination yet (ACUBOT): plain label, still readable in the nav
-    return <span className={className}>{children}</span>;
-  }
-  if (station.external) {
-    return (
-      <a
-        href={station.href}
-        target="_blank"
-        rel="noreferrer"
-        className={className}
-      >
-        {children}
-      </a>
-    );
-  }
-  return (
-    <Link href={station.href} className={className}>
-      {children}
-    </Link>
-  );
-}
-
+/** Server-rendered identity and proof; neither waits for the optional instruments. */
 export default function HomeShell() {
-  const bench3d = useBench3d();
-  // which instrument the phone is showing. The list is the control,
-  // so the canvas needs no pointer handling of its own.
-  const [shown, setShown] = useState<string>(BERTH_ORDER[0]);
-  // the phone reads the same sequence the rail walks, so the two are
-  // never telling a visitor a different story about what comes first
-  const ordered = BERTH_ORDER.map(
-    (id) => STATIONS.find((s) => s.id === id)!
-  );
-
   return (
-    <div className="min-h-svh">
-      <BenchHome active={bench3d} />
-      {/* instrument boot: pure HTML/CSS, first paint before Three parses */}
-      {bench3d && <BenchLoader />}
+    <PageContainer>
+      <header className={`${s.stack} pb-[var(--space-l)]`}>
+        <p className={s.label}>Ali Lin / Design Engineer</p>
+        <Rule />
+        <EditorialIntro split={6}
+          primary={<h1 className={`${s.title} max-w-[28ch]`}>
+            I build interfaces for things that are hard to see, measure, or control.
+          </h1>}
+          supporting={<div className={s.stack}>
+            <p className={`${s.lead} max-w-[38ch]`}>
+              Design Engineer working across visual computing, generative AI, and creative tools.
+            </p>
+            <div className="flex flex-wrap gap-x-[var(--space-l)] gap-y-[var(--space-s)]">
+              <p className={s.meta}>New York / 2026</p>
+              <div>
+                <p className={s.label}>Currently</p>
+                <p className={`${s.meta} mt-[var(--space-xs)]`}>AI Image Research @ Vision On</p>
+              </div>
+            </div>
+          </div>}
+        />
+      </header>
 
-      {/* DOM list: SSR fallback and the whole story on mobile/coarse/
-          reduced-motion/no-JS. Hidden only once the 3D bench mounts. */}
-      {/* The pt on the section clears the fixed site bar. globals.css
-          zeroes the body's 3.25rem on the index because the desktop
-          scene is a fixed inset-0 canvas that wants the whole viewport,
-          but THIS path is ordinary flowed content and inherits that
-          zero, so it has to put the clearance back itself.
-
-          6.5rem rather than 3.25rem because the bar wraps: one row at
-          49px on a wide screen, two rows at 83px by 390, which is where
-          this path is the only one that renders. The body rule was
-          written for the one-row case. At 48px the first line sat 35px
-          underneath the bar, and that was true before there was any
-          text here to hide it with: the instrument frame's top edge was
-          already under it, which is quiet enough to miss. */}
-      {!bench3d && (
-        <section className="relative z-10 mx-auto max-w-3xl px-6 pb-12 pt-[6.5rem]">
-          {/* the bench, reduced to one turning object. Tapping a
-              station below swaps it rather than opening a second
-              context. */}
-          <div className="mb-8">
-            <MobileBench slug={shown} />
-          </div>
-          <h2 className="mb-6 font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-widest text-bronze">
-            Stations
-          </h2>
-          <ol className="border-t border-line">
-            {ordered.map((s, i) => (
-              <li
-                key={s.id}
-                className={`border-b border-line transition-opacity ${
-                  shown === s.id ? "" : "opacity-60"
-                }`}
-                onPointerEnter={() => setShown(s.id)}
-                onFocusCapture={() => setShown(s.id)}
-              >
-                <StationLink
-                  station={s}
-                  className="group grid gap-1 py-5"
-                >
-                  <span className="font-mono font-medium text-[length:var(--text-meta)] text-bronze">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-serif text-[length:var(--text-lead)] decoration-bronze decoration-1 underline-offset-4 group-hover:underline">
-                    {s.label}
-                  </span>
-                  {s.blurb && (
-                    <span className="text-[length:var(--text-body)] leading-snug text-muted">
-                      {s.blurb}
-                    </span>
-                  )}
-                  {s.external && (
-                    <span className="font-mono font-medium text-[length:var(--text-meta)] text-muted">
-                      teardown.alilinlab.com →
-                    </span>
-                  )}
-                </StationLink>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-
-      {/* bottom bar */}
-      <footer
-        className={`${
-          bench3d ? "fixed inset-x-0 bottom-0" : "relative"
-        } z-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 border-t border-line bg-paper/85 px-6 py-4 font-mono font-medium text-[length:var(--text-meta)] text-muted`}
-      >
-        <span>New York</span>
-        <nav aria-label="Contact" className="flex flex-wrap gap-x-5 gap-y-1">
-          <a
-            href="mailto:alilin406@outlook.com"
-            className="transition-colors hover:text-bronze"
-          >
-            alilin406@outlook.com
-          </a>
-          <a
-            href="https://x.com/alilinlab"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors hover:text-bronze"
-          >
-            X
-          </a>
-          <a
-            href="https://github.com/AliLin200446"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors hover:text-bronze"
-          >
-            GitHub
-          </a>
+      <section id="project-latent" aria-labelledby="latent-title" className={`${s.stack} scroll-mt-24`}>
+        <SectionHeader title="Featured" index="01" aside={latent.meta.year} />
+        <EditorialGrid>
+          <GridSpan columns={6} tablet={3}>
+            <h2 id="latent-title" className={s.title}>{latent.name}</h2>
+            <p className={`${s.meta} mt-[var(--space-xs)]`}>Visual Computing / Graphics Engineering</p>
+          </GridSpan>
+          <GridSpan columns={6} tablet={3}>
+            <p className={s.lead}>Real-time film physics for generative video.</p>
+            <p className={`${s.meta} mt-[var(--space-xs)]`}>{latent.meta.stack}</p>
+          </GridSpan>
+        </EditorialGrid>
+        {/* The existing recording awaits re-recording (content/heroes/latent.ts).
+            Use the verified workbench still, uncropped, including its controls. */}
+        <MediaFrame caption="LATENT / Calibration workbench. Reference film, engine output, and optical controls.">
+          <Image
+            src="/case-assets/latent/workbench.webp"
+            alt="Latent's calibration workbench: a reference film scan with red halation around a subway light, the rendered video output, and controls for halation and export."
+            width={1952} height={1066}
+            sizes="(min-width: 1280px) 1184px, (min-width: 1024px) calc(100vw - 96px), (min-width: 640px) calc(100vw - 64px), calc(100vw - 48px)"
+            priority
+            className="h-auto w-full"
+          />
+        </MediaFrame>
+        <nav aria-label="Latent" className="flex flex-wrap gap-x-[var(--space-m)] gap-y-[var(--space-s)]">
+          <TextLink href="/work/latent">CASE STUDY</TextLink>
+          {latent.meta.live && <TextLink href={latent.meta.live}>OPEN LATENT</TextLink>}
         </nav>
-      </footer>
-    </div>
+      </section>
+
+      <HomeStations />
+
+      <nav aria-label="Contact" className="flex flex-wrap gap-x-[var(--space-m)] gap-y-[var(--space-s)] border-t border-line pt-[var(--space-m)]">
+        <TextLink href="mailto:alilin406@outlook.com">alilin406@outlook.com</TextLink>
+        <TextLink href="https://x.com/alilinlab" target="_blank">X</TextLink>
+        <TextLink href="https://github.com/AliLin200446" target="_blank">GitHub</TextLink>
+      </nav>
+    </PageContainer>
   );
 }
