@@ -1,66 +1,62 @@
 import type { Metadata } from "next";
-import Venn from "@/components/about/Venn";
 import { FolioBar } from "@/components/folio/FolioChrome";
+import styles from "./about.module.css";
 
 export const metadata: Metadata = { title: "About" };
-
-/*
- * ABOUT — three circles, and the middle one is the job.
- *
- * The page makes one argument: the job is not one discipline plus
- * another, it is the intersection of judgment, build and measurement. So the diagram is the argument rather than an
- * illustration beside it, and every one of the seven regions has
- * something to say.
- *
- * Copy lives in content/about.ts and is the author's, verbatim.
- */
-
-const CONTACT: { label: string; href: string; text: string; away?: boolean }[] =
-  [
-    { label: "Email", href: "mailto:alilin406@outlook.com", text: "alilin406@outlook.com" },
-    { label: "GitHub", href: "https://github.com/AliLin200446", text: "github.com/AliLin200446", away: true },
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/alilin406/", text: "linkedin.com/in/alilin406", away: true },
-    { label: "X", href: "https://x.com/alilinlab", text: "x.com/alilinlab", away: true },
-    { label: "Instagram", href: "https://instagram.com/alilinlab", text: "instagram.com/alilinlab", away: true },
-  ];
-
+const email = "mailto:alilin406@outlook.com";
+const contact = [
+  { label: "EMAIL", href: email },
+  { label: "LINKEDIN", href: "https://www.linkedin.com/in/alilin406/" },
+  { label: "GITHUB", href: "https://github.com/AliLin200446" },
+];
+const working = [
+  { title: "INTERFACE", items: ["React", "TypeScript"] },
+  { title: "GRAPHICS", items: ["WebGL / GLSL", "Three.js / React Three Fiber"] },
+  { title: "AI", items: ["Generative image systems", "Model evaluation"] },
+];
 export default function AboutPage() {
   return (
-    <main className="mx-auto max-w-5xl px-6">
+    <main className={`mx-auto max-w-5xl px-6 ${styles.page}`}>
       <FolioBar backHref="/" />
+      <header className={styles.header}>
+        <h1 className={styles.pageTitle}>ABOUT</h1>
+      </header>
 
-      <section className="pt-16 pb-4">
-        <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">ABOUT</h1>
+      <section className={styles.opening} aria-label="Introduction">
+        <div className={styles.copy}>
+          <div><h2 className={styles.name}>ALI LIN</h2><p className={styles.meta}>DESIGN ENGINEER · NEW YORK</p></div>
+          <p>I&apos;m Ali Lin, a Design Engineer based in New York.</p>
+          <p>I build creative tools across visual computing, generative AI, and real-time graphics.</p>
+          <p>Currently, I research generative image systems for commercial production at Vision On.</p>
+          <a className={styles.textLink} href={email}>EMAIL ↗</a>
+        </div>
       </section>
 
-      <Venn />
+      <div className={styles.profile}>
+        <section className={styles.section} aria-labelledby="experience">
+          <h2 id="experience" className={styles.sectionTitle}>EXPERIENCE</h2>
+          <article className={styles.experience}>
+            <div><h3 className={styles.lead}>VISION ON</h3><p className={styles.meta}>GENERATIVE IMAGE RESEARCH</p></div>
+            <div className={styles.copy}><p className={styles.meta}>NEW YORK / CURRENT</p><p>Evaluating generative image systems for commercial retouching and production.</p></div>
+          </article>
+        </section>
+        <div>
+          <section className={styles.section} aria-labelledby="education">
+            <h2 id="education" className={styles.sectionTitle}>EDUCATION</h2>
+            <h3 className={styles.lead}>NEW YORK UNIVERSITY</h3>
+            <p>Interactive Media Arts</p><p>BFA · 2026</p><p className={styles.location}>New York</p>
+          </section>
+          <section className={styles.section} aria-labelledby="working">
+            <h2 id="working" className={styles.sectionTitle}>WORKING WITH</h2>
+            <div className={styles.working}>{working.map((group) => <div key={group.title}><h3 className={styles.meta}>{group.title}</h3><ul className={styles.list}>{group.items.map((item) => <li key={item}>{item}</li>)}</ul></div>)}</div>
+          </section>
+        </div>
+      </div>
 
-      {/* addresses, one per line and labelled. A bare row of URLs makes
-          the reader work out which is which from the domain. */}
-      <section
-        className="mt-16 border-t border-line pt-6"
-        style={{ borderTopWidth: "0.5px" }}
-      >
-        <dl className="font-mono font-medium text-[length:var(--text-meta)]">
-          {CONTACT.map((c) => (
-            <div key={c.label} className="flex gap-2 py-1">
-              <dt className="text-muted">{c.label}:</dt>
-              <dd>
-                <a
-                  href={c.href}
-                  target={c.away ? "_blank" : undefined}
-                  rel={c.away ? "noreferrer" : undefined}
-                  className="border-b border-line pb-px transition-colors hover:text-bronze-text"
-                >
-                  {c.text}
-                </a>
-              </dd>
-            </div>
-          ))}
-        </dl>
+      <section className={styles.section} aria-labelledby="contact">
+        <h2 id="contact" className={styles.sectionTitle}>CONTACT</h2>
+        <div className={styles.contact}>{contact.map((item) => <a className={styles.textLink} key={item.label} href={item.href}>{item.label} ↗</a>)}</div>
       </section>
-
-      <div className="pb-24" />
     </main>
   );
 }
