@@ -1,0 +1,6 @@
+.section { margin-top: 112px; }
+.pair { display: grid; gap: 32px; width: 100%; max-width: 720px; margin-inline: auto; align-items: start; }
+.pair figure { margin: 0; min-width: 0; }
+@media (min-width: 960px) {
+  .section { margin-top: 160px; }
+}
