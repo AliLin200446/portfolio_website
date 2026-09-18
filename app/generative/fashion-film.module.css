@@ -10,6 +10,9 @@
 .toggle span { position: absolute; top: 12px; right: 12px; padding: 4px 6px; background: var(--paper); color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: var(--text-meta); }
 .toggle:hover span { color: var(--bronze-text); }
 .toggle:focus-visible { outline: 2px solid var(--bronze-text); outline-offset: 4px; }
+.sound { position: absolute; bottom: 12px; right: 12px; padding: 10px 6px; background: var(--paper); color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: var(--text-meta); cursor: pointer; }
+.sound:hover { color: var(--bronze-text); }
+.sound:focus-visible { outline: 2px solid var(--bronze-text); outline-offset: 4px; }
 .strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 48px; align-items: start; }
 .still { display: block; width: 100%; height: auto; }
 .placeholder { aspect-ratio: 16 / 9; background: var(--line); display: grid; place-items: center; }

@@ -12,6 +12,7 @@ const frames = ["gs1", "gs2", "gs3", "gs4"];
 export default function FashionFilm({ assets }: { assets: FashionFilmAssets }) {
   const video = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
   const [ready, setReady] = useState(false);
   const [duration, setDuration] = useState(14.27);
   const userPaused = useRef(false);
@@ -49,6 +50,17 @@ export default function FashionFilm({ assets }: { assets: FashionFilmAssets }) {
     else film.pause();
   };
 
+  const toggleSound = () => {
+    const film = video.current;
+    if (!film) return;
+    film.muted = !film.muted;
+    setMuted(film.muted);
+    if (!film.muted) {
+      userPaused.current = false;
+      void film.play().catch(() => setPlaying(false));
+    }
+  };
+
   return (
     <section className={styles.section} aria-labelledby="fashion-film-title">
       <div className={`${editorial.heading} ${styles.header}`}>
@@ -62,7 +74,7 @@ export default function FashionFilm({ assets }: { assets: FashionFilmAssets }) {
         <div className={styles.screen} style={{ aspectRatio: ratio }}>
           {assets.poster && <Image fill sizes="(max-width: 1024px) 100vw, 976px" className={styles.poster} src={`${base}/poster.jpg`} alt="Fashion film opening frame" />}
           {assets.video ? <>
-            <video ref={video} muted loop playsInline preload="metadata" poster={assets.poster ? `${base}/poster.jpg` : undefined}
+            <video ref={video} muted={muted} loop playsInline preload="metadata" poster={assets.poster ? `${base}/poster.jpg` : undefined}
               className={`${styles.video} ${ready ? styles.ready : ""}`} aria-label="Fashion campaign film"
               onPlaying={() => { setPlaying(true); setReady(true); }} onPause={() => setPlaying(false)}
               onLoadedData={() => setReady(true)} onLoadedMetadata={(event) => {
@@ -74,6 +86,9 @@ export default function FashionFilm({ assets }: { assets: FashionFilmAssets }) {
             </video>
             <button type="button" className={styles.toggle} onClick={toggle} aria-label={playing ? "Pause fashion film" : "Play fashion film"}>
               <span>{playing ? "PAUSE" : "PLAY"} ↗</span>
+            </button>
+            <button type="button" className={styles.sound} onClick={toggleSound} aria-label={muted ? "Unmute fashion film" : "Mute fashion film"} aria-pressed={!muted}>
+              SOUND {muted ? "OFF" : "ON"} ↗
             </button>
           </> : !assets.poster && <span className={editorial.meta}>FILM / AWAITING FINAL CUT</span>}
         </div>
