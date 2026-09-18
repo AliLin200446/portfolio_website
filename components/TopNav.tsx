@@ -141,6 +141,13 @@ export default function TopNav() {
         EXPERIMENTS
       </Link>
       <Link
+        href="/generative"
+        aria-current={at("/generative") ? "page" : undefined}
+        className={here(at("/generative"))}
+      >
+        GENERATIVE
+      </Link>
+      <Link
         href="/photography"
         aria-current={at("/photography") ? "page" : undefined}
         className={here(at("/photography"))}
