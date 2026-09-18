@@ -1,4 +1,4 @@
-.section { margin-top: 112px; }
+.section { margin-bottom: 112px; }
 .header { align-items: end; }
 .details { flex-shrink: 0; text-align: right; line-height: 1.8; }
 .hero, .strip figure { margin: 0; min-width: 0; }
@@ -20,7 +20,7 @@
   .process { grid-template-columns: 1fr 3fr; }
 }
 @media (min-width: 960px) {
-  .section { margin-top: 160px; }
+  .section { margin-bottom: 160px; }
 }
 @media (max-width: 639px) {
   .strip { gap: 24px 12px; }
