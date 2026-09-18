@@ -28,6 +28,28 @@ export type Figure = Pending &
          *  click behind it; `motionStill` is what reduced-motion sees. */
         motion?: string;
         motionStill?: string;
+        /** Mount the iframe on load instead of waiting for a click.
+         *
+         *  Off by default, and it stays a per-figure opt-in rather than
+         *  a new default because the click is load-bearing everywhere it
+         *  is still used: material-memory's two captions say "click to
+         *  run", and flipping the default would make that copy false.
+         *
+         *  The cost is real and was measured before this existed rather
+         *  than argued about: skeletal-silk's live site is 3 requests,
+         *  316 kB transferred (1.1 MB decoded), fully loaded in 385ms.
+         *  Against the case route's own 119 kB First Load JS that is
+         *  roughly 2.6x the page's own budget, spent on every visit by
+         *  every reader, including the ones who never touch it.
+         *
+         *  What it does NOT cost, contrary to the rule it relaxes: the
+         *  parent's LCP. Content inside a cross-origin iframe is not
+         *  eligible as the parent document's LCP element, so the bill is
+         *  bandwidth and CPU contention, not a worse headline metric.
+         *
+         *  Still gated on width: below 768px this is ignored and the
+         *  reader gets the poster and `open live ↗`, same as before. */
+        auto?: boolean;
       }
     | { kind: "video"; src: string; poster?: string; caption: string }
     | {

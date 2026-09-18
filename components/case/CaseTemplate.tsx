@@ -25,9 +25,11 @@ import type { CaseData, Figure } from "@/content/cases/_schema";
  * and every figure carries a mono caption.
  *
  * Reused rather than rebuilt: the left rail is the same CaseIndex the
- * Teardown page uses, the live embed is the same click-to-run
- * LiveFacade (no iframe exists before the click), and the halation
- * comparator is the same SVG instrument.
+ * Teardown page uses, the live embed is the same LiveFacade, and the
+ * halation comparator is the same SVG instrument. The facade is
+ * click-to-run by default and no iframe exists before that click,
+ * unless a figure sets `auto`, which mounts it on load; the reasoning
+ * and the measured cost are on LiveFacade itself.
  */
 
 const LABEL = "font-mono text-[length:var(--text-body)] uppercase tracking-widest text-bronze-text";
@@ -59,8 +61,9 @@ function Fig({ figure }: { figure: Figure }) {
             poster={figure.poster}
             motion={figure.motion}
             motionStill={figure.motionStill}
+            auto={figure.auto}
             posterNote={
-              figure.poster || figure.motion
+              figure.poster || figure.motion || figure.auto
                 ? undefined
                 : "high-res still pending. The live engine runs on click"
             }

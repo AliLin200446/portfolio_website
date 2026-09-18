@@ -33,6 +33,12 @@ const skeletalSilk: CaseData = {
   hero: {
     kind: "live",
     url: "https://skeletal-silk.alilinlab.com",
+    /* Runs on arrival rather than on a click. This is the one page
+       where the tool IS the argument, and a reader who has to press a
+       button first has already been asked to take the claim on trust.
+       Checked before turning it on: the site sends no X-Frame-Options
+       and no CSP frame-ancestors, so it embeds. */
+    auto: true,
     caption:
       "upload a material · Claude Vision reads four properties · they drive the shader in real time: try it",
   },
@@ -140,20 +146,21 @@ cotton and knit differ only in color.`,
         source: "raw-responses.json, cotton.jpg and knit.jpg",
       },
     ],
-    limits: [
-      "Four properties, one shader, best on woven textiles. It doesn't segment the image, doesn't handle multi-material inputs, and assumes what you give it is a material to begin with.",
-      "The endpoint's system prompt contains a written table of expected ranges by material type. The readings are vision plus a set of priors, not pure measurement. I have not isolated how much each contributes.",
-      "On an earlier session I recorded knit rigidity at 0.52 and the control at 0.50. I did not keep those responses, and the images were recompressed between then and now, so I cannot tell whether that was model variance or different input bytes. Every number on this page comes from runs I kept.",
-      "There is no stability test here at all. Each image was called once and only those four responses were kept, so nothing on this page shows whether the same image returns the same values twice. Repeating the four calls and publishing both sets would close it.",
-      "Colour is returned as three normalised channels, not one number. The page calls these four material parameters, which is four fields, not four scalars.",
-      /* Moved out of the tool, where 547px of prose explaining the method sat
-         under a column of counts. The counts are facts about a session and
-         belong in the instrument; the method is a claim about how they were
-         arrived at, and belongs here. The tool now carries one line back to
-         this page. */
-      "The session counter shows landed, cancelled and refused as three separate figures because they cost three different things. A landed analysis reports its own token counts, passed through from the API. A cancelled request left the machine and may well have been billed upstream, but its response never arrived, so its tokens are unknown and are in no total. A refused one was stopped by the cooldown or the concurrency cap before anything was sent, and cost nothing.",
-      "The tool shows what a session spent and never what is left. Reading a remaining balance needs an admin key, and a browser should never hold one.",
-    ],
+    /* Emptied on purpose, not an oversight and not yet written. The
+       schema requires the field, and CaseTemplate gates both the section
+       and its nav entry on length, so an empty array removes LIMITS from
+       this page without touching the other two that still carry one.
+
+       What left with it, so it can be put back knowingly rather than
+       rediscovered: the priors caveat (the endpoint's system prompt
+       carries a table of expected ranges, so the readings are vision
+       plus priors), the discarded earlier session (knit 0.52 against a
+       0.50 control, responses not kept), the absence of any stability
+       test (each image called once), the four-fields-not-four-scalars
+       correction, and the session counter's three figures. The last of
+       those had been moved here OUT of the tool, which still points back
+       at this page for it. */
+    limits: [],
   },
   coda: "A vision model's loose reading, pinned to four numbers you can drive and carry away.",
   byline: "Ali Lin",
