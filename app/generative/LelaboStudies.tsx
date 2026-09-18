@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./generative.module.css";
 
 const films = [
-  { id: "01", width: 1176, height: 1764, duration: "04.13 S", label: "A black-and-white LYS 41 bottle framed by translucent petals." },
-  { id: "02", width: 860, height: 1078, duration: "05.04 S", label: "A close view of pale petals moving across the LYS 41 bottle." },
   { id: "03", width: 862, height: 1074, duration: "05.04 S", label: "A monochrome detail of the LYS 41 label, glass and layered petals." },
+  { id: "02", width: 860, height: 1078, duration: "05.04 S", label: "A close view of pale petals moving across the LYS 41 bottle." },
+  { id: "01", width: 1176, height: 1764, duration: "04.13 S", label: "A black-and-white LYS 41 bottle framed by translucent petals." },
 ];
 
 export default function LelaboStudies() {
