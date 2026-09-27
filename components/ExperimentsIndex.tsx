@@ -30,7 +30,7 @@ export default function ExperimentsIndex() {
                 <div className={styles.metadata}>
                   <div className={styles.facts}><span>{String(index).padStart(2, "0")}</span><span>{experiment.year}</span></div>
                   <h2 id={`experiment-${index}`} className={styles.name}>{experiment.name}</h2>
-                  <p className={styles.category}>{experiment.stack ?? experiment.tags.join(" / ")}</p>
+                  <p className={styles.category}>{experiment.category ?? experiment.stack ?? experiment.tags.join(" / ")}</p>
                   {away && <span className="sr-only">Opens in a new tab</span>}
                 </div>
               </a>

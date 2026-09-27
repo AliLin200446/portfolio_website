@@ -20,6 +20,7 @@ export type Experiment = {
    *  already carries the name. Absent means the label is absent, never
    *  a guess. */
   stack?: string;
+  category?: string;
   /** Card back, /experiments/<id>.webp, 16:10. Absent renders a
    *  labelled empty slot rather than a broken frame. */
   shot?: string;
@@ -30,6 +31,16 @@ export type Experiment = {
 export const TAGS: Tag[] = ["web3", "3d", "web", "ios", "generative", "emotion"];
 
 export const experiments: Experiment[] = [
+  {
+    name: "RUNS",
+    line: "An interactive motion study of portrait comparisons and composition.",
+    year: "2026",
+    tags: ["web"],
+    category: "Motion Design",
+    shot: "/experiments/runs.webp",
+    href: "https://runs.alilinlab.com/",
+    featured: true,
+  },
   {
     name: "Cyber I Ching",
     line: "Ethereum block hash → I Ching hexagram",
