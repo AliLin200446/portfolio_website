@@ -1,0 +1,8 @@
+.section { margin-top: 112px; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+@media (max-width: 639px) {
+  .grid { gap: 12px; }
+}
+@media (min-width: 960px) {
+  .section { margin-top: 160px; }
+}

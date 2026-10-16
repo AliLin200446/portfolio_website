@@ -1,4 +1,6 @@
 import LelaboStudies from "./LelaboStudies";
+import ParallelPersonas from "./ParallelPersonas";
+import TheScoreCriedFirst from "./TheScoreCriedFirst";
 import NikeFilm from "./NikeFilm";
 import UmaWang from "./UmaWang";
 import StillScenes from "./StillScenes";
@@ -25,6 +27,8 @@ export default function GenerativePage() {
       </header>
       <FashionFilm assets={{ video: available("film.mp4"), poster: available("poster.jpg"), stills: [1, 2, 3, 4].map((id) => available(`gs${id}.jpg`)) }} />
       <LelaboStudies />
+      <ParallelPersonas />
+      <TheScoreCriedFirst />
       <NikeFilm />
       <UmaWang />
       <StillScenes />
