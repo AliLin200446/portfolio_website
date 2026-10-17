@@ -5,7 +5,7 @@ import editorial from "./generative.module.css";
 import styles from "./the-score-cried-first.module.css";
 
 export default function ThreadStudies() {
-  const grid = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
@@ -17,9 +17,9 @@ export default function ThreadStudies() {
   }, []);
 
   useEffect(() => {
-    const element = grid.current;
+    const element = videoRef.current;
     if (!element) return;
-    const videos = Array.from(element.querySelectorAll("video"));
+    const videos = [element];
     let visible = false;
     let playing = false;
     let disposed = false;
@@ -29,10 +29,8 @@ export default function ThreadStudies() {
         playing = false;
         return;
       }
-      // Start all six studies together once their media is ready.
       if (playing || videos.some((video) => video.readyState < 3)) return;
-      const time = videos[0].currentTime;
-      videos.forEach((video) => { video.muted = true; video.currentTime = time; });
+      element.muted = true;
       playing = true;
       void Promise.all(videos.map((video) => video.play())).catch(() => {
         if (!disposed && playing) {
@@ -64,18 +62,14 @@ export default function ThreadStudies() {
     <section className={styles.section} aria-labelledby="thread-studies-title">
       <div className={editorial.heading}>
         <h2 id="thread-studies-title" className={editorial.title} style={{ scrollMarginTop: 112 }}>THREAD STUDIES</h2>
-        <button type="button" className={editorial.playback} onClick={() => setPaused((value) => !value)} aria-label={paused ? "Play Thread Studies videos" : "Pause Thread Studies videos"}>
+        <button type="button" className={editorial.playback} onClick={() => setPaused((value) => !value)} aria-label={paused ? "Play Thread Studies video" : "Pause Thread Studies video"}>
           {paused ? "PLAY" : "PAUSE"} ↗
         </button>
       </div>
-      <div ref={grid} className={styles.grid}>
-        {[1, 2, 3, 4, 5, 6].map((id) => (
-          <video key={id} width={768} height={1344} muted loop playsInline preload="auto"
-            poster={`/generative/thread-studies/${id}.jpg`} aria-label={`Thread Studies, study ${id}`} className={editorial.video}>
-            <source src={`/generative/thread-studies/${id}.mp4`} type="video/mp4" />
-          </video>
-        ))}
-      </div>
+      <video ref={videoRef} width={3022} height={1656} muted loop playsInline preload="auto"
+        poster="/generative/thread-studies/integrated.jpg" aria-label="Thread Studies, integrated film" className={editorial.video}>
+        <source src="/generative/thread-studies/integrated.mp4" type="video/mp4" />
+      </video>
     </section>
   );
 }
