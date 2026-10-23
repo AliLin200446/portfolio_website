@@ -13,7 +13,7 @@ export const films: Film[] = [
   { id: "still-scenes", name: "Still Scenes", type: "Night scenes", description: "A softly lit laundromat and a late-night corner shop reflected in wet pavement.", tools: "Not documented", pipeline: "Two generative night scenes, preserved as individual motion studies.", clips: clips("still-scenes", ["01", "02"]) },
 ];
 
-export const pieces = ['fashion-film', 'thread-studies', 'loewe', 'lelabo', 'parallel-personas', 'the-score-cried-first', 'nike', 'uma-wang', 'still-scenes'].map((id, index) => {
+export const pieces = ['fashion-film', 'thread-studies', 'lelabo', 'parallel-personas', 'nike', 'the-score-cried-first', 'uma-wang', 'still-scenes'].map((id, index) => {
   const film = films.find(item => item.id === id)!;
   return { id, title: film.name, order: index + 1, description: film.description,
     mediaType: film.type, tools: undefined as string | undefined, date: undefined as string | undefined,
