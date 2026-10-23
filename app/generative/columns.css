@@ -1,0 +1,106 @@
+.generative-columns .tab-footer { display:none; }
+.gen-stage { display:flex; height:auto; background:#f4f4f2; }
+.gen-column { position:relative; overflow:hidden; min-width:0; flex:1 1 0; border-right:1px solid #dadad6; transition:flex 460ms cubic-bezier(.6,0,.2,1); }
+.gen-stage:has(.gen-column[data-state=normal]) { height:760px; }
+.gen-column:last-child { border-right:0; }
+.gen-column[data-state=collapsed] { flex:0 0 72px; }
+.gen-normal { position:absolute; inset:0; padding:32px 24px; display:flex; flex-direction:column; }
+.gen-column:not([data-state=normal]) .gen-normal { visibility:hidden; }
+.gen-label,.gen-date,.gen-strip > span:last-child,.gen-controls,.gen-footer { font-family:var(--font-geist-mono),monospace; font-size:12px; }
+.gen-label { color:#55554f; min-height:20px; white-space:nowrap; }
+.gen-number { font-family:var(--font-oswald),sans-serif; font-weight:600; font-size:88px; line-height:.9; letter-spacing:-.01em; color:#5b2a30; }
+.gen-normal > .gen-number { margin-top:174px; margin-bottom:64px; }
+.gen-title { display:flex; flex-direction:column; text-align:left; gap:2px; cursor:pointer; }
+.gen-title strong { font-size:15px; font-weight:600; }
+.gen-title span { font-size:13px; color:#55554f; white-space:nowrap; }
+.gen-title:hover strong { text-decoration:underline; text-underline-offset:3px; }
+.gen-thumb { position:relative; width:100%; aspect-ratio:16/10; flex-shrink:0; margin-top:28px; overflow:hidden; cursor:pointer; }
+.gen-art { position:absolute; inset:0; width:100%; height:100%; display:block; }
+.gen-date { margin-top:28px; font-size:11px; color:#55554f; }
+.gen-strip { position:absolute; inset:0; width:100%; display:flex; flex-direction:column; align-items:center; gap:20px; padding-top:32px; cursor:pointer; }
+.gen-strip[hidden] { display:none; }
+.gen-strip:hover { background:#ecebe7; }
+.gen-strip > span { writing-mode:vertical-rl; transform:rotate(180deg); }
+.gen-strip .gen-number { font-size:40px; }
+.gen-open,.gen-full { position:relative; }
+.gen-open-title { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; padding:24px 32px 0; background:#fcfcfa; color:#111; }
+.gen-open-title .gen-number { font-size:36px; }
+.gen-open-title button,.gen-open-title strong { font:600 20px var(--font-geist-sans),sans-serif; cursor:pointer; }
+.gen-open-title > span:last-child { flex-basis:100%; font:12px var(--font-geist-mono),monospace; }
+.gen-controls { position:relative; display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px; padding:18px 32px; background:#fcfcfa; color:#111; }
+.gen-controls button { border:1px solid; padding:8px 14px; min-height:44px; cursor:pointer; }
+.gen-controls button:hover { background:#e2e1dc; }
+.gen-footer { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; padding:16px 24px; border-top:1px solid; color:#55554f; }
+.gen-dialog { position:fixed; inset:0; margin:0; width:100vw; height:100dvh; max-width:none; max-height:none; border:0; padding:0; }
+.gen-dialog::backdrop { background:#111; }
+.gen-full .gen-controls strong { margin-right:auto; }
+.generative-columns button:focus-visible,.gen-dialog button:focus-visible { outline:2px solid #5b2a30; outline-offset:-3px; }
+@media(min-width:761px) and (max-width:1200px) {.gen-normal { padding-inline:16px; }
+.gen-title span { white-space:normal; } }
+@media(max-width:760px) {.gen-stage,.gen-stage:has(.gen-column[data-state=normal]) { flex-direction:column; height:auto; }
+.gen-column { flex:none!important; min-height:520px; border-right:0; border-bottom:1px solid #dadad6; }
+.gen-column[data-state=collapsed] { min-height:72px; }
+.gen-strip { flex-direction:row; padding:16px 24px; }
+.gen-strip > span { writing-mode:initial; transform:none; }
+.gen-normal > .gen-number { margin-top:32px; margin-bottom:32px; font-size:64px; }
+.gen-thumb { max-height:190px; }
+.gen-controls { padding:16px; gap:10px; }
+.gen-open-title { padding:20px 16px 0; }
+.gen-footer { font-size:11px; } }
+@media(prefers-reduced-motion:reduce) {.gen-column { transition:none; } }/* Film content adapters and archive pagination; retain the editorial frame. */
+.gen-column { transition:flex 180ms ease; }
+.gen-poster { object-fit:cover; transition:transform 300ms ease; }
+.gen-thumb:hover .gen-poster,.gen-thumb:focus-visible .gen-poster { transform:scale(1.02); }
+.gen-thumb::after { content:'▷'; position:absolute; right:10px; bottom:8px; color:white; background:#1119; padding:2px 7px; }
+.gen-title span { white-space:normal; }
+.gen-video-host { position:relative; width:100%; height:auto; overflow:hidden; }
+.gen-video { display:block; width:100%; height:auto; object-fit:contain; }
+.gen-full .gen-video-host { width:min(100%, calc(80dvh * var(--video-ratio))); margin-inline:auto; }
+.gen-film-details { flex:1 1 100%; font-family:var(--font-geist-sans),sans-serif; }
+.gen-film-details p { font-size:13px; margin-bottom:8px; }
+.gen-film-details > div { display:flex; gap:6px; flex-wrap:wrap; }
+.gen-film-details button[aria-pressed=true] { color:#5b2a30; box-shadow:inset 0 -2px #5b2a30; }
+.gen-footer nav { display:flex; align-items:center; gap:16px; }
+.gen-footer nav button { min-height:44px; cursor:pointer; }
+.gen-footer nav button:disabled { opacity:.35; cursor:default; }
+@media(min-width:761px) and (max-width:1050px) {.gen-stage:has(.gen-column[data-state=normal]) { flex-wrap:wrap; height:auto; }
+.gen-stage .gen-column[data-state=normal] { flex:0 0 33.333%; height:700px; }
+.gen-empty { display:none; } }
+@media(max-width:760px) {.gen-column[data-state=open] { min-height:0; }
+.gen-empty { display:none; } }
+@media(prefers-reduced-motion:reduce) {.gen-column,.gen-poster { transition:none; }
+.gen-thumb:hover .gen-poster,.gen-thumb:focus-visible .gen-poster { transform:none; } }
+.gen-playback-toggle,.gen-sound-toggle { position:absolute; right:12px; z-index:1; min-height:44px; padding:8px 12px; border:0; border-radius:0; background:#fcfcfae8; color:#111; font:11px var(--font-geist-mono),monospace; letter-spacing:.04em; cursor:pointer; }
+.gen-playback-toggle { top:12px; }
+.gen-sound-toggle { bottom:12px; }
+.gen-playback-toggle:hover,.gen-sound-toggle:hover { background:#f3ecec; }/* Media structures reuse the original project CSS modules; only the accordion shell is new. */
+.gen-open,.gen-full { background:#fcfcfa!important; color:#111!important; }
+.gen-open-title { padding-bottom:24px; }
+.gen-composition { padding:0 24px; }
+.gen-composition figure { margin:0; min-width:0; }
+.gen-composition-loewe video { max-width:480px; margin-inline:auto; }
+.gen-composition-actions { display:flex; gap:16px; padding-top:20px; font:12px var(--font-geist-mono),monospace; }
+.gen-composition-actions button { min-height:44px; padding:8px 12px; border:1px solid; cursor:pointer; }
+.gen-composition-actions button:hover { background:#e2e1dc; }
+.gen-dialog .gen-full { min-height:100%; }
+@media(max-width:760px) {.gen-composition { padding-inline:16px; } }
+@media(max-width:639px) {.gen-composition-parallel-personas > div:first-child,.gen-composition-the-score-cried-first > div:first-child { grid-template-columns:1fr; gap:24px; }
+}/* Diesel uses the shared Thread Studies width cap in fluid-viewport.css. */
+.gen-composition.gen-composition-fashion-film > div:first-child,
+.gen-composition.gen-composition-fashion-film > .diesel-stills {
+  width:100%; margin-inline:auto;
+}
+.gen-composition-fashion-film > div:first-child video {
+  display:block; width:100%; height:auto; max-width:none; max-height:none;
+  aspect-ratio:auto; object-fit:contain; background:transparent; margin:0;
+}
+.gen-composition.gen-composition-fashion-film > .diesel-stills {
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px;
+  margin-top:24px; align-items:start;
+}
+.gen-composition-fashion-film .diesel-stills img { width:100%; height:auto; object-fit:contain; }
+.gen-composition-fashion-film > .gen-composition-actions { order:-1; padding:0 0 12px; }
+.gen-open:has(> .gen-composition-fashion-film) > .gen-controls,
+.gen-full:has(> .gen-composition-fashion-film) > .gen-controls { order:3; }
+@media(max-width:760px) {.gen-composition.gen-composition-fashion-film > .diesel-stills { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}

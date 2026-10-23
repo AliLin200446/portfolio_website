@@ -1,0 +1,93 @@
+/* Five-tab shell. Page styles own only content inside this frame.
+   Desktop geometry follows the Projects header measured at 1440px. */
+:root {
+  --site-gutter:24px;
+  --site-top:24px;
+  --header-height:73px;
+  --logo-width:191px;
+  --logo-mark-width:48px;
+  --nav-border:1px solid #111;
+  --nav-font-size:13px;
+  --nav-tab-widths:114px 140px 131px 140px 88px;
+}
+.site-shell.tab-page {
+  box-sizing:border-box;
+  width:calc(100% - 2 * var(--site-gutter));
+  max-width:none;
+  margin:var(--site-top) auto;
+  border:var(--nav-border);
+}
+.site-shell > .tab-header {
+  box-sizing:border-box;
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:stretch;
+  height:var(--header-height);
+  min-height:var(--header-height);
+  padding:0;
+  position:sticky;
+  top:0;
+  z-index:20;
+  border-bottom:var(--nav-border);
+}
+.site-shell .tab-brand {
+  width:var(--logo-width);
+  flex:0 0 var(--logo-width);
+  height:auto;
+  margin:0;
+  padding:0 28px;
+  gap:14px;
+  border-right:var(--nav-border);
+  font:16px var(--font-geist-mono),monospace;
+  letter-spacing:.04em;
+}
+.site-shell .tab-brand svg { width:var(--logo-mark-width); flex:none; height:auto; }
+.site-shell .tab-navigation {
+  display:grid;
+  grid-template-columns:var(--nav-tab-widths);
+  flex:1 1 auto;
+  min-width:0;
+  overflow:visible;
+  order:0;
+  border:0;
+}
+.site-shell .tab-navigation a {
+  min-width:0;
+  min-height:0;
+  height:100%;
+  padding:0;
+  justify-content:center;
+  font:var(--nav-font-size) var(--font-geist-mono),monospace;
+  letter-spacing:.06em;
+  border-right:var(--nav-border);
+}
+.site-shell .tab-availability {
+  display:flex;
+  padding:0 20px;
+  font-size:11px;
+}
+.site-shell .tab-grid {
+  height:auto;
+  width:72px;
+  flex:0 0 72px;
+  order:0;
+  border-left:var(--nav-border);
+}
+.site-shell .interaction-command-toggle { width:44px; flex:0 0 44px; min-height:0; padding:0 8px; }
+@media(max-width:1399px) {
+  .site-shell .tab-availability { display:none; }
+}
+@media(min-width:768px) and (max-width:1023px) {
+  :root { --logo-width:154px; --logo-mark-width:34px; --nav-font-size:10px; --nav-tab-widths:repeat(5,minmax(0,1fr)); }
+  .site-shell .tab-brand { padding-inline:16px; gap:10px; font-size:14px; }
+  .site-shell .tab-grid { width:44px; flex-basis:44px; }
+}
+@media(max-width:767px) {
+  :root { --site-gutter:12px; --site-top:12px; --header-height:111px; --logo-width:154px; --logo-mark-width:32px; --nav-font-size:9px; --nav-tab-widths:repeat(5,minmax(0,1fr)); }
+  .site-shell > .tab-header { flex-wrap:wrap; }
+  .site-shell .tab-brand { height:60px; padding:0 12px; gap:14px; font-size:12px; margin-right:auto; border-right:0; }
+  .site-shell .tab-grid,.site-shell .interaction-command-toggle { height:60px; width:44px; flex-basis:44px; }
+  .site-shell .tab-navigation { order:2; flex:0 0 100%; height:50px; border-top:var(--nav-border); }
+  .site-shell .tab-navigation a { letter-spacing:0; }
+  .site-shell .tab-navigation a:last-of-type { border-right:0; }
+}

@@ -7,8 +7,10 @@ import { useRouter } from "next/navigation";
 import { BERTH_ORDER, STATIONS } from "@/lib/bench";
 import { useBenchStore } from "@/lib/benchStore";
 import Cocoon from "./Cocoon";
+import ClientWork from "./ClientWork";
 import FilmRoll from "./FilmRoll";
 import Movement from "./Movement";
+import capabilityStyles from "./capabilities.module.css";
 
 /*
  * THE WORK GRID. Every instrument on one scrollable page, description
@@ -342,7 +344,7 @@ export default function WorkGrid() {
     <div className="fixed inset-0 z-0 flex">
       {/* LEFT: pinned. It does not scroll, so the description is always
           the one belonging to whatever is on screen. */}
-      <div className="hidden w-[34%] shrink-0 flex-col justify-center border-r border-line px-10 lg:flex">
+      <div className={`hidden w-[34%] shrink-0 flex-col justify-center border-r border-line px-10 lg:flex ${capabilityStyles.projectColumn}`}>
         <p className="font-mono font-medium text-[length:var(--text-meta)] uppercase tracking-[0.18em] text-bronze">
           {String(active + 1).padStart(2, "0")} /{" "}
           {String(BERTH_ORDER.length).padStart(2, "0")}
@@ -427,6 +429,7 @@ export default function WorkGrid() {
               </span>
             </a>
           ))}
+          <div className="relative bg-paper px-8 py-6"><ClientWork /></div>
           <div style={{ height: `${(1 - CELL_VH) * 100}svh` }} />
         </div>
       </div>

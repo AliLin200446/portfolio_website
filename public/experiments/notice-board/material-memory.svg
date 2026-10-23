@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 100" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#2E3A4A" stroke-width="0.5">
+        <path d="M15 14Q75 22 135 14M15 22Q75 32 135 22M15 30Q75 42 135 30M15 38Q75 52 135 38M15 46Q75 62 135 46M15 54Q75 72 135 54M15 62Q75 82 135 62M15 70Q75 90 135 70"></path>
+        <path d="M15 14L15 70M30 15Q31 44 30 76M45 16Q46 48 45 81M60 17Q61 50 60 84M75 18L75 86M90 17Q89 50 90 84M105 16Q104 48 105 81M120 15Q119 44 120 76M135 14L135 70"></path>
+        <circle cx="15" cy="14" r="1.6" fill="#5B2A30" stroke="none"></circle><circle cx="135" cy="14" r="1.6" fill="#5B2A30" stroke="none"></circle>
+      </svg>

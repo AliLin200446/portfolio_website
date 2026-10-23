@@ -1,3 +1,7 @@
+import TeardownStudy from "@/components/editorial/TeardownStudy";
+import "./teardown-study.css";
+import LatentStudy from "@/components/editorial/LatentStudy";
+import "./latent-study.css";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CaseTemplate from "@/components/case/CaseTemplate";
@@ -94,13 +98,15 @@ export default async function WorkPage({
   const slug = (await params).slug;
   const c = cases[slug];
   if (!c) notFound();
+  if (slug === "latent") return <LatentStudy />;
+  if (slug === "teardown") return <TeardownStudy />;
   const hero = heroes[slug];
   const leading = leadingSections[slug];
-  return (
+  const content = (
     <>
-      {hero ? <CaseHero data={hero} /> : null}
       {leading && <leading.Section />}
-      <CaseTemplate data={c} leadingIndexItems={leading && [leading.indexItem]} />
+      <CaseTemplate data={c} introduction={hero ? <CaseHero data={hero} /> : undefined} leadingIndexItems={leading && [leading.indexItem]} />
     </>
   );
+  return content;
 }

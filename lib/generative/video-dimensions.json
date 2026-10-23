@@ -1,0 +1,106 @@
+{
+  "/generative/still-scenes/02.mp4": {
+    "width": 1280,
+    "height": 720
+  },
+  "/generative/still-scenes/01.mp4": {
+    "width": 1280,
+    "height": 720
+  },
+  "/generative/loewe/film.mp4": {
+    "width": 1080,
+    "height": 1920
+  },
+  "/generative/lelabo/03.mp4": {
+    "width": 720,
+    "height": 898
+  },
+  "/generative/lelabo/02.mp4": {
+    "width": 720,
+    "height": 902
+  },
+  "/generative/lelabo/01.mp4": {
+    "width": 960,
+    "height": 1440
+  },
+  "/generative/fashion-film/film.mp4": {
+    "width": 1618,
+    "height": 1080
+  },
+  "/generative/uma-wang/03.mp4": {
+    "width": 1280,
+    "height": 854
+  },
+  "/generative/uma-wang/02.mp4": {
+    "width": 1280,
+    "height": 854
+  },
+  "/generative/uma-wang/01.mp4": {
+    "width": 1088,
+    "height": 800
+  },
+  "/generative/uma-wang/04.mp4": {
+    "width": 864,
+    "height": 1268
+  },
+  "/generative/nike/film.mp4": {
+    "width": 1920,
+    "height": 1080
+  },
+  "/generative/thread-studies/6.mp4": {
+    "width": 768,
+    "height": 1344
+  },
+  "/generative/thread-studies/4.mp4": {
+    "width": 768,
+    "height": 1344
+  },
+  "/generative/thread-studies/5.mp4": {
+    "width": 768,
+    "height": 1344
+  },
+  "/generative/thread-studies/1.mp4": {
+    "width": 768,
+    "height": 1344
+  },
+  "/generative/thread-studies/2.mp4": {
+    "width": 768,
+    "height": 1344
+  },
+  "/generative/thread-studies/3.mp4": {
+    "width": 768,
+    "height": 1344
+  },
+  "/generative/thread-studies/integrated.mp4": {
+    "width": 1920,
+    "height": 1052
+  },
+  "/generative/parallel-personas/1.mp4": {
+    "width": 720,
+    "height": 1280
+  },
+  "/generative/parallel-personas/2.mp4": {
+    "width": 720,
+    "height": 1280
+  },
+  "/generative/parallel-personas/3.mp4": {
+    "width": 720,
+    "height": 1280
+  },
+  "/generative/the-score-cried-first/4.mp4": {
+    "width": 960,
+    "height": 1430
+  },
+  "/generative/the-score-cried-first/1.mp4": {
+    "width": 960,
+    "height": 1430
+  },
+  "/generative/the-score-cried-first/2.mp4": {
+    "width": 960,
+    "height": 1430
+  },
+  "/generative/the-score-cried-first/3.mp4": {
+    "width": 960,
+    "height": 1430
+  }
+}

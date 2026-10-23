@@ -3,6 +3,12 @@ import type { CSSProperties } from "react";
 import { colorSections, type ColorSpread, type ColorPhoto } from "@/content/photography-color-edit";
 import styles from "@/app/photography/photography.module.css";
 
+export function photoCaption(photo: ColorPhoto) {
+  const { roll } = photo;
+  const format = { "135": "35MM FILM", "120": "120 FILM", digital: "DIGITAL", instant: "INSTANT FILM" }[roll.format];
+  return [format, roll.camera, roll.stock, roll.year].filter(value => value && !value.startsWith("DRAFT")).join(" · ");
+}
+
 const ratio = (photo: ColorPhoto) => photo.width / photo.height;
 
 // Size columns from intrinsic geometry so unlike frames share a balanced spread.
@@ -15,13 +21,10 @@ function spreadStyle({ layout, images }: ColorSpread): CSSProperties {
   return { "--spread-columns": columns } as CSSProperties;
 }
 
-export default function PhotographyColorEdit({ onOpen }: { onOpen: (photo: ColorPhoto) => void }) {
+export default function PhotographyColorEdit({ onOpen, sectionIndex }: { onOpen: (photo: ColorPhoto) => void; sectionIndex: number }) {
   return <>
-    <nav aria-label="Photography colors" className={styles.index}>
-      {colorSections.map((section) => <a key={section.id} href={`#${section.id}`}>{section.title}</a>)}
-    </nav>
     <div className={styles.edit}>
-      {colorSections.map((section, sectionIndex) => <section key={section.id} id={section.id} className={styles.colorSection} aria-labelledby={`${section.id}-title`}>
+      {[colorSections[sectionIndex]].map((section) => <section key={section.id} id="color-collection" className={styles.colorSection} aria-labelledby={`${section.id}-title`}>
         <h2 id={`${section.id}-title`} className={styles.chapter}>{String(sectionIndex + 1).padStart(2, "0")} / {section.title}</h2>
         <div className={styles.sequence}>
           {section.spreads.map((spread, spreadIndex) => <div key={spreadIndex} className={`${styles.spread} ${styles[spread.layout]}`} style={spreadStyle(spread)}>
@@ -30,10 +33,10 @@ export default function PhotographyColorEdit({ onOpen }: { onOpen: (photo: Color
               return <figure key={frame.src}>
                 <a href={frame.src} className={styles.photoLink} onClick={(event) => { event.preventDefault(); onOpen(photo); }}>
                   <Image src={frame.src} alt={photo.alt} width={photo.width} height={photo.height}
-                    sizes={`(min-width: 1024px) ${spread.layout === "filmstrip" ? "232px" : spread.layout === "wide-pair" && i === 0 ? "976px" : "650px"}, (min-width: 640px) 50vw, 100vw`}
-                    loading={sectionIndex === 0 && spreadIndex === 0 && i === 0 ? "eager" : "lazy"} className={styles.image} />
+                    sizes={`(max-width: 759px) 92vw, ${spread.layout === "wide-pair" && i === 0 ? "90vw" : spread.layout === "filmstrip" ? "24vw" : "60vw"}`}
+                    loading={spreadIndex === 0 && i < 2 ? "eager" : "lazy"} className={styles.image} />
                 </a>
-                <figcaption className={styles.caption}><span>{photo.roll.format}</span><span>{frame.n}</span></figcaption>
+                <figcaption className={styles.caption}><span>{photoCaption(photo)}</span><span>{frame.n}</span></figcaption>
               </figure>;
             })}
           </div>)}

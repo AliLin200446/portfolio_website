@@ -1,0 +1,11 @@
+.capabilities { margin-top: 24px; }
+.label { font-family: var(--font-geist-mono), monospace; font-size: var(--text-meta); font-weight: 500; letter-spacing: .18em; color: var(--bronze-text); }
+.lines { margin-top: 8px; font-size: var(--text-body); font-weight: 400; line-height: 1.4; letter-spacing: .035em; color: var(--ink); }
+/* Keep the existing centered project copy on tall screens; reserve room for
+   the identity above it when the desktop viewport is shorter. */
+.projectColumn { padding-top: max(0px, calc(840px - 100svh)); }
+@media (min-width: 1024px) and (max-height: 600px) {
+  .capabilities { margin-top: 12px; }
+  .lines { line-height: 1.25; }
+  .projectColumn { padding-top: max(0px, calc(780px - 100svh)); }
+}

@@ -17,7 +17,7 @@ export function useBench3d() {
   const [mount, setMount] = useState(false);
   useEffect(() => {
     const ok = window.matchMedia(
-      "(min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference)"
+      "(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)"
     ).matches;
     setMount(ok);
     // ?berth=N deep-link (also used by case pages to return to a berth).

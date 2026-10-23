@@ -43,7 +43,9 @@ export default function CaseIndex({ items }: { items: IndexItem[] }) {
     const el = document.getElementById(id);
     if (!el) return; // no-JS falls through to the plain anchor
     e.preventDefault();
-    const target = el.getBoundingClientRect().top + window.scrollY - 32;
+    const header = el.closest(".case-study-shell")?.querySelector(".tab-header");
+    const offset = header ? header.getBoundingClientRect().height + 24 : 32;
+    const target = el.getBoundingClientRect().top + window.scrollY - offset;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       window.scrollTo(0, target);
       return;

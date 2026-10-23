@@ -1,0 +1,62 @@
+/* Shared shell sizing, scoped to the five-tab portfolio. */
+
+
+@media(min-width:768px) {
+ .generative-columns { --media-height:max(320px, calc(100dvh - 340px)); }
+ .gen-stage:has(.gen-column[data-state=normal]) { height:max(580px,calc(100dvh - 190px)); }
+ .gen-normal > .gen-number { margin-top:clamp(50px,12dvh,150px); margin-bottom:40px; }
+ .gen-open,.gen-full { display:flex; flex-direction:column; }
+ .gen-open-title { order:0; padding:16px 24px 8px; }
+ .gen-open > .gen-controls,.gen-full > .gen-controls { order:1; padding:8px 24px; }
+ .gen-composition { order:2; display:flex; flex-direction:column; padding-bottom:20px; }
+ .gen-composition-actions { order:-1; padding:0 0 12px; }
+ .gen-composition > div:first-child { width:100%; margin-inline:auto; }
+ .gen-composition-loewe > div:first-child { max-width:calc(var(--media-height) * .5625); }
+ .gen-composition-thread-studies > div:first-child,
+ .gen-composition.gen-composition-fashion-film > div:first-child,
+ .gen-composition.gen-composition-fashion-film > .diesel-stills { max-width:calc(var(--media-height) * 1.825); }
+ .gen-composition-nike > div:first-child { max-width:calc(var(--media-height) * 1.778); }
+ .gen-composition-parallel-personas > div:first-child { max-width:calc(var(--media-height) * 1.6875 + 48px); }
+ .gen-composition-the-score-cried-first > div:first-child { max-width:calc(var(--media-height) * 2.014 + 48px); }
+ .gen-composition-lelabo > div:first-child { max-width:var(--media-height); }
+ .gen-composition-lelabo video { object-fit:contain!important; background:transparent; }
+ .gen-composition-fashion-film > div:first-child,.gen-composition-fashion-film > div:nth-child(2) { width:min(100%,max(480px,calc((100dvh - 400px) * .748))); margin-inline:auto; }
+ .gen-composition-fashion-film > div:nth-child(2) { margin-top:24px; gap:16px; }
+ .gen-composition-uma-wang > div:first-child { max-width:760px; }
+ .gen-composition-still-scenes > div:first-child { max-width:min(720px,calc((var(--media-height) - 32px) * .889)); }
+ .gen-film-details p { margin-bottom:0; max-width:85ch; }
+ .photobook-page { --book-ui-height:310px; }
+ .photobook-page .book-stage { padding:16px 24px; }
+ .photobook-page .book-spread { width:min(100%,calc(max(320px,100dvh - var(--book-ui-height)) * 1.5)); max-width:none; }
+ .book-thumbnails { max-width:100%; min-width:0; }
+ .projects-expanded .projects-intro h1,.projects-expanded .projects-intro > p { padding-top:40px; padding-bottom:32px; }
+ .project-band-info { padding:28px; gap:24px; }
+ .project-band-intro p { max-width:42ch; }
+ .contents-inner { padding:48px 40px 64px; }
+ .contents-line { grid-template-columns:minmax(180px,.7fr) 48px minmax(0,1fr); }
+ .contents-line > :last-child { max-width:66ch; }
+ .contents-objects { margin-top:32px; }
+ .contents-group { margin-top:40px; }
+}
+@media(min-width:1600px) {
+ .contents-inner { display:grid; grid-template-columns:1fr 1fr; gap:40px 64px; align-items:start; }
+ .contents-inner > * { margin-top:0; min-width:0; }
+ .contents-title { grid-column:1/-1; }
+ .contents-title > div { grid-column:1/-1; }
+ .contents-inner .contents-resume { grid-column:1/-1; }
+ .contents-inner .contents-line { grid-template-columns:minmax(100px,.55fr) 40px minmax(0,1fr); }
+ .contents-inner > .contents-title { display:block; }
+}
+
+@media(min-width:768px) {
+ .generative-columns .gen-open-title,.gen-dialog .gen-open-title { padding:12px 24px 8px; gap:6px 10px; }
+ .generative-columns .gen-open-title .gen-number,.gen-dialog .gen-open-title .gen-number { font-size:32px; }
+ .generative-columns .gen-controls,.gen-dialog .gen-controls { padding:8px 24px; }
+ .generative-columns .gen-film-details,.gen-dialog .gen-film-details { flex:1 1 40ch; }
+ .generative-columns .gen-composition-actions,.gen-dialog .gen-composition-actions { padding:0 0 12px; }
+}
+@media(min-width:768px) {
+ .projects-expanded .project-band-info { padding:28px; gap:24px; }
+ .projects-expanded .project-media-frame { aspect-ratio:auto; height:clamp(320px,58dvh,680px); }
+ .about-contents .contents-inner { padding:48px 40px 64px; }
+}

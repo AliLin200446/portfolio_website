@@ -1,3 +1,4 @@
+import Loader from "@/components/Loader";
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
@@ -6,14 +7,19 @@ import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import BrandMark from "@/components/BrandMark";
 import "./globals.css";
+import "./editorial.css";
+import "./tabs.css";
+import "@/interaction/styles/tokens.css";
+import "@/interaction/styles/interactions.css";
+import "@/interaction/styles/integration.css";
+import InteractionProvider from "@/interaction/components/InteractionProvider";
 
-/* CASE-TEMPLATE: the document serif is Spectral, ROMAN ONLY. The
- * italic axis is not loaded, so no component can reach for it. */
+/* Roman for existing case studies; italic for editorial emphasis. */
 const spectral = Spectral({
   variable: "--font-spectral",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  style: ["normal"],
+  style: ["normal", "italic"],
 });
 
 export const viewport: Viewport = { themeColor: "#F5F2EC" };
@@ -60,9 +66,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${GeistSans.variable} ${GeistMono.variable} ${spectral.variable}`}
     >
+      <head><script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.loader=sessionStorage.getItem("portfolio-loaded")?"done":"pending"}catch{document.documentElement.dataset.loader="pending"}window.__loaderStart=performance.now();` }} /><noscript><style>{`[data-loader-cover]{display:none!important}html[data-loader=pending] body{overflow:auto!important}`}</style></noscript></head>
       <body>
+        <Loader />
+        <div id="portfolio-content" className="portfolio-content">
         {/* Nav lived only inside HomeShell, so every subpage was a dead
             end. You had to go back to the index to move anywhere. It
             belongs in the layout, where every route gets it. HomeShell
@@ -89,7 +99,7 @@ export default function RootLayout({
             <TopNav />
           </div>
         </header>
-        {children}
+        <InteractionProvider>{children}</InteractionProvider>
         {/* Hidden on the index. The home page is a fixed, full-viewport
             scene with its own footer already in it; this one appeared
             under the work grid as a second footer with a rule above it,
@@ -121,6 +131,7 @@ export default function RootLayout({
             </nav>
           </div>
         </footer>
+        </div>
       </body>
     </html>
   );

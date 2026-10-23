@@ -168,8 +168,10 @@ function Fig({ figure }: { figure: Figure }) {
 export default function CaseTemplate({
   data,
   leadingIndexItems,
+  introduction,
 }: {
   data: CaseData;
+  introduction?: React.ReactNode;
   /* Anchors for full-bleed sections mounted ABOVE this template by the
      route. The template cannot see them, so it is told about them
      rather than guessing; they go first because they sit above WHAT on
@@ -205,7 +207,7 @@ export default function CaseTemplate({
   ];
 
   return (
-    <main className="mx-auto max-w-[1268px] px-6">
+    <main id="main-content" className="case-template">
       <BenchArrival slug={data.slug} />
       <header className="sticky top-[3.25rem] z-[3] -mx-6 border-b border-line bg-paper/90 px-6 backdrop-blur-sm flex items-baseline justify-between py-3 font-mono font-medium text-[length:var(--text-meta)] text-muted">
         <Link
@@ -232,16 +234,15 @@ export default function CaseTemplate({
           Below xl the grid collapses to one column and CaseIndex falls
           back to the horizontal row it already had at the top, which is
           why the split is not expressed as two fixed widths. */}
-      <div className="xl:grid xl:grid-cols-[20%_80%] xl:gap-0">
+      <div className="case-layout">
         {/* left rail: this page's own section nav */}
         <CaseIndex items={items} />
-        <div className="min-w-0">
+        <div className="case-article">
+        {introduction}
 
         {/* ① MASTHEAD */}
-        <section className="pt-14">
-          <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">
-            {data.name}
-          </h1>
+        <section className="case-masthead pt-14">
+          {!introduction && <h1 className="font-serif text-[length:var(--text-display)] tracking-tight sm:text-[length:var(--text-display)]">{data.name}</h1>}
           <p className="mt-4 max-w-[52ch] font-serif text-[length:var(--text-lead)] text-muted">
             {data.oneLine}
           </p>

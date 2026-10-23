@@ -1,6 +1,16 @@
 .section { margin-top: 112px; }
-.pair { display: grid; gap: 32px; width: 100%; max-width: 720px; margin-inline: auto; align-items: start; }
-.pair figure { margin: 0; min-width: 0; }
+.pair { display: grid; gap: 40px; width: 100%; align-items: center; }
+.pair figure { margin: 0; min-width: 0; width: 100%; }
+.pair .opening, .pair .closing { max-width: 720px; justify-self: center; }
+.pair .portrait { width: 82%; max-width: 480px; justify-self: center; }
+@media (min-width: 640px) {
+  .pair { grid-template-columns: 1.15fr 1fr; grid-template-areas: "opening opening" "portrait detail" "closing closing"; gap: 64px 48px; }
+  .opening { grid-area: opening; }
+  .portrait { grid-area: portrait; }
+  .detail { grid-area: detail; }
+  .closing { grid-area: closing; }
+  .pair .portrait { width: 100%; justify-self: start; }
+}
 @media (min-width: 960px) {
   .section { margin-top: 160px; }
 }

@@ -1,41 +1,8 @@
-import LoeweFilm from "./LoeweFilm";
-import ThreadStudies from "./ThreadStudies";
-import LelaboStudies from "./LelaboStudies";
-import ParallelPersonas from "./ParallelPersonas";
-import TheScoreCriedFirst from "./TheScoreCriedFirst";
-import NikeFilm from "./NikeFilm";
-import UmaWang from "./UmaWang";
-import StillScenes from "./StillScenes";
-import FashionFilm from "./FashionFilm";
-import { existsSync } from "node:fs";
-import path from "node:path";
-import type { Metadata } from "next";
-import { FolioBar } from "@/components/folio/FolioChrome";
-
-export const metadata: Metadata = {
-  title: "Generative",
-  description: "Generative images, films, and visual studies by Ali Lin.",
-};
-
-export default function GenerativePage() {
-  const available = (file: string) => existsSync(path.join(process.cwd(), "public/generative/fashion-film", file));
-  return (
-    <main className="mx-auto max-w-5xl px-6 pb-24 pt-8 sm:pt-0">
-      <FolioBar backHref="/" />
-      <header className="pb-8 pt-16">
-        <h1 className="font-serif text-[length:min(8.7vw,75px)] tracking-tight">
-          GENERATIVE
-        </h1>
-      </header>
-      <FashionFilm assets={{ video: available("film.mp4"), poster: available("poster.jpg"), stills: [1, 2, 3, 4].map((id) => available(`gs${id}.jpg`)) }} />
-      <LelaboStudies />
-      <ThreadStudies />
-      <LoeweFilm />
-      <ParallelPersonas />
-      <TheScoreCriedFirst />
-      <NikeFilm />
-      <UmaWang />
-      <StillScenes />
-    </main>
-  );
-}
+import type { Metadata } from 'next';
+import { Oswald } from 'next/font/google';
+import TabShell from '@/components/editorial/TabShell';
+import GenerativeColumns from '@/components/editorial/GenerativeColumns';
+import './columns.css';
+const oswald = Oswald({ subsets: ['latin'], weight: '600', variable: '--font-oswald' });
+export const metadata: Metadata = { title: 'Generative', description: 'Nine generative films and visual studies by Ali Lin.' };
+export default function GenerativePage() { return <TabShell className={`generative-columns ${oswald.variable}`}><GenerativeColumns /></TabShell>; }

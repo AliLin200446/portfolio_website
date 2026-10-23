@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Keep document geometry unchanged when the intro or dialogs lock scrolling. */
+html { scrollbar-gutter: stable; }
+
 /* Design system. All color and type decisions live here.
    Five-elements palette (GEWU-AN design language):
    earth --paper · metal --bronze · fire --oxblood (cinnabar) ·
@@ -195,6 +198,32 @@ body[data-index="true"] .site-footer { display: none; }
   .venn-part { transition: none; }
 }
 
+/* INTRO. The loading screen's three statements, each entering as a
+   whole line rather than a character at a time.
+
+   BACKWARDS, not both, for the reason written beside .hero-rise: `both`
+   retains the `to` frame after the run and a CSS animation outranks a
+   normal declaration, so a retained transform quietly beats anything
+   set later. `backwards` applies the `from` frame through the delay and
+   then releases the element to its resting style, which here is already
+   the finished state. Nothing flashes, because the two are identical.
+
+   The delay is set inline per line, so the sequence lives next to the
+   copy it sequences rather than in three near-identical classes here. */
+@keyframes intro-line {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+.intro-line {
+  animation: intro-line 460ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+/* Reduced motion gets the finished composition immediately: no stagger,
+   no travel. The resting style IS the final state, so removing the
+   animation shows all three at once rather than hiding them. */
+@media (prefers-reduced-motion: reduce) {
+  .intro-line { animation: none; }
+}
+
 /* CASE HERO mount sequence. Title wipes up from its own bottom edge,
    quadrants rise 3px on a 70ms stagger starting 200ms in, media fades
    only. Delays are set inline per quadrant; everything here is off
@@ -333,3 +362,10 @@ body[data-index="true"] .site-footer { display: none; }
     transition: none;
   }
 }
+
+/* The session decision runs before body parsing; preserve the scrollbar gutter. */
+html[data-loader=pending] body:has([data-loader-cover]) { overflow:hidden; }
+html[data-loader=done] [data-loader-cover] { display:none; }
+.portfolio-content { display:contents; }
+.portfolio-content:has(.editorial-page) > .site-bar,
+.portfolio-content:has(.editorial-page) > .site-footer { display:none; }

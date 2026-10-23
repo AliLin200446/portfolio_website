@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import ClientWork from "./ClientWork";
 import { BERTH_ORDER, STATIONS } from "@/lib/bench";
 import BenchHome, { useBench3d } from "./BenchHome";
 import BenchLoader from "./BenchLoader";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import styles from "./capabilities.module.css";
 
 /* One instrument, mounted only on the phone path, dynamic so the
  * desktop bundle never carries it. */
@@ -63,23 +65,29 @@ export default function HomeShell() {
       {/* instrument boot: pure HTML/CSS, first paint before Three parses */}
       {bench3d && <BenchLoader />}
 
+      <header
+        className={bench3d
+          ? "pointer-events-none absolute left-0 top-24 z-[1] px-6 lg:px-10"
+          : "relative z-10 mx-auto max-w-3xl px-6 pb-6 pt-[6.5rem]"}
+      >
+        <h1 className="font-mono text-[length:var(--text-meta)] font-medium tracking-widest">ALI LIN</h1>
+        <p className="mt-2 text-[length:var(--text-lead)] leading-snug">DESIGN ENGINEER</p>
+        <p className="mt-2 font-mono text-[length:var(--text-meta)] font-medium leading-relaxed text-muted">GENERATIVE AI / VISUAL SYSTEMS</p>
+        <div className={styles.capabilities} aria-label="Areas of practice">
+          <p className={styles.label}>I WORK IN</p>
+          <p className={styles.lines}>
+            RAPID PROTOTYPING<br />
+            0 → 1 SYSTEMS<br />
+            VISUAL COMPUTING
+          </p>
+        </div>
+      </header>
+
       {/* DOM list: SSR fallback and the whole story on mobile/coarse/
           reduced-motion/no-JS. Hidden only once the 3D bench mounts. */}
-      {/* The pt on the section clears the fixed site bar. globals.css
-          zeroes the body's 3.25rem on the index because the desktop
-          scene is a fixed inset-0 canvas that wants the whole viewport,
-          but THIS path is ordinary flowed content and inherits that
-          zero, so it has to put the clearance back itself.
-
-          6.5rem rather than 3.25rem because the bar wraps: one row at
-          49px on a wide screen, two rows at 83px by 390, which is where
-          this path is the only one that renders. The body rule was
-          written for the one-row case. At 48px the first line sat 35px
-          underneath the bar, and that was true before there was any
-          text here to hide it with: the instrument frame's top edge was
-          already under it, which is quiet enough to miss. */}
+      {/* The identity header supplies the mobile clearance for the wrapped nav. */}
       {!bench3d && (
-        <section className="relative z-10 mx-auto max-w-3xl px-6 pb-12 pt-[6.5rem]">
+        <section className="relative z-10 mx-auto max-w-3xl px-6 pb-12">
           {/* the bench, reduced to one turning object. Tapping a
               station below swaps it rather than opening a second
               context. */}
@@ -123,6 +131,7 @@ export default function HomeShell() {
               </li>
             ))}
           </ol>
+          <div className="mt-8"><ClientWork /></div>
         </section>
       )}
 

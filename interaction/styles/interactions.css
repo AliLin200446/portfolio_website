@@ -1,0 +1,128 @@
+/* ─────────────────────────────────────────────
+   alilinlab.com — interaction patterns
+   Each block is opt-in by class or data-attribute.
+   ───────────────────────────────────────────── */
+
+/* 01 · Sliding ink ─ tabs
+   <nav class="tabs" style="--i:2; --n:5"> … <span class="tabs__ink" /> */
+.tabs { position: relative; display: flex; }
+.tabs > a, .tabs > button { flex: 1 1 0; }
+.tabs__ink {
+  position: absolute; bottom: -1px; height: 3px;
+  width: calc(100% / var(--n, 5));
+  left: calc(100% / var(--n, 5) * var(--i, 0));
+  background: var(--accent);
+  transition: left var(--t-base) var(--ease-out);
+  pointer-events: none;
+}
+
+/* 01 · Sliding ink ─ rows: 3px bar grows from the left */
+.ink-row { position: relative; }
+.ink-row::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 0;
+  background: var(--accent);
+  transition: width var(--t-base) var(--ease-out);
+}
+.ink-row:hover::before,
+.ink-row:focus-visible::before,
+.ink-row[aria-current="true"]::before { width: 3px; }
+
+/* 02 · Sibling dim ─ put .dim-group on the list, .dim-item on rows */
+.dim-item { transition: opacity var(--t-fast) var(--ease-out); }
+.dim-group:hover .dim-item:not(:hover),
+.dim-group:has(.dim-item:focus-visible) .dim-item:not(:focus-visible) { opacity: var(--dim); }
+
+/* 03 · Arrow nudge ─ <span class="nudge nudge--r">→</span> inside a link */
+.nudge { display: inline-block; transition: transform var(--t-base) var(--ease-out); }
+:is(a, button):is(:hover, :focus-visible) .nudge--r { transform: translateX(var(--nudge)); }
+:is(a, button):is(:hover, :focus-visible) .nudge--l { transform: translateX(calc(var(--nudge) * -1)); }
+:is(a, button):is(:hover, :focus-visible) .nudge--e { transform: translate(2px, -2px); }
+
+/* 04 · Crop marks ─ see <CropFrame /> */
+.crop { position: relative; display: block; }
+.crop__mark {
+  position: absolute; width: 14px; height: 14px; pointer-events: none; opacity: 0;
+  border: 0 solid var(--ink);
+  transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out);
+}
+.crop__mark--tl { left: -10px; top: -10px; border-left-width: 1px; border-top-width: 1px; transform: translate(-4px, -4px); }
+.crop__mark--tr { right: -10px; top: -10px; border-right-width: 1px; border-top-width: 1px; transform: translate(4px, -4px); }
+.crop__mark--bl { left: -10px; bottom: -10px; border-left-width: 1px; border-bottom-width: 1px; transform: translate(-4px, 4px); }
+.crop__mark--br { right: -10px; bottom: -10px; border-right-width: 1px; border-bottom-width: 1px; transform: translate(4px, 4px); }
+.crop__label {
+  position: absolute; right: 0; bottom: -26px;
+  font: 11px/1 var(--font-mono, ui-monospace, monospace); color: var(--muted);
+  opacity: 0; transition: opacity var(--t-base) var(--ease-out);
+}
+.crop:is(:hover, :focus-within) .crop__mark { opacity: 1; transform: none; }
+.crop:is(:hover, :focus-within) .crop__label { opacity: 1; }
+
+/* 05 · Develop ─ see <Develop /> */
+.develop { position: relative; overflow: hidden; }
+.develop > :first-child {
+  filter: grayscale(.75) contrast(.85) brightness(1.1);
+  transition: filter var(--t-slow) var(--ease-out);
+}
+.develop::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(0,0,0,.35) 1px, transparent 1.2px);
+  background-size: 3px 3px;
+  opacity: .55; transition: opacity var(--t-slow) var(--ease-out);
+}
+.develop[data-developed="true"] > :first-child { filter: none; }
+.develop[data-developed="true"]::after { opacity: 0; }
+
+/* 06 · Readout ─ crosshair only inside demos */
+.readout-area { position: relative; cursor: crosshair; }
+.readout {
+  position: absolute; right: 10px; bottom: 8px;
+  font: 12px/1 var(--font-mono, ui-monospace, monospace);
+  font-variant-numeric: tabular-nums; pointer-events: none;
+}
+
+/* 07 · Copy ─ width is locked by the component */
+.copy-btn { transition: background-color var(--t-fast) var(--ease-out); }
+.copy-btn:hover { background: var(--accent-tint); }
+
+/* 08 · View transitions ─ titles get view-transition-name inline */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: var(--t-slow); animation-timing-function: var(--ease-io); }
+::view-transition-group(*) { animation-duration: var(--t-slow); animation-timing-function: var(--ease-io); }
+
+/* 09 · Inspect mode (G) ─ grid + redlines, see <InspectMode /> */
+.inspect-grid {
+  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  display: grid; margin-inline: auto;
+  opacity: 0; transition: opacity var(--t-base) var(--ease-out);
+}
+.inspect-grid[data-on="true"] { opacity: 1; }
+.inspect-grid > span { background: var(--accent); opacity: .08; }
+.redline { position: fixed; z-index: 9999; pointer-events: none; }
+.redline--box { outline: 1px solid var(--accent); }
+.redline--h { height: 1px; background: var(--accent); }
+.redline--v { width: 1px; background: var(--accent); }
+.redline--tag {
+  padding: 2px 5px; background: var(--accent); color: var(--paper);
+  font: 10px/1.2 var(--font-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 13 · Command menu (⌘K) */
+.cmdk { padding: 0; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); width: min(560px, calc(100vw - 32px)); }
+.cmdk::backdrop { background: rgba(17,17,17,.24); }
+.cmdk__input {
+  width: 100%; box-sizing: border-box; border: 0; border-bottom: 1px solid var(--ink);
+  padding: 16px 20px; font: 15px/1.4 inherit; background: transparent; color: inherit;
+}
+.cmdk__input:focus-visible { outline: none; }
+.cmdk__list { list-style: none; margin: 0; padding: 0; max-height: 360px; overflow-y: auto; }
+.cmdk__item {
+  display: flex; justify-content: space-between; gap: 16px; padding: 12px 20px;
+  border-bottom: 1px solid var(--rule-soft); cursor: pointer;
+}
+.cmdk__item[aria-selected="true"] { background: var(--accent-tint); box-shadow: inset 3px 0 0 var(--accent); }
+.cmdk__hint { font: 11px/1.4 var(--font-mono, ui-monospace, monospace); color: var(--muted); }
+.cmdk__foot {
+  display: flex; gap: 16px; padding: 10px 20px;
+  font: 11px/1 var(--font-mono, ui-monospace, monospace); color: var(--muted);
+}

@@ -1,18 +1,6 @@
+import "./notice-board.css";
 import type { Metadata } from "next";
-import ExperimentsIndex from "@/components/ExperimentsIndex";
-import { FolioBar } from "@/components/folio/FolioChrome";
-import styles from "./experiments.module.css";
-
+import TabShell from "@/components/editorial/TabShell";
+import ExperimentsPanel from "@/components/editorial/ExperimentsPanel";
 export const metadata: Metadata = { title: "Experiments" };
-
-export default function ExperimentsPage() {
-  return (
-    <main className={styles.page}>
-      <FolioBar backHref="/" />
-      <header className={styles.header}>
-        <h1 className={styles.title}>EXPERIMENTS</h1>
-      </header>
-      <ExperimentsIndex />
-    </main>
-  );
-}
+export default function ExperimentsPage() { return <TabShell className="experiments-notice"><ExperimentsPanel /></TabShell>; }

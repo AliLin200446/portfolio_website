@@ -23,7 +23,7 @@ const link =
 
 export default function ResonancePage() {
   return (
-    <main className="mx-auto max-w-5xl px-6">
+    <main id="main-content" className="case-simple mx-auto max-w-5xl px-6">
       <header className="sticky top-[3.25rem] z-[3] -mx-6 border-b border-line bg-paper/90 px-6 backdrop-blur-sm flex items-baseline justify-between py-3 font-mono font-medium text-[length:var(--text-meta)] text-muted">
         <Link href="/experiments" className="transition-colors hover:text-bronze-text">
           ← Experiments
