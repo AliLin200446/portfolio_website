@@ -1,0 +1,24 @@
+.experiments-spatial .tab-footer { display:none; }
+.experiments-view-controls h1 { font-size:var(--text-body); font-weight:500; }
+.spatial-fallback { list-style:none; padding:24px 28px 48px; }
+.spatial-fallback a { display:block; padding:16px 0; border-bottom:1px solid var(--ed-secondary); }
+.spatial-fallback a:focus-visible { outline:2px solid var(--ed-accent); outline-offset:4px; }
+.experiments-view-controls { padding:20px 28px 0; }
+.spatial-tags button { min-height:40px; padding:8px 18px; font:12px var(--font-geist-mono),monospace; border-radius:0; }
+.spatial-tags button[aria-pressed=true] { background:#5b2a30; color:#faf9f6; }
+.experiments-view-controls p { margin:10px 0 16px; color:#77746e; font-size:12px; }
+.spatial-tags { display:flex; gap:8px; flex-wrap:wrap; padding:0 28px; }
+.spatial-tags button { border:1px solid #c9c6be; }
+.spatial-stage { position:relative; height: min(76svh,850px); min-height:480px; background:#eeede8; touch-action:pan-y; }
+.spatial-stage canvas { touch-action:pan-y!important; }
+.spatial-label { width:max-content; max-width:240px; padding:8px 10px; color:#1c1b19; background:#faf9f6; font:11px/1.5 var(--font-geist-mono),monospace; pointer-events:auto; }
+.spatial-label button { display:inline-block; margin:5px 8px 0 0; text-decoration:underline; }
+.spatial-centre { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:2; padding:24px; font:16px var(--font-geist-sans),sans-serif; }
+.spatial-keyboard { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.spatial-keyboard:focus-within { z-index:3; width:auto; height:auto; clip-path:none; left:28px; bottom:20px; padding:12px; background:#faf9f6; }
+.spatial-keyboard a { display:block; }
+.spatial-keyboard:focus-within a:not(:focus) { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }.spatial-keyboard a:focus { display:block; outline:2px solid #5b2a30; outline-offset:4px; }
+.spatial-footer { padding:16px 28px; border-top:1px solid #c9c6be; display:flex; justify-content:space-between; font:11px var(--font-geist-mono),monospace; }
+.experiments-view-controls button:focus-visible,.spatial-tags button:focus-visible,.spatial-centre:focus-visible { outline:2px solid #5b2a30; outline-offset:3px; }
+
+@media(max-width:760px) { .spatial-stage { min-height:360px; height:65svh; } .spatial-footer { flex-wrap:wrap; gap:12px; } }

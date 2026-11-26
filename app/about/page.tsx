@@ -44,16 +44,34 @@ export default function AboutPage() {
         <Row meta="Next.js · React Native · i18n" number="B">Interface engineering: design systems written as code.</Row>
         <Row meta="Benchmarks · spectral analysis" number="C">Instrumentation: measuring what models and APIs actually do.</Row>
       </Group>
-      <Group title="Experience">{experience.map(job => <Row key={job.name} meta={job.role} number={job.date.includes('2024') ? '2024–25' : '2026'}><strong>{job.name}</strong><span className="contents-job-date">{job.date} · {job.location}</span><p>{job.points[0]}</p></Row>)}</Group>
+      <Group title="Experience">{experience.map(job => <Row key={job.name} meta={job.role} number={job.date.includes('2024') ? '2024–25' : '2026'}><strong>{job.name}</strong><span className="contents-job-date">{job.date} · {job.location}</span>{job.department && <p>{job.department}</p>}{job.points[0] && <p>{job.points[0]}</p>}</Row>)}</Group>
       <Group title="Research & IP"><Row meta="Vestige" number="2026">A filed provisional covering the role-differentiated proof architecture. <Link href="/work/vestige">Read case ↗</Link></Row></Group>
       <Group title="Education"><Row meta="Interactive Media Arts · STEM" number="2026"><strong>New York University, Tisch School of the Arts</strong><p>Interactive Media Arts · May 2026 · GPA 3.85</p></Row></Group>
+      <Group title="Selected Recognition">
+        <ul className="contents-recognition">
+          <li>
+            <a className="contents-line contents-row" href="https://www.csswinner.com/details/tailors-time/19561">
+              <span className="contents-meta">CSS Winner</span>
+              <span className="contents-number">2026</span>
+              <div><strong>STAR Award</strong> · Tailor’s Time <span aria-hidden="true">↗</span></div>
+            </a>
+          </li>
+          <li>
+            <a className="contents-line contents-row" href="https://wdawards.com/web/tailor-s-time">
+              <span className="contents-meta">WD Awards</span>
+              <span className="contents-number">2026</span>
+              <div><strong>WD Favourite</strong> · Tailor’s Time <span aria-hidden="true">↗</span></div>
+            </a>
+          </li>
+        </ul>
+      </Group>
       <Group title="Tools">
         <Row meta="Daily" number="A">TypeScript, React, Next.js, WebGL2, GLSL, Three.js.</Row>
         <Row meta="Also" number="B">React Native, Figma, Python, Photoshop, Lightroom, Capture One.</Row>
         <Row meta="Analog" number="C">35mm, 120 and instant film.</Row>
       </Group>
       <Group title="Elsewhere"><div className="contents-line contents-links"><div>{contactLinks.map(link => <Link key={link.label} href={link.href}>{link.label} ↗</Link>)}<Link href="/photography">Photography ↗</Link><CopyEmail /></div></div></Group>
-      <details id="resume-title" className="contents-resume"><summary>Resume / web edition <span>+</span></summary><div className="contents-resume-body"><h2>Professional experience</h2>{experience.map(job => <article key={job.name}><h3>{job.name}</h3><p>{job.role} · {job.date}</p><ul>{job.points.map(point => <li key={point}>{point}</li>)}</ul></article>)}<h2>Selected projects</h2>{resumeProjects.map(project => <article key={project.name}><h3><Link href={project.href}>{project.name} ↗</Link></h3><p>{project.stack}</p><ul>{project.points.map(point => <li key={point}>{point}</li>)}</ul></article>)}<h2>Skills</h2><dl>{skills.map(([name,value]) => <div key={name}><dt>{name}</dt><dd>{value}</dd></div>)}</dl></div></details>
+      <details id="resume-title" className="contents-resume"><summary>Resume / web edition <span>+</span></summary><div className="contents-resume-body"><h2>Professional experience</h2>{experience.map(job => <article key={job.name}><h3>{job.name}</h3><p>{job.role} · {job.date}</p>{job.department && <p>{job.department} · {job.location}</p>}{job.points.length > 0 && <ul>{job.points.map(point => <li key={point}>{point}</li>)}</ul>}</article>)}<h2>Selected projects</h2>{resumeProjects.map(project => <article key={project.name}><h3><Link href={project.href}>{project.name} ↗</Link></h3><p>{project.stack}</p><ul>{project.points.map(point => <li key={point}>{point}</li>)}</ul></article>)}<h2>Skills</h2><dl>{skills.map(([name,value]) => <div key={name}><dt>{name}</dt><dd>{value}</dd></div>)}</dl></div></details>
     </div>
     <div className="contents-footer"><span>© 2026 Ali Lin Lab LLC</span><span>Open to full-time roles</span><NYClock /></div>
   </TabShell>;

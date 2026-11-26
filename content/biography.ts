@@ -1,6 +1,11 @@
 export const experience = [
   {
-    name: "Vision On", location: "New York, NY", role: "AI Image Research Intern", date: "July 2026 – Present",
+    name: "Meta", location: "New York, NY", role: "Creative GenAI Analyst (Contractor)", date: "Nov 2026 – Present",
+    department: "Product Data Operations",
+    points: [],
+  },
+  {
+    name: "Vision On", location: "New York, NY", role: "AI Image Research Intern", date: "July 2026 – Sep 2026",
     points: [
       "Built production benchmarks to evaluate 20+ AI image models for commercial retouching, testing model strengths and failure modes across 10 production scenarios with senior retouchers.",
       "Built a model-selection taxonomy mapping production tasks to model capabilities and failure modes; adopted into the studio’s AI retouching pipeline.",

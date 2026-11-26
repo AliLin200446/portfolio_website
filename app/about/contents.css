@@ -27,6 +27,11 @@
 .contents-row strong { font-weight:500; }
 .contents-row a { text-decoration:underline; text-underline-offset:3px; }
 .contents-row p { color:#444440; }
+.about-contents .contents-recognition { list-style:none; margin:0; padding:0; }
+.about-contents .contents-recognition .contents-row { padding-block:20px; border-bottom:1px solid var(--ed-secondary); }
+.about-contents .contents-recognition a { transition:color 200ms ease, border-color 200ms ease; }
+.about-contents .contents-recognition a:is(:hover,:focus-visible) { color:var(--ed-accent); border-color:var(--ed-accent); }
+.about-contents .contents-recognition a:focus-visible { outline:2px solid var(--ed-accent); outline-offset:4px; }
 .contents-links { min-height:0; }
 .contents-links > div { grid-column:3; display:flex; flex-wrap:wrap; gap:8px 28px; font:12px var(--font-geist-mono),monospace; }
 .contents-links a { min-height:44px; display:flex; align-items:center; }
